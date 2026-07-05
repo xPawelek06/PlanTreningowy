@@ -40,8 +40,8 @@ EXERCISES = [
         name="Wyciskanie płaskie (główny bój)",
         sets_reps="3 x 5 (S3 = AMRAP, min. 5)",
         tm_info=(
-            "Rozgrzewka: pusta sztanga x5, 32,5 kg x5, 48,75 kg x5 → "
-            "S1: 52,5 kg x5, S2: 61,25 kg x5, S3: 68,75 kg x5+"
+            "Rozgrzewka: pusta sztanga x5, 32,5 kg x5, 47,5 kg x5 → "
+            "S1: 52,5 kg x5, S2: 60 kg x5, S3: 67,5 kg x5+"
         ),
         is_main_lift=True,
     ),
