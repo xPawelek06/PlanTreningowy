@@ -35,14 +35,13 @@ EXERCISES = [
     ),
     dict(
         day="Poniedziałek", day_order=0, position=1,
-        name="Bułgary", sets_reps="3 x 8–10 / nogę",
-        tm_info="S1: 24 kg x8 / nogę\nS2: 24 kg x9 / nogę\nS3: 24 kg x10 / nogę",
+        name="Bułgary", sets_reps="3 x 8–10 / noga",
+        tm_info="S1: 24 kg x8 / noga\nS2: 24 kg x9 / noga\nS3: 24 kg x10 / noga",
     ),
     dict(
         day="Poniedziałek", day_order=0, position=2,
         name="RDL (lekko)", sets_reps="3 x 10",
         tm_info=(
-            "Pierwszy raz z tym ćwiczeniem — dobierz S3 wg samopoczucia po S2\n"
             "Rozgrzewka: pusta sztanga x5, 40 kg x5\n"
             "S1: 60 kg x10\n"
             "S2: 70 kg x10\n"
@@ -67,20 +66,16 @@ EXERCISES = [
     ),
     dict(
         day="Wtorek", day_order=1, position=1,
-        name="Wyciskanie hantli skos górny", sets_reps="3 x 8–10",
+        name="Wyciskanie hantli skos górny", sets_reps="3 x 8",
         tm_info=(
-            "Punkt startowy (dawno nie robione) — do korekty po 1. podejściu\n"
-            "20 kg / hantla x8–10\n"
-            "Priorytet: kontrola łokci (patrz Wiosłowanie), nie ciężar"
+            "20 kg / hantla\n"
         ),
     ),
     dict(
         day="Wtorek", day_order=1, position=2,
-        name="Wiosłowanie sztangą", sets_reps="3 x 8–10",
+        name="Wiosłowanie sztangą", sets_reps="3 x 8",
         tm_info=(
-            "Punkt startowy (pierwszy powrót po długiej przerwie) — do korekty po 1. podejściu\n"
-            "40 kg x8–10\n"
-            "Priorytet: neutralny kręgosłup / technika, nie ciężar"
+            "40 kg\n"
         ),
     ),
     dict(
@@ -94,7 +89,7 @@ EXERCISES = [
             "S3: +40 kg x5+"
         ),
     ),  # TM=45 kg dociazenia; zaokraglenie w gore co 2,5 kg (najmniejszy talerz na pas do dipow), wartosci S1/S2/S3 podane przez Pawla
-    dict(day="Wtorek", day_order=1, position=4, name="Prostowanie ramion wyciąg", sets_reps="3 x 12–15", tm_info="40 kg"),
+    dict(day="Wtorek", day_order=1, position=4, name="Prostowanie ramion wyciąg", sets_reps="3 x 12", tm_info="40 kg"),
     dict(day="Wtorek", day_order=1, position=5, name="Rozpiętki hantle w opadzie", sets_reps="3 x 10", tm_info="8 kg"),
 
     # SRODA - Bieg 10 km
@@ -109,7 +104,6 @@ EXERCISES = [
         tm_info=(
             "Dragon Flag: 3 powt. (pełny wyprost i powrót) / serię\n"
             "Hollow Body Rocks: 30 sek / serię\n"
-            "Utrwalamy ten sam poziom co ostatnio (już blisko granicy) — progres przy kolejnym powrocie"
         ),
     ),
     dict(day="Czwartek", day_order=3, position=1, name="Wznosy nóg/kolan w zwisie", sets_reps="3 x 10"),
@@ -136,19 +130,14 @@ EXERCISES = [
     ),
     dict(day="Piątek", day_order=4, position=1, name="Nordic Curls", sets_reps="3 x 6"),
     dict(
-        day="Piątek", day_order=4, position=2,
-        name="Rumuński martwy ciąg (lekko)", sets_reps="3 x 8–10",
-        tm_info="Lekko, technika — jeśli plecy czuły się ciężko na martwym, pomiń albo jeszcze odciąż",
-    ),
-    dict(
         day="Piątek", day_order=4, position=3,
         name="Spacer farmera", sets_reps="3 x 20 sek",
-        tm_info="15 kg / rękę (aktualny realny stan, nie aspiracyjne 40–45 sek)",
+        tm_info="15 kg / ręka",
     ),
     dict(
         day="Piątek", day_order=4, position=4,
-        name="Podciąganie na drążku", sets_reps="3 x 8–10",
-        tm_info="Bez dociążenia — buduj bazę powtórzeń, zanim dołożysz ciężar",
+        name="Podciąganie na drążku", sets_reps="3 x 12",
+        tm_info="Bez dociążenia — pod ilość",
     ),
     dict(
         day="Piątek", day_order=4, position=5,
@@ -158,18 +147,19 @@ EXERCISES = [
 
     # SOBOTA - Bieg latwy
     dict(day="Sobota", day_order=5, position=0, name="Bieg łatwy", sets_reps="30–40 min"),
-    dict(day="Sobota", day_order=5, position=1, name="Rozciąganie całego ciała", sets_reps="20–30 min"),
     dict(day="Sobota", day_order=5, position=2, name="Chest-to-wall Handstand Hold", sets_reps="3 x 30 sek"),
+    dict(day="Sobota", day_order=5, position=1, name="Rozciąganie całego ciała", sets_reps="20–30 min"),
 
     # NIEDZIELA - Kalistenika vertical push
-    dict(day="Niedziela", day_order=6, position=0, name="HSPU przy ścianie", sets_reps="4 x 5–8"),
-    dict(day="Niedziela", day_order=6, position=1, name="Frog Stand", sets_reps="4 serie"),
-    dict(day="Niedziela", day_order=6, position=2, name="Pike Push-ups", sets_reps="3 x 10–12"),
+    dict(day="Niedziela", day_order=6, position=0, name="HSPU przy ścianie", sets_reps="4 x 4"),
+    dict(day="Niedziela", day_order=6, position=1, name="Frog Stand", sets_reps="4 x 60 sek"),
+    dict(day="Niedziela", day_order=6, position=2, name="Pike Push-ups", sets_reps="3 x 10"),
     dict(day="Niedziela", day_order=6, position=3, name="Toes to Bar", sets_reps="3 x 10"),
 ]
 
 
 def main():
+    # 1. Upsert wszystkiego, co jest na liscie EXERCISES (jak dotychczas).
     resp = requests.post(
         f"{API_BASE}/api/admin/seed",
         json={"exercises": EXERCISES},
@@ -177,7 +167,38 @@ def main():
         timeout=30,
     )
     resp.raise_for_status()
-    print(resp.json())
+    print("seed:", resp.json())
+
+    # 2. Usun "osierocone" wiersze: te, ktore sa w bazie dla dni obecnych w
+    # EXERCISES, ale nie ma ich juz na liscie (np. Pawel usunal linie z pliku).
+    # Celowo NIE ruszamy dni, ktorych w tym przebiegu w ogole nie ma na liscie -
+    # zeby niepelny plik nie skasowal calych dni przez pomylke.
+    days_in_file = {item["day"] for item in EXERCISES}
+    names_in_file = {(item["day"], item["name"]) for item in EXERCISES}
+
+    plan_resp = requests.get(f"{API_BASE}/api/plan", timeout=30)
+    plan_resp.raise_for_status()
+    current_plan = plan_resp.json()
+
+    orphaned = [
+        {"day": ex["day"], "name": ex["name"]}
+        for ex in current_plan
+        if ex["day"] in days_in_file and (ex["day"], ex["name"]) not in names_in_file
+    ]
+
+    if not orphaned:
+        print("brak osieroconych wierszy do usuniecia")
+        return
+
+    print("usuwam osierocone wiersze:", orphaned)
+    del_resp = requests.delete(
+        f"{API_BASE}/api/admin/exercises",
+        json={"exercises": orphaned},
+        headers={"X-Auth-Secret": APP_SECRET},
+        timeout=30,
+    )
+    del_resp.raise_for_status()
+    print("delete:", del_resp.json())
 
 
 if __name__ == "__main__":

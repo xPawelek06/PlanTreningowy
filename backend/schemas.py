@@ -48,3 +48,12 @@ class ExerciseSeed(BaseModel):
 
 class SeedPayload(BaseModel):
     exercises: List[ExerciseSeed]
+
+
+class ExerciseRef(BaseModel):
+    day: str
+    name: str
+
+
+class DeletePayload(BaseModel):
+    exercises: List[ExerciseRef]

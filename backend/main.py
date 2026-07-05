@@ -29,7 +29,7 @@ app = FastAPI(title="Plan Treningowy API")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=ALLOWED_ORIGINS,
-    allow_methods=["GET", "POST"],
+    allow_methods=["GET", "POST", "DELETE"],
     allow_headers=["*"],
 )
 
@@ -148,3 +148,26 @@ def seed_plan(payload: schemas.SeedPayload, db: Session = Depends(get_db)):
             created += 1
     db.commit()
     return {"status": "ok", "updated": updated, "created": created}
+
+
+@app.delete("/api/admin/exercises", dependencies=[Depends(require_secret)])
+def delete_exercises(payload: schemas.DeletePayload, db: Session = Depends(get_db)):
+    """Kasuje cwiczenia po (day, name) - uzywane przez seed_data.py do usuwania
+    wierszy, ktore zostaly wykreslone z listy EXERCISES. Kasuje tez powiazane
+    wpisy Entry (historia zapas/uwagi tego cwiczenia znika razem z nim - to
+    swiadome, "prawdziwe" kasowanie, nie tylko ukrycie wiersza)."""
+    deleted, not_found = 0, []
+    for ref in payload.exercises:
+        exercise = (
+            db.query(models.Exercise)
+            .filter(models.Exercise.day == ref.day, models.Exercise.name == ref.name)
+            .first()
+        )
+        if not exercise:
+            not_found.append({"day": ref.day, "name": ref.name})
+            continue
+        db.query(models.Entry).filter(models.Entry.exercise_id == exercise.id).delete()
+        db.delete(exercise)
+        deleted += 1
+    db.commit()
+    return {"status": "ok", "deleted": deleted, "not_found": not_found}
