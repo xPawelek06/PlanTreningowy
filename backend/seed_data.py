@@ -33,8 +33,22 @@ EXERCISES = [
         ),
         is_main_lift=False,  # Pawel poprosil o zwykly tekst bez pogrubienia (2026-07-05)
     ),
-    dict(day="Poniedziałek", day_order=0, position=1, name="Bułgary", sets_reps="3 x 8–10 / nogę"),
-    dict(day="Poniedziałek", day_order=0, position=2, name="RDL (lekko)", sets_reps="3 x 10"),
+    dict(
+        day="Poniedziałek", day_order=0, position=1,
+        name="Bułgary", sets_reps="3 x 8–10 / nogę",
+        tm_info="S1: 24 kg x8 / nogę\nS2: 24 kg x9 / nogę\nS3: 24 kg x10 / nogę",
+    ),
+    dict(
+        day="Poniedziałek", day_order=0, position=2,
+        name="RDL (lekko)", sets_reps="3 x 10",
+        tm_info=(
+            "Pierwszy raz z tym ćwiczeniem — dobierz S3 wg samopoczucia po S2\n"
+            "Rozgrzewka: pusta sztanga x5, 40 kg x5\n"
+            "S1: 60 kg x10\n"
+            "S2: 70 kg x10\n"
+            "S3: 80 kg x10 (jeśli S2 lekko) / 70 kg x10 (jeśli S2 ciężko)"
+        ),
+    ),
     dict(day="Poniedziałek", day_order=0, position=3, name="Pallof Press", sets_reps="3 x 45–60 sek", tm_info="S1: 45 sek\nS2: 50 sek\nS3: 60 sek"),
     dict(day="Poniedziałek", day_order=0, position=4, name="Hollow Hold", sets_reps="3 x 45–60 sek", tm_info="S1: 45 sek\nS2: 50 sek\nS3: 60 sek"),
 
