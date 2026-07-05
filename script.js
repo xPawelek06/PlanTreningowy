@@ -117,13 +117,13 @@ function buildRow(exercise) {
   tr.appendChild(multilineCell(exercise.tm_info || "—", "TM"));
 
   const zapasCell = makeEl("td", { attrs: { "data-label": "Zapas" } });
-  const zapasInput = makeEl("input", { attrs: { type: "text", placeholder: "np. spory – 3" } });
+  const zapasInput = makeEl("input", { attrs: { type: "text"} });
   zapasInput.value = exercise.latest_zapas || "";
   zapasCell.appendChild(zapasInput);
   tr.appendChild(zapasCell);
 
   const uwagiCell = makeEl("td", { attrs: { "data-label": "Uwagi" } });
-  const uwagiInput = makeEl("input", { attrs: { type: "text", placeholder: "np. bolało ramię" } });
+  const uwagiInput = makeEl("input", { attrs: { type: "text"} });
   uwagiInput.value = exercise.latest_uwagi || "";
   uwagiCell.appendChild(uwagiInput);
   tr.appendChild(uwagiCell);
