@@ -9,8 +9,8 @@ const CORRECT_HASH =
 const SESSION_KEY = "plan-treningowy-unlocked";
 const SECRET_SESSION_KEY = "plan-treningowy-secret";
 
-// TODO po wdrożeniu na Render: podmień na prawdziwy URL backendu
-// (Render Dashboard -> plan-treningowy-api -> adres na górze strony).
+// Backend wdrożony i zweryfikowany na Renderze (2026-07-05) - to prawdziwy,
+// żywy URL, połączony z bazą Neon.
 const API_BASE = "https://plan-treningowy-api.onrender.com";
 
 let authSecret = "";
