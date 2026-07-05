@@ -35,8 +35,8 @@ EXERCISES = [
     ),
     dict(day="Poniedziałek", day_order=0, position=1, name="Bułgary", sets_reps="3 x 8–10 / nogę"),
     dict(day="Poniedziałek", day_order=0, position=2, name="RDL (lekko)", sets_reps="3 x 10"),
-    dict(day="Poniedziałek", day_order=0, position=3, name="Pallof Press", sets_reps="S1: 45 sek\nS2: 50 sek\nS3: 60 sek"),
-    dict(day="Poniedziałek", day_order=0, position=4, name="Hollow Hold", sets_reps="S1: 45 sek\nS2: 50 sek\nS3: 60 sek"),
+    dict(day="Poniedziałek", day_order=0, position=3, name="Pallof Press", sets_reps="3 x 45–60 sek", tm_info="S1: 45 sek\nS2: 50 sek\nS3: 60 sek"),
+    dict(day="Poniedziałek", day_order=0, position=4, name="Hollow Hold", sets_reps="3 x 45–60 sek", tm_info="S1: 45 sek\nS2: 50 sek\nS3: 60 sek"),
 
     # WTOREK - Wyciskanie plaskie
     dict(
