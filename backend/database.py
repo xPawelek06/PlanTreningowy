@@ -3,8 +3,10 @@ import os
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
 
-# Render (i wiekszosc hostow Postgres) podaje DATABASE_URL w formie "postgres://...".
-# SQLAlchemy 1.4+ / psycopg2 wymaga prefiksu "postgresql://".
+# Baza produkcyjna to Neon (neon.tech, darmowy Postgres bez limitu czasowego -
+# patrz render.yaml). Niektorzy dostawcy podaja DATABASE_URL w formie
+# "postgres://...", a SQLAlchemy 1.4+ / psycopg2 wymaga prefiksu
+# "postgresql://" - ponizej konwersja na wszelki wypadek.
 DATABASE_URL = os.environ.get("DATABASE_URL", "sqlite:///./local.db")
 if DATABASE_URL.startswith("postgres://"):
     DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
