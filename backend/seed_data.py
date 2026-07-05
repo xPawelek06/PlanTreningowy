@@ -55,19 +55,21 @@ EXERCISES = [
     # WTOREK - Wyciskanie plaskie
     dict(
         day="Wtorek", day_order=1, position=0,
-        name="Wyciskanie płaskie (główny bój)",
+        name="Wyciskanie płaskie",
         sets_reps="3 x 5 (S3 = AMRAP, min. 5)",
         tm_info=(
-            "Rozgrzewka: pusta sztanga x5, 32,5 kg x5, 47,5 kg x5 → "
-            "S1: 52,5 kg x5, S2: 60 kg x5, S3: 67,5 kg x5+"
+            "Rozgrzewka: pusta sztanga x5, 32,5 kg x5, 47,5 kg x5\n"
+            "S1: 52,5 kg x5\n"
+            "S2: 60 kg x5\n"
+            "S3: 67,5 kg x5+"
         ),
-        is_main_lift=True,
+        is_main_lift=False,  # Pawel poprosil o zwykly tekst bez pogrubienia (jak Przysiad w Pon.)
     ),
     dict(day="Wtorek", day_order=1, position=1, name="Wyciskanie hantli skos górny", sets_reps="3 x 8–10"),
-    dict(day="Wtorek", day_order=1, position=2, name="Wiosłowanie sztangą / hantlami", sets_reps="3 x 8–10"),
-    dict(day="Wtorek", day_order=1, position=3, name="Dipy (dociążone)", sets_reps="3 x 8–10"),
-    dict(day="Wtorek", day_order=1, position=4, name="Prostowanie ramion wyciąg", sets_reps="3 x 12–15"),
-    dict(day="Wtorek", day_order=1, position=5, name="Rozpiętki hantle w opadzie", sets_reps="3 x 10"),
+    dict(day="Wtorek", day_order=1, position=2, name="Wiosłowanie sztangą", sets_reps="3 x 8–10"),
+    dict(day="Wtorek", day_order=1, position=3, name="Dipy (dociążone)", sets_reps="3 x 8–10"),  # TM/rep-scheme: czeka na potwierdzenie Pawla (zaokraglenie + zmiana na 5/5/5+)
+    dict(day="Wtorek", day_order=1, position=4, name="Prostowanie ramion wyciąg", sets_reps="3 x 12–15", tm_info="40 kg"),
+    dict(day="Wtorek", day_order=1, position=5, name="Rozpiętki hantle w opadzie", sets_reps="3 x 10", tm_info="8 kg"),
 
     # SRODA - Bieg 10 km
     dict(day="Środa", day_order=2, position=0, name="Bieg 10 km", sets_reps="~50 min (cel 40 min)"),
