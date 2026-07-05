@@ -7,6 +7,8 @@ services:
     buildCommand: "pip install -r requirements.txt"
     startCommand: "uvicorn main:app --host 0.0.0.0 --port $PORT"
     envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.6 # Render domyslnie wybral 3.14 (za nowy - brak wheeli dla pydantic-core, build padal)
       - key: APP_SECRET
         sync: false # ustaw recznie w Render Dashboard -> Environment (wartosc: PlanTreningowy)
       - key: DATABASE_URL
