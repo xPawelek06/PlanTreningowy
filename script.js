@@ -82,6 +82,24 @@ function makeEl(tag, opts) {
   return node;
 }
 
+// Komorka, ktora rozbija tekst na osobne linie po znaku nowej linii (\n).
+// Dla wartosci bez \n (wiekszosc dni) zachowuje sie jak zwykla, jednoliniowa
+// komorka - wiec zmiana dotyczy tylko wierszy z wieloliniowym breakdownem.
+function multilineCell(text, label) {
+  const td = makeEl("td", { attrs: { "data-label": label } });
+  const lines = String(text).split("\n");
+  if (lines.length === 1) {
+    td.textContent = lines[0];
+    return td;
+  }
+  const wrap = makeEl("div", { className: "lines" });
+  for (const line of lines) {
+    wrap.appendChild(makeEl("div", { text: line, className: "line" }));
+  }
+  td.appendChild(wrap);
+  return td;
+}
+
 function buildRow(exercise) {
   const tr = document.createElement("tr");
 
@@ -95,12 +113,8 @@ function buildRow(exercise) {
   }
   tr.appendChild(nameCell);
 
-  tr.appendChild(
-    makeEl("td", { text: exercise.sets_reps, attrs: { "data-label": "Serie x powtórzenia" } })
-  );
-  tr.appendChild(
-    makeEl("td", { text: exercise.tm_info || "—", attrs: { "data-label": "TM" } })
-  );
+  tr.appendChild(multilineCell(exercise.sets_reps, "Serie x powtórzenia"));
+  tr.appendChild(multilineCell(exercise.tm_info || "—", "TM"));
 
   const zapasCell = makeEl("td", { attrs: { "data-label": "Zapas" } });
   const zapasInput = makeEl("input", { attrs: { type: "text", placeholder: "np. spory – 3" } });

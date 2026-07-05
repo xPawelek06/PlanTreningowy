@@ -273,6 +273,21 @@ tbody tr:last-child td {
   border-bottom: none;
 }
 
+.lines {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.lines .line {
+  padding: 2px 0;
+}
+
+.lines .line:not(:last-child) {
+  border-bottom: 1px dashed var(--border);
+  padding-bottom: 5px;
+}
+
 td input[type="text"] {
   width: 100%;
   min-width: 110px;

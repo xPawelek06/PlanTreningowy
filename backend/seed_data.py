@@ -19,20 +19,24 @@ APP_SECRET = os.environ.get("APP_SECRET", "PlanTreningowy")
 
 EXERCISES = [
     # PONIEDZIALEK - Przysiad
+    # Kolumny sets_reps / tm_info moga zawierac znaki nowej linii (\n) - frontend
+    # renderuje kazdy fragment jako osobna linie (czytelny breakdown per seria).
     dict(
         day="Poniedziałek", day_order=0, position=0,
-        name="Przysiad ze sztangą (główny bój)",
+        name="Przysiad ze sztangą",
         sets_reps="3 x 5 (S3 = AMRAP, min. 5)",
         tm_info=(
-            "Rozgrzewka: pusta sztanga x5, 40 kg x5, 57,5 kg x5 → "
-            "S1: 62,5 kg x5, S2: 72,5 kg x5, S3: 82,5 kg x5+"
+            "Rozgrzewka: pusta sztanga x5, 40 kg x5, 57,5 kg x5\n"
+            "S1: 62,5 kg x5\n"
+            "S2: 72,5 kg x5\n"
+            "S3: 82,5 kg x5+"
         ),
-        is_main_lift=True,
+        is_main_lift=False,  # Pawel poprosil o zwykly tekst bez pogrubienia (2026-07-05)
     ),
-    dict(day="Poniedziałek", day_order=0, position=1, name="Przysiad przedni LUB bułgarski", sets_reps="3 x 8–10 / nogę"),
-    dict(day="Poniedziałek", day_order=0, position=2, name="RDL / Good Morning (lekko)", sets_reps="3 x 10"),
-    dict(day="Poniedziałek", day_order=0, position=3, name="Pallof Press", sets_reps="3 x 45–60 sek"),
-    dict(day="Poniedziałek", day_order=0, position=4, name="Hollow Hold", sets_reps="3 x 45–60 sek"),
+    dict(day="Poniedziałek", day_order=0, position=1, name="Bułgary", sets_reps="3 x 8–10 / nogę"),
+    dict(day="Poniedziałek", day_order=0, position=2, name="RDL (lekko)", sets_reps="3 x 10"),
+    dict(day="Poniedziałek", day_order=0, position=3, name="Pallof Press", sets_reps="S1: 45 sek\nS2: 50 sek\nS3: 60 sek"),
+    dict(day="Poniedziałek", day_order=0, position=4, name="Hollow Hold", sets_reps="S1: 45 sek\nS2: 50 sek\nS3: 60 sek"),
 
     # WTOREK - Wyciskanie plaskie
     dict(
