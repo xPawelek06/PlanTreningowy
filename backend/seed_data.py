@@ -67,7 +67,17 @@ EXERCISES = [
     ),
     dict(day="Wtorek", day_order=1, position=1, name="Wyciskanie hantli skos górny", sets_reps="3 x 8–10"),
     dict(day="Wtorek", day_order=1, position=2, name="Wiosłowanie sztangą", sets_reps="3 x 8–10"),
-    dict(day="Wtorek", day_order=1, position=3, name="Dipy (dociążone)", sets_reps="3 x 8–10"),  # TM/rep-scheme: czeka na potwierdzenie Pawla (zaokraglenie + zmiana na 5/5/5+)
+    dict(
+        day="Wtorek", day_order=1, position=3,
+        name="Dipy (dociążone)",
+        sets_reps="3 x 5 (S3 = AMRAP, min. 5)",
+        tm_info=(
+            "Rozgrzewka: dociążenie +17,5 kg x5, +27,5 kg x5\n"
+            "S1: +28,75 kg x5\n"
+            "S2: +33,75 kg x5\n"
+            "S3: +38,75 kg x5+"
+        ),
+    ),  # TM=45 kg dociazenia (max +50 kg x 0,9), formalny wave potwierdzony przez Pawla
     dict(day="Wtorek", day_order=1, position=4, name="Prostowanie ramion wyciąg", sets_reps="3 x 12–15", tm_info="40 kg"),
     dict(day="Wtorek", day_order=1, position=5, name="Rozpiętki hantle w opadzie", sets_reps="3 x 10", tm_info="8 kg"),
 
