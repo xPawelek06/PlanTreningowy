@@ -65,7 +65,15 @@ EXERCISES = [
         ),
         is_main_lift=False,  # Pawel poprosil o zwykly tekst bez pogrubienia (jak Przysiad w Pon.)
     ),
-    dict(day="Wtorek", day_order=1, position=1, name="Wyciskanie hantli skos górny", sets_reps="3 x 8–10"),
+    dict(
+        day="Wtorek", day_order=1, position=1,
+        name="Wyciskanie hantli skos górny", sets_reps="3 x 8–10",
+        tm_info=(
+            "Punkt startowy (dawno nie robione) — do korekty po 1. podejściu\n"
+            "20 kg / hantla x8–10\n"
+            "Priorytet: kontrola łokci (patrz Wiosłowanie), nie ciężar"
+        ),
+    ),
     dict(
         day="Wtorek", day_order=1, position=2,
         name="Wiosłowanie sztangą", sets_reps="3 x 8–10",
@@ -95,8 +103,16 @@ EXERCISES = [
     dict(day="Środa", day_order=2, position=2, name="Superman Hold", sets_reps="3 x 45 sek"),
 
     # CZWARTEK - Kalistenika core
-    dict(day="Czwartek", day_order=3, position=0, name="Dragon Flag + Hollow Body Rocks", sets_reps="4 serie"),
-    dict(day="Czwartek", day_order=3, position=1, name="Wznosy nóg/kolan w zwisie", sets_reps="3–4 x 10–12"),
+    dict(
+        day="Czwartek", day_order=3, position=0,
+        name="Dragon Flag + Hollow Body Rocks", sets_reps="4 serie",
+        tm_info=(
+            "Dragon Flag: 3 powt. (pełny wyprost i powrót) / serię\n"
+            "Hollow Body Rocks: 30 sek / serię\n"
+            "Utrwalamy ten sam poziom co ostatnio (już blisko granicy) — progres przy kolejnym powrocie"
+        ),
+    ),
+    dict(day="Czwartek", day_order=3, position=1, name="Wznosy nóg/kolan w zwisie", sets_reps="3 x 10"),
     dict(day="Czwartek", day_order=3, position=2, name="Shoulder Taps", sets_reps="3 x 20"),
     dict(day="Czwartek", day_order=3, position=3, name="Plank", sets_reps="3 x 60 sek"),
     dict(day="Czwartek", day_order=3, position=4, name="Mobilność bioder + lędźwie", sets_reps="10–15 min"),
