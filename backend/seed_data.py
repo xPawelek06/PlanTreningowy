@@ -88,12 +88,12 @@ EXERCISES = [
         name="Dipy (dociążone)",
         sets_reps="3 x 5 (S3 = AMRAP, min. 5)",
         tm_info=(
-            "Rozgrzewka: dociążenie +17,5 kg x5, +27,5 kg x5\n"
-            "S1: +28,75 kg x5\n"
-            "S2: +33,75 kg x5\n"
-            "S3: +38,75 kg x5+"
+            "Rozgrzewka: dociążenie +20 kg x5, +27,5 kg x5\n"
+            "S1: +30 kg x5\n"
+            "S2: +35 kg x5\n"
+            "S3: +40 kg x5+"
         ),
-    ),  # TM=45 kg dociazenia (max +50 kg x 0,9), formalny wave potwierdzony przez Pawla
+    ),  # TM=45 kg dociazenia; zaokraglenie w gore co 2,5 kg (najmniejszy talerz na pas do dipow), wartosci S1/S2/S3 podane przez Pawla
     dict(day="Wtorek", day_order=1, position=4, name="Prostowanie ramion wyciąg", sets_reps="3 x 12–15", tm_info="40 kg"),
     dict(day="Wtorek", day_order=1, position=5, name="Rozpiętki hantle w opadzie", sets_reps="3 x 10", tm_info="8 kg"),
 
@@ -118,21 +118,43 @@ EXERCISES = [
     dict(day="Czwartek", day_order=3, position=4, name="Mobilność bioder + lędźwie", sets_reps="10–15 min"),
 
     # PIATEK - Martwy ciag
+    # Kolejnosc cwiczen zmieniona 2026-07-05: Nordic Curls (hamstringi, mala
+    # obciazenie ledzwi) wstawione MIEDZY Martwy a RDL, zeby dac ledzwiom bufor
+    # zanim przyjdzie druga praca w zawiasie biodrowym - patrz uzasadnienie
+    # w wiadomosci do Pawla (historia kontuzji + swiezy powrot do martwego).
     dict(
         day="Piątek", day_order=4, position=0,
-        name="Martwy ciąg (główny bój)",
+        name="Martwy ciąg",
         sets_reps="3 x 5 (S3 = AMRAP, min. 5)",
         tm_info=(
-            "Rozgrzewka: pusta sztanga x5, 47,5 kg x5, 70 kg x5 → "
-            "S1: 77,5 kg x5, S2: 87,5 kg x5, S3: 100 kg x5+"
+            "Rozgrzewka: pusta sztanga x5, 47,5 kg x5, 70 kg x5\n"
+            "S1: 77,5 kg x5\n"
+            "S2: 87,5 kg x5\n"
+            "S3: 100 kg x5+"
         ),
-        is_main_lift=True,
+        is_main_lift=False,  # Pawel poprosil o zwykly tekst bez pogrubienia (jak inne glowne boje)
     ),
-    dict(day="Piątek", day_order=4, position=1, name="Rumuński martwy ciąg (lekko)", sets_reps="3 x 8–10"),
-    dict(day="Piątek", day_order=4, position=2, name="Nordic Curls", sets_reps="3 x 6"),
-    dict(day="Piątek", day_order=4, position=3, name="Spacer farmera", sets_reps="3 x 40–45 sek"),
-    dict(day="Piątek", day_order=4, position=4, name="Podciąganie na drążku", sets_reps="3 x 8–10"),
-    dict(day="Piątek", day_order=4, position=5, name="Przedramiona / chwyt", sets_reps="3 x 8 / stronę"),
+    dict(day="Piątek", day_order=4, position=1, name="Nordic Curls", sets_reps="3 x 6"),
+    dict(
+        day="Piątek", day_order=4, position=2,
+        name="Rumuński martwy ciąg (lekko)", sets_reps="3 x 8–10",
+        tm_info="Lekko, technika — jeśli plecy czuły się ciężko na martwym, pomiń albo jeszcze odciąż",
+    ),
+    dict(
+        day="Piątek", day_order=4, position=3,
+        name="Spacer farmera", sets_reps="3 x 20 sek",
+        tm_info="15 kg / rękę (aktualny realny stan, nie aspiracyjne 40–45 sek)",
+    ),
+    dict(
+        day="Piątek", day_order=4, position=4,
+        name="Podciąganie na drążku", sets_reps="3 x 8–10",
+        tm_info="Bez dociążenia — buduj bazę powtórzeń, zanim dołożysz ciężar",
+    ),
+    dict(
+        day="Piątek", day_order=4, position=5,
+        name="Zginanie nadgarstków za plecami", sets_reps="3 x 15",
+        tm_info="30 kg",
+    ),
 
     # SOBOTA - Bieg latwy
     dict(day="Sobota", day_order=5, position=0, name="Bieg łatwy", sets_reps="30–40 min"),
