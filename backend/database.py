@@ -1,7 +1,12 @@
 import os
 
+from dotenv import load_dotenv
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
+
+# Lokalnie (dev) czyta backend/.env, jesli istnieje - w produkcji (Render) i tak
+# uzywane sa prawdziwe zmienne srodowiskowe z dashboardu, wiec to nieszkodliwe.
+load_dotenv()
 
 # Baza produkcyjna to Neon (neon.tech, darmowy Postgres bez limitu czasowego -
 # patrz render.yaml). Niektorzy dostawcy podaja DATABASE_URL w formie
