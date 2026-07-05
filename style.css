@@ -123,6 +123,20 @@ body {
   font-size: 0.8rem;
 }
 
+.load-status {
+  font-size: 0.85rem;
+  color: var(--text-dim);
+  margin: 10px 0 0;
+}
+
+.load-status.load-error {
+  color: #ff6b6b;
+}
+
+.load-status.hidden {
+  display: none;
+}
+
 .day-nav {
   position: sticky;
   top: 0;
@@ -196,6 +210,48 @@ tbody tr:last-child td {
   border-bottom: none;
 }
 
+td input[type="text"] {
+  width: 100%;
+  min-width: 110px;
+  padding: 7px 9px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text);
+  font-size: 0.85rem;
+}
+
+.action-cell {
+  white-space: nowrap;
+}
+
+.save-btn {
+  padding: 7px 14px;
+  border-radius: 6px;
+  border: none;
+  background: var(--accent);
+  color: #fff;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.save-btn:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.save-status {
+  display: inline-block;
+  margin-left: 8px;
+  font-size: 0.78rem;
+  color: var(--accent-2);
+}
+
+.save-status.save-error {
+  color: #ff6b6b;
+}
+
 .page-footer {
   margin-top: 40px;
   color: var(--text-dim);
@@ -240,6 +296,14 @@ tbody tr:last-child td {
     text-transform: uppercase;
     letter-spacing: 0.03em;
     flex: 0 0 110px;
+  }
+
+  .action-cell {
+    justify-content: flex-end;
+  }
+
+  .action-cell::before {
+    display: none;
   }
 }
 
