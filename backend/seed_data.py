@@ -66,7 +66,15 @@ EXERCISES = [
         is_main_lift=False,  # Pawel poprosil o zwykly tekst bez pogrubienia (jak Przysiad w Pon.)
     ),
     dict(day="Wtorek", day_order=1, position=1, name="Wyciskanie hantli skos górny", sets_reps="3 x 8–10"),
-    dict(day="Wtorek", day_order=1, position=2, name="Wiosłowanie sztangą", sets_reps="3 x 8–10"),
+    dict(
+        day="Wtorek", day_order=1, position=2,
+        name="Wiosłowanie sztangą", sets_reps="3 x 8–10",
+        tm_info=(
+            "Punkt startowy (pierwszy powrót po długiej przerwie) — do korekty po 1. podejściu\n"
+            "40 kg x8–10\n"
+            "Priorytet: neutralny kręgosłup / technika, nie ciężar"
+        ),
+    ),
     dict(
         day="Wtorek", day_order=1, position=3,
         name="Dipy (dociążone)",
