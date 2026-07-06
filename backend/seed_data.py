@@ -78,8 +78,8 @@ EXERCISES = [
             "40 kg\n"
         ),
     ),
-    dict(day="Wtorek", day_order=1, position=4, name="Prostowanie ramion wyciąg", sets_reps="3 x 12", tm_info="40 kg"),
-    dict(day="Wtorek", day_order=1, position=5, name="Rozpiętki hantle w opadzie", sets_reps="3 x 10", tm_info="8 kg"),
+    dict(day="Wtorek", day_order=1, position=3, name="Prostowanie ramion wyciąg", sets_reps="3 x 12", tm_info="40 kg"),
+    dict(day="Wtorek", day_order=1, position=4, name="Rozpiętki hantle w opadzie", sets_reps="3 x 10", tm_info="8 kg"),
 
     # SRODA - Bieg 10 km
     dict(day="Środa", day_order=2, position=0, name="Bieg 10 km", sets_reps="~50 min (cel 40 min)"),
@@ -118,7 +118,7 @@ EXERCISES = [
         is_main_lift=False,  # Pawel poprosil o zwykly tekst bez pogrubienia (jak inne glowne boje)
     ),
     dict(
-        day="Wtorek", day_order=1, position=3,
+        day="Piątek", day_order=1, position=1,
         name="Dipy",
         sets_reps="3 x 5 (S3 = AMRAP, min. 5)",
         tm_info=(
@@ -129,7 +129,7 @@ EXERCISES = [
         ),
     ),  # TM=45 kg dociazenia; zaokraglenie w gore co 2,5 kg (najmniejszy talerz na pas do dipow), wartosci S1/S2/S3 podane przez Pawla
     dict(
-        day="Piątek", day_order=4, position=4,
+        day="Piątek", day_order=4, position=2,
         name="Podciąganie na drążku", sets_reps="3 x 12",
         tm_info="Bez dociążenia — pod ilość",
     ),
@@ -140,7 +140,7 @@ EXERCISES = [
         tm_info="15 kg / ręka",
     ),
     dict(
-        day="Piątek", day_order=4, position=5,
+        day="Piątek", day_order=4, position=4,
         name="Zginanie nadgarstków za plecami", sets_reps="3 x 15",
         tm_info="30 kg",
     ),
