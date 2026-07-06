@@ -40,6 +40,7 @@ class Entry(Base):
     exercise_id = Column(Integer, ForeignKey("exercises.id"), nullable=False)
     entry_date = Column(Date, nullable=False)
     zapas = Column(String, nullable=True)
+    seria_plus = Column(String, nullable=True)  # powtorzenia w ostatniej serii AMRAP (5+/3+/1+)
     uwagi = Column(String, nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 

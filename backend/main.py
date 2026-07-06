@@ -4,6 +4,7 @@ from typing import List, Optional
 
 from fastapi import Depends, FastAPI, Header, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy import inspect, text
 from sqlalchemy.orm import Session
 
 import models
@@ -11,6 +12,22 @@ import schemas
 from database import Base, SessionLocal, engine
 
 Base.metadata.create_all(bind=engine)
+
+
+def migrate_schema():
+    """create_all() tworzy tylko brakujace tabele, nie dodaje kolumn do juz
+    istniejacych (np. produkcyjna tabela 'entries' na Neon) - wiec nowe kolumny
+    dopisujemy tu recznie, bez ruszania istniejacych danych."""
+    inspector = inspect(engine)
+    if "entries" not in inspector.get_table_names():
+        return
+    existing_cols = {col["name"] for col in inspector.get_columns("entries")}
+    if "seria_plus" not in existing_cols:
+        with engine.begin() as conn:
+            conn.execute(text("ALTER TABLE entries ADD COLUMN seria_plus VARCHAR"))
+
+
+migrate_schema()
 
 # Sekret do zapisu (naglowek X-Auth-Secret) - w produkcji ustaw go jako zmienna
 # srodowiskowa APP_SECRET w Renderze, zamiast polegac na tej wartosci domyslnej.
@@ -79,6 +96,7 @@ def get_plan(db: Session = Depends(get_db)):
                 tm_info=ex.tm_info,
                 is_main_lift=ex.is_main_lift,
                 latest_zapas=latest.zapas if latest else None,
+                latest_seria_plus=latest.seria_plus if latest else None,
                 latest_uwagi=latest.uwagi if latest else None,
                 latest_entry_date=latest.entry_date if latest else None,
             )
@@ -104,6 +122,7 @@ def create_entry(payload: schemas.EntryCreate, db: Session = Depends(get_db)):
         exercise_id=payload.exercise_id,
         entry_date=payload.entry_date or date.today(),
         zapas=payload.zapas,
+        seria_plus=payload.seria_plus,
         uwagi=payload.uwagi,
     )
     db.add(entry)

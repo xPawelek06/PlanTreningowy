@@ -122,6 +122,12 @@ function buildRow(exercise) {
   zapasCell.appendChild(zapasInput);
   tr.appendChild(zapasCell);
 
+  const seriaPlusCell = makeEl("td", { attrs: { "data-label": "Seria +" } });
+  const seriaPlusInput = makeEl("input", { attrs: { type: "text"} });
+  seriaPlusInput.value = exercise.latest_seria_plus || "";
+  seriaPlusCell.appendChild(seriaPlusInput);
+  tr.appendChild(seriaPlusCell);
+
   const uwagiCell = makeEl("td", { attrs: { "data-label": "Uwagi" } });
   const uwagiInput = makeEl("input", { attrs: { type: "text"} });
   uwagiInput.value = exercise.latest_uwagi || "";
@@ -132,7 +138,7 @@ function buildRow(exercise) {
   const saveBtn = makeEl("button", { text: "Zapisz", className: "save-btn" });
   const status = makeEl("span", { className: "save-status" });
   saveBtn.addEventListener("click", () =>
-    saveEntry(exercise.id, zapasInput.value, uwagiInput.value, saveBtn, status)
+    saveEntry(exercise.id, zapasInput.value, seriaPlusInput.value, uwagiInput.value, saveBtn, status)
   );
   actionCell.appendChild(saveBtn);
   actionCell.appendChild(status);
@@ -168,7 +174,7 @@ async function loadPlan() {
   }
 }
 
-async function saveEntry(exerciseId, zapas, uwagi, button, statusEl) {
+async function saveEntry(exerciseId, zapas, seriaPlus, uwagi, button, statusEl) {
   button.disabled = true;
   statusEl.textContent = "Zapisywanie…";
   statusEl.classList.remove("save-error");
@@ -179,7 +185,7 @@ async function saveEntry(exerciseId, zapas, uwagi, button, statusEl) {
         "Content-Type": "application/json",
         "X-Auth-Secret": authSecret,
       },
-      body: JSON.stringify({ exercise_id: exerciseId, zapas, uwagi }),
+      body: JSON.stringify({ exercise_id: exerciseId, zapas, seria_plus: seriaPlus, uwagi }),
     });
     if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
     statusEl.textContent = "Zapisano ✓";

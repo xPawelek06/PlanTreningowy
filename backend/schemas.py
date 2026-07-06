@@ -7,6 +7,7 @@ from pydantic import BaseModel, ConfigDict
 class EntryCreate(BaseModel):
     exercise_id: int
     zapas: Optional[str] = None
+    seria_plus: Optional[str] = None
     uwagi: Optional[str] = None
     entry_date: Optional[date] = None
 
@@ -18,6 +19,7 @@ class EntryOut(BaseModel):
     exercise_id: int
     entry_date: date
     zapas: Optional[str]
+    seria_plus: Optional[str]
     uwagi: Optional[str]
     created_at: datetime
 
@@ -32,6 +34,7 @@ class ExerciseOut(BaseModel):
     tm_info: Optional[str]
     is_main_lift: bool
     latest_zapas: Optional[str] = None
+    latest_seria_plus: Optional[str] = None
     latest_uwagi: Optional[str] = None
     latest_entry_date: Optional[date] = None
 
