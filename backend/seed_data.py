@@ -26,9 +26,9 @@ EXERCISES = [
         name="Przysiad ze sztangą",
         sets_reps="3 x 5 (S3 = AMRAP, min. 5)",
         tm_info=(
-            "Rozgrzewka: pusta sztanga x5, 40 kg x5, 57,5 kg x5\n"
-            "S1: 62,5 kg x5\n"
-            "S2: 72,5 kg x5\n"
+            "Rozgrzewka: pusta sztanga x5, 60 kg x5\n"
+            "S1: 70 kg x5\n"
+            "S2: 75 kg x5\n"
             "S3: 82,5 kg x5+"
         ),
         is_main_lift=False,  # Pawel poprosil o zwykly tekst bez pogrubienia (2026-07-05)
@@ -57,8 +57,8 @@ EXERCISES = [
         name="Wyciskanie płaskie",
         sets_reps="3 x 5 (S3 = AMRAP, min. 5)",
         tm_info=(
-            "Rozgrzewka: pusta sztanga x5, 32,5 kg x5, 47,5 kg x5\n"
-            "S1: 52,5 kg x5\n"
+            "Rozgrzewka: pusta sztanga x5, 40 kg x5\n"
+            "S1: 50 kg x5\n"
             "S2: 60 kg x5\n"
             "S3: 67,5 kg x5+"
         ),
@@ -78,17 +78,6 @@ EXERCISES = [
             "40 kg\n"
         ),
     ),
-    dict(
-        day="Wtorek", day_order=1, position=3,
-        name="Dipy (dociążone)",
-        sets_reps="3 x 5 (S3 = AMRAP, min. 5)",
-        tm_info=(
-            "Rozgrzewka: dociążenie +20 kg x5, +27,5 kg x5\n"
-            "S1: +30 kg x5\n"
-            "S2: +35 kg x5\n"
-            "S3: +40 kg x5+"
-        ),
-    ),  # TM=45 kg dociazenia; zaokraglenie w gore co 2,5 kg (najmniejszy talerz na pas do dipow), wartosci S1/S2/S3 podane przez Pawla
     dict(day="Wtorek", day_order=1, position=4, name="Prostowanie ramion wyciąg", sets_reps="3 x 12", tm_info="40 kg"),
     dict(day="Wtorek", day_order=1, position=5, name="Rozpiętki hantle w opadzie", sets_reps="3 x 10", tm_info="8 kg"),
 
@@ -121,23 +110,34 @@ EXERCISES = [
         name="Martwy ciąg",
         sets_reps="3 x 5 (S3 = AMRAP, min. 5)",
         tm_info=(
-            "Rozgrzewka: pusta sztanga x5, 47,5 kg x5, 70 kg x5\n"
-            "S1: 77,5 kg x5\n"
-            "S2: 87,5 kg x5\n"
+            "Rozgrzewka: pusta sztanga x5, 60 kg x5\n"
+            "S1: 80 kg x5\n"
+            "S2: 90 kg x5\n"
             "S3: 100 kg x5+"
         ),
         is_main_lift=False,  # Pawel poprosil o zwykly tekst bez pogrubienia (jak inne glowne boje)
+    ),
+    dict(
+        day="Wtorek", day_order=1, position=3,
+        name="Dipy",
+        sets_reps="3 x 5 (S3 = AMRAP, min. 5)",
+        tm_info=(
+            "Rozgrzewka: dociążenie +20 kg x5, +25 kg x5\n"
+            "S1: +30 kg x5\n"
+            "S2: +35 kg x5\n"
+            "S3: +40 kg x5+"
+        ),
+    ),  # TM=45 kg dociazenia; zaokraglenie w gore co 2,5 kg (najmniejszy talerz na pas do dipow), wartosci S1/S2/S3 podane przez Pawla
+    dict(
+        day="Piątek", day_order=4, position=4,
+        name="Podciąganie na drążku", sets_reps="3 x 12",
+        tm_info="Bez dociążenia — pod ilość",
     ),
     dict(day="Piątek", day_order=4, position=1, name="Nordic Curls", sets_reps="3 x 6"),
     dict(
         day="Piątek", day_order=4, position=3,
         name="Spacer farmera", sets_reps="3 x 20 sek",
         tm_info="15 kg / ręka",
-    ),
-    dict(
-        day="Piątek", day_order=4, position=4,
-        name="Podciąganie na drążku", sets_reps="3 x 12",
-        tm_info="Bez dociążenia — pod ilość",
     ),
     dict(
         day="Piątek", day_order=4, position=5,
