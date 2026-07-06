@@ -118,7 +118,7 @@ EXERCISES = [
         is_main_lift=False,  # Pawel poprosil o zwykly tekst bez pogrubienia (jak inne glowne boje)
     ),
     dict(
-        day="Piątek", day_order=1, position=1,
+        day="Piątek", day_order=4, position=1,
         name="Dipy",
         sets_reps="3 x 5 (S3 = AMRAP, min. 5)",
         tm_info=(
@@ -133,14 +133,14 @@ EXERCISES = [
         name="Podciąganie na drążku", sets_reps="3 x 12",
         tm_info="Bez dociążenia — pod ilość",
     ),
-    dict(day="Piątek", day_order=4, position=1, name="Nordic Curls", sets_reps="3 x 6"),
+    dict(day="Piątek", day_order=4, position=3, name="Nordic Curls", sets_reps="3 x 6"),
     dict(
-        day="Piątek", day_order=4, position=3,
+        day="Piątek", day_order=4, position=4,
         name="Spacer farmera", sets_reps="3 x 20 sek",
         tm_info="15 kg / ręka",
     ),
     dict(
-        day="Piątek", day_order=4, position=4,
+        day="Piątek", day_order=4, position=5,
         name="Zginanie nadgarstków za plecami", sets_reps="3 x 15",
         tm_info="30 kg",
     ),
