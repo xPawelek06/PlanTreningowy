@@ -50,6 +50,10 @@ EXERCISES = [
     ),
     dict(day="Poniedziałek", day_order=0, position=3, name="Pallof Press", sets_reps="3 x 45–60 sek", tm_info="S1: 45 sek\nS2: 50 sek\nS3: 60 sek"),
     dict(day="Poniedziałek", day_order=0, position=4, name="Hollow Hold", sets_reps="3 x 45–60 sek", tm_info="S1: 45 sek\nS2: 50 sek\nS3: 60 sek"),
+    dict(
+        day="Poniedziałek", day_order=0, position=5,
+        name="Uginanie ramion ze sztangą/hantlami", sets_reps="3 x 10-12",
+    ),  # Dodane 2026-07-07 - propozycja kolegi Pawla, dzien z najmniejsza liczba cwiczen
 
     # WTOREK - Wyciskanie plaskie
     dict(
@@ -73,11 +77,11 @@ EXERCISES = [
     ),
     dict(
         day="Wtorek", day_order=1, position=2,
-        name="Wiosłowanie sztangą", sets_reps="3 x 8",
+        name="Wiosłowanie sztangą / hantlami, szerokim chwytem", sets_reps="3 x 8–10",
         tm_info=(
             "40 kg\n"
         ),
-    ),
+    ),  # Doprecyzowany chwyt 2026-07-07 (drugie wioslowanie w piatek - waskie)
     dict(day="Wtorek", day_order=1, position=3, name="Prostowanie ramion wyciąg", sets_reps="3 x 12", tm_info="40 kg"),
     dict(day="Wtorek", day_order=1, position=4, name="Rozpiętki hantle w opadzie", sets_reps="3 x 10", tm_info="8 kg"),
 
@@ -133,14 +137,18 @@ EXERCISES = [
         name="Podciąganie na drążku", sets_reps="3 x 12",
         tm_info="Bez dociążenia — pod ilość",
     ),
-    dict(day="Piątek", day_order=4, position=3, name="Nordic Curls", sets_reps="3 x 6"),
     dict(
-        day="Piątek", day_order=4, position=4,
+        day="Piątek", day_order=4, position=3,
+        name="Wiosłowanie na maszynie (wąski chwyt)", sets_reps="3 x 8–10",
+    ),  # Dodane 2026-07-07 - propozycja kolegi Pawla, wasko zeby nie kumulowac hip-hinge (Pawel wybral maszyne zamiast podpory na lawce)
+    dict(day="Piątek", day_order=4, position=4, name="Nordic Curls", sets_reps="3 x 6"),
+    dict(
+        day="Piątek", day_order=4, position=5,
         name="Spacer farmera", sets_reps="3 x 20 sek",
         tm_info="15 kg / ręka",
     ),
     dict(
-        day="Piątek", day_order=4, position=5,
+        day="Piątek", day_order=4, position=6,
         name="Zginanie nadgarstków za plecami", sets_reps="3 x 15",
         tm_info="30 kg",
     ),
