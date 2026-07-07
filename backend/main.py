@@ -169,6 +169,19 @@ def seed_plan(payload: schemas.SeedPayload, db: Session = Depends(get_db)):
     return {"status": "ok", "updated": updated, "created": created}
 
 
+@app.delete("/api/admin/entries", dependencies=[Depends(require_secret)])
+def delete_all_entries(db: Session = Depends(get_db)):
+    """Kasuje WSZYSTKIE wpisy (tabela 'entries'), zostawiajac plan (tabela
+    'exercises') nietkniety. Uzywane przez trenera-personalnego przy
+    cotygodniowej analizie: NAJPIERW archiwizacja tygodnia do
+    gym/logs/archiwum.md (GET /api/entries?since=...), DOPIERO POTEM to
+    kasowanie - zeby appka wracala do pustych pol na nowy tydzien bez utraty
+    historii (ktora zyje dalej w repo mozgu)."""
+    deleted = db.query(models.Entry).delete()
+    db.commit()
+    return {"status": "ok", "deleted": deleted}
+
+
 @app.delete("/api/admin/exercises", dependencies=[Depends(require_secret)])
 def delete_exercises(payload: schemas.DeletePayload, db: Session = Depends(get_db)):
     """Kasuje cwiczenia po (day, name) - uzywane przez seed_data.py do usuwania
