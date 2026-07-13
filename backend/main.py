@@ -233,6 +233,53 @@ def create_weekly_trend_snapshot(db: Session = Depends(get_db)):
     return {"status": "ok", "week_start": week_start, "week_end": week_end, "count": len(exercises)}
 
 
+@app.post(
+    "/api/admin/weekly-trend-snapshot/manual",
+    dependencies=[Depends(require_secret)],
+)
+def create_weekly_trend_snapshot_manual(
+    payload: schemas.WeeklyTrendManualPayload, db: Session = Depends(get_db)
+):
+    """Reczny odpowiednik POST /api/admin/weekly-trend-snapshot - zamiast
+    kopiowac AKTUALNY stan tabeli 'exercises' (dziala tylko dla biezacego
+    tygodnia), przyjmuje w body gotowy zestaw wierszy (day/name/sets_reps/
+    tm_info/...) dla DOWOLNEGO week_start/week_end podanego przez wywolujacego.
+
+    Uzywane przez backend/seed_trend.py, zeby Pawel mogl uzupelnic/skorygowac
+    zakladke 'Trend' za tygodnie sprzed wdrozenia automatycznego zrzutu, albo
+    poprawic tydzien, ktory z jakiegos powodu nie zostal zarchiwizowany na
+    czas - dane przepisuje recznie z gym/logs/archiwum.md w repo mozgu.
+
+    Upsert po week_start: kasuje istniejace wiersze tego tygodnia i wstawia
+    nowe z payloadu (identyczna logika jak w automatycznym endpoincie) -
+    bezpiecznie wywolac ponownie dla tego samego tygodnia, np. przy korekcie."""
+    db.query(models.WeeklyTrendSnapshot).filter(
+        models.WeeklyTrendSnapshot.week_start == payload.week_start
+    ).delete()
+
+    for row in payload.exercises:
+        db.add(
+            models.WeeklyTrendSnapshot(
+                week_start=payload.week_start,
+                week_end=payload.week_end,
+                day=row.day,
+                day_order=row.day_order,
+                position=row.position,
+                name=row.name,
+                sets_reps=row.sets_reps,
+                tm_info=row.tm_info,
+                is_main_lift=row.is_main_lift,
+            )
+        )
+    db.commit()
+    return {
+        "status": "ok",
+        "week_start": payload.week_start,
+        "week_end": payload.week_end,
+        "count": len(payload.exercises),
+    }
+
+
 @app.get(
     "/api/weekly-trend",
     response_model=List[schemas.WeeklyTrendSnapshotOut],

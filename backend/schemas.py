@@ -76,3 +76,23 @@ class WeeklyTrendSnapshotOut(BaseModel):
     tm_info: Optional[str]
     is_main_lift: bool
     created_at: datetime
+
+
+class WeeklyTrendRow(BaseModel):
+    day: str
+    day_order: int
+    position: int
+    name: str
+    sets_reps: str
+    tm_info: Optional[str] = None
+    is_main_lift: bool = False
+
+
+class WeeklyTrendManualPayload(BaseModel):
+    """Body dla POST /api/admin/weekly-trend-snapshot/manual - reczne
+    wpisanie/korekta zrzutu trendu dla DOWOLNEGO (najczesciej przeszlego)
+    tygodnia, patrz backend/seed_trend.py."""
+
+    week_start: date
+    week_end: date
+    exercises: List[WeeklyTrendRow]
