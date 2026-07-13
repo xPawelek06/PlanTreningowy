@@ -210,53 +210,117 @@ async function loadPlan() {
   }
 }
 
-// --- Trend: historia poprzednich tygodni (zrzuty planu) ---
+// --- Trend: historia poprzednich tygodni, tabela przestawna (pivot) ---
+//
+// Uklad (ustalony z Pawlem 2026-07-13): wiersze = cwiczenia pogrupowane per
+// dzien (jak dawniej), kolumny = tygodnie rosnace w prawo (najstarszy po
+// lewej, najnowszy po prawej), kazdy tydzien to para kolumn "Obciazenie" /
+// "Serie x powtorzenia" pod wspolnym naglowkiem z zakresem dat. Pierwsza
+// kolumna (nazwa cwiczenia) jest przypieta (position: sticky) podczas
+// przewijania w poziomie - patrz .sticky-col w style.css.
+//
+// Cwiczenia dopasowywane sa po kluczu "day|name" (dokladne dopasowanie
+// stringow) - jesli Pawel kiedys zmieni nazwe cwiczenia w planie, w Trendzie
+// wyladuje to jako NOWY wiersz, nie kontynuacja starego. To swiadome
+// ograniczenie (bez fuzzy matchingu), nie bug.
 
-function groupTrendByWeek(rows) {
-  // rows juz posortowane przez backend: week_start desc, day_order, position.
-  const weeks = [];
-  const byWeekStart = new Map();
+function buildTrendPivot(rows) {
+  // rows: plaska lista z backendu, posortowana week_start desc, day_order, position.
+  const weekMap = new Map();
   for (const row of rows) {
-    let week = byWeekStart.get(row.week_start);
+    let week = weekMap.get(row.week_start);
     if (!week) {
-      week = { week_start: row.week_start, week_end: row.week_end, days: new Map() };
-      byWeekStart.set(row.week_start, week);
-      weeks.push(week);
+      week = { week_start: row.week_start, week_end: row.week_end, byKey: new Map() };
+      weekMap.set(row.week_start, week);
     }
-    let dayRows = week.days.get(row.day);
-    if (!dayRows) {
-      dayRows = [];
-      week.days.set(row.day, dayRows);
-    }
-    dayRows.push(row);
+    week.byKey.set(`${row.day}|${row.name}`, row);
   }
-  return weeks;
+
+  // Najstarszy tydzien pierwszy (lewa kolumna) -> najnowszy ostatni (prawa kolumna).
+  const weeks = Array.from(weekMap.values()).sort((a, b) =>
+    a.week_start < b.week_start ? -1 : a.week_start > b.week_start ? 1 : 0
+  );
+  const newestIdx = weeks.length - 1;
+
+  // Unia (day, name) ze WSZYSTKICH tygodni - zeby wiersz nie znikal tylko
+  // dlatego, ze w najnowszym tygodniu danego cwiczenia nie bylo. Dla kazdego
+  // klucza zapamietujemy metadane (day_order/position/is_main_lift) z
+  // najnowszego tygodnia, w ktorym cwiczenie wystapilo.
+  const exerciseMeta = new Map();
+  weeks.forEach((week, wIdx) => {
+    for (const [key, row] of week.byKey) {
+      const existing = exerciseMeta.get(key);
+      if (!existing || wIdx > existing.weekIdx) {
+        exerciseMeta.set(key, {
+          key,
+          day: row.day,
+          day_order: row.day_order,
+          name: row.name,
+          is_main_lift: row.is_main_lift,
+          position: row.position,
+          weekIdx: wIdx,
+        });
+      }
+    }
+  });
+
+  const days = new Map();
+  for (const meta of exerciseMeta.values()) {
+    let arr = days.get(meta.day);
+    if (!arr) {
+      arr = [];
+      days.set(meta.day, arr);
+    }
+    arr.push(meta);
+  }
+
+  // W obrebie dnia: cwiczenia obecne w najnowszym tygodniu ida pierwsze (wg
+  // ich position tam), cwiczenia widoczne juz tylko w starszych tygodniach
+  // ida na koniec sekcji dnia (najpierw te z pozniejszego "ostatniego
+  // wystapienia", potem wg position).
+  for (const arr of days.values()) {
+    arr.sort((a, b) => {
+      const aOld = a.weekIdx === newestIdx ? 0 : 1;
+      const bOld = b.weekIdx === newestIdx ? 0 : 1;
+      if (aOld !== bOld) return aOld - bOld;
+      if (aOld === 1 && a.weekIdx !== b.weekIdx) return b.weekIdx - a.weekIdx;
+      return a.position - b.position;
+    });
+  }
+
+  const dayList = Array.from(days.values()).sort((a, b) => a[0].day_order - b[0].day_order);
+
+  return { weeks, dayList };
 }
 
-function buildTrendRow(exercise) {
-  const tr = document.createElement("tr");
-
-  const nameCell = makeEl("td", { attrs: { "data-label": "Ćwiczenie" } });
-  if (exercise.is_main_lift) {
-    const strong = document.createElement("strong");
-    strong.textContent = exercise.name;
-    nameCell.appendChild(strong);
-  } else {
-    nameCell.textContent = exercise.name;
+// Komorka pivota dla jednego pola (tm_info / sets_reps) jednego cwiczenia w
+// jednym tygodniu. Brak wiersza (cwiczenie w tym tygodniu nie wystepowalo /
+// tydzien jeszcze nie zarchiwizowany) -> "---". Wiersz istnieje, ale pole jest
+// puste (np. tm_info dla dni bez glownego boju) -> "—" (jak dotychczas).
+function trendCell(row, field) {
+  if (!row) {
+    return makeEl("td", { text: "---", className: "trend-cell trend-empty" });
   }
-  tr.appendChild(nameCell);
-
-  tr.appendChild(multilineCell(exercise.tm_info || "—", "Obciążenie"));
-  tr.appendChild(multilineCell(exercise.sets_reps, "Serie x powtórzenia"));
-
-  return tr;
+  const value = row[field] || "—";
+  const td = makeEl("td", { className: "trend-cell" });
+  const lines = String(value).split("\n");
+  if (lines.length === 1) {
+    td.textContent = lines[0];
+    return td;
+  }
+  const wrap = makeEl("div", { className: "lines" });
+  for (const line of lines) {
+    wrap.appendChild(makeEl("div", { text: line, className: "line" }));
+  }
+  td.appendChild(wrap);
+  return td;
 }
 
-function renderTrendWeeks(weeks) {
+function renderTrendPivot(rows) {
   const container = document.getElementById("trend-weeks");
   container.innerHTML = "";
 
-  if (!weeks.length) {
+  if (!rows.length) {
     container.appendChild(
       makeEl("p", {
         className: "load-status",
@@ -266,34 +330,65 @@ function renderTrendWeeks(weeks) {
     return;
   }
 
+  const { weeks, dayList } = buildTrendPivot(rows);
+
+  const wrap = makeEl("div", { className: "table-wrap trend-pivot-wrap" });
+  const table = makeEl("table", { className: "trend-pivot" });
+
+  const thead = document.createElement("thead");
+  const headRow1 = document.createElement("tr");
+  const cornerTh = makeEl("th", { className: "sticky-col", text: "Ćwiczenie" });
+  cornerTh.rowSpan = 2;
+  headRow1.appendChild(cornerTh);
   for (const week of weeks) {
-    const section = makeEl("div", { className: "trend-week" });
-    section.appendChild(
-      makeEl("h2", { className: "trend-week-title", text: `Tydzień ${week.week_start} – ${week.week_end}` })
-    );
-
-    for (const [day, rows] of week.days) {
-      const dayBlock = makeEl("div", { className: "trend-day" });
-      dayBlock.appendChild(makeEl("h3", { className: "trend-day-title", text: day }));
-
-      const tableWrap = makeEl("div", { className: "table-wrap" });
-      const table = document.createElement("table");
-      const thead = document.createElement("thead");
-      thead.innerHTML =
-        "<tr><th>Ćwiczenie</th><th>Obciążenie</th><th>Serie x powtórzenia</th></tr>";
-      const tbody = document.createElement("tbody");
-      for (const row of rows) {
-        tbody.appendChild(buildTrendRow(row));
-      }
-      table.appendChild(thead);
-      table.appendChild(tbody);
-      tableWrap.appendChild(table);
-      dayBlock.appendChild(tableWrap);
-      section.appendChild(dayBlock);
-    }
-
-    container.appendChild(section);
+    const th = makeEl("th", {
+      className: "trend-week-head",
+      text: `${week.week_start} – ${week.week_end}`,
+    });
+    th.colSpan = 2;
+    headRow1.appendChild(th);
   }
+  const headRow2 = document.createElement("tr");
+  for (const week of weeks) {
+    headRow2.appendChild(makeEl("th", { text: "Obciążenie" }));
+    headRow2.appendChild(makeEl("th", { text: "Serie x powtórzenia" }));
+  }
+  thead.appendChild(headRow1);
+  thead.appendChild(headRow2);
+  table.appendChild(thead);
+
+  const tbody = document.createElement("tbody");
+  for (const arr of dayList) {
+    const dayRow = makeEl("tr", { className: "trend-day-row" });
+    dayRow.appendChild(makeEl("td", { className: "sticky-col trend-day-cell", text: arr[0].day }));
+    const spacer = makeEl("td", { className: "trend-day-spacer" });
+    spacer.colSpan = weeks.length * 2;
+    dayRow.appendChild(spacer);
+    tbody.appendChild(dayRow);
+
+    for (const meta of arr) {
+      const tr = document.createElement("tr");
+      const nameCell = makeEl("td", { className: "sticky-col" });
+      if (meta.is_main_lift) {
+        const strong = document.createElement("strong");
+        strong.textContent = meta.name;
+        nameCell.appendChild(strong);
+      } else {
+        nameCell.textContent = meta.name;
+      }
+      tr.appendChild(nameCell);
+
+      for (const week of weeks) {
+        const row = week.byKey.get(meta.key);
+        tr.appendChild(trendCell(row, "tm_info"));
+        tr.appendChild(trendCell(row, "sets_reps"));
+      }
+      tbody.appendChild(tr);
+    }
+  }
+  table.appendChild(tbody);
+  wrap.appendChild(table);
+  container.appendChild(wrap);
 }
 
 async function loadTrend() {
@@ -303,8 +398,7 @@ async function loadTrend() {
   try {
     const resp = await fetchWithRetry(`${API_BASE}/api/weekly-trend`);
     const rows = await resp.json();
-    const weeks = groupTrendByWeek(rows);
-    renderTrendWeeks(weeks);
+    renderTrendPivot(rows);
     statusEl.classList.add("hidden");
   } catch (err) {
     statusEl.textContent = "Nie udało się pobrać historii tygodni. Sprawdź internet i spróbuj odświeżyć stronę.";

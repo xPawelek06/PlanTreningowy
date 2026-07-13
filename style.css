@@ -224,28 +224,67 @@ body {
   border-bottom-color: var(--accent);
 }
 
-/* --- Trend tab --- */
-.trend-week {
-  margin-bottom: 32px;
+/* --- Trend tab: tabela przestawna (pivot) ---
+   Wiersze = cwiczenia pogrupowane per dzien, kolumny = tygodnie rosnace w
+   prawo. Pierwsza kolumna (nazwa cwiczenia) jest przypieta podczas
+   przewijania w poziomie (position: sticky), zeby zawsze byla widoczna. */
+
+.trend-pivot-wrap {
+  max-width: 100%;
 }
 
-.trend-week-title {
-  font-size: 1.1rem;
-  border-bottom: 2px solid var(--border);
-  padding-bottom: 8px;
-  margin: 0 0 16px;
+.trend-pivot {
+  border-collapse: separate;
+  border-spacing: 0;
+  width: max-content;
+  min-width: 100%;
 }
 
-.trend-day {
-  margin-bottom: 20px;
+.trend-pivot th,
+.trend-pivot td {
+  white-space: nowrap;
 }
 
-.trend-day-title {
-  font-size: 0.9rem;
+.trend-pivot td .lines {
+  white-space: normal;
+}
+
+/* Przypieta kolumna "Ćwiczenie" - wlasne, niepolprzezroczyste tlo, zeby
+   przewijane kolumny tygodni nie przeswiecaly pod spodem, plus cien/border
+   sygnalizujacy, ze kolumna jest przypieta. */
+.sticky-col {
+  position: sticky;
+  left: 0;
+  z-index: 2;
+  background: var(--bg-card);
+  box-shadow: 2px 0 6px -2px rgba(0, 0, 0, 0.45);
+}
+
+.trend-pivot thead .sticky-col {
+  z-index: 3;
+}
+
+.trend-week-head {
+  text-align: center;
+  border-left: 2px solid var(--border);
+}
+
+/* Wiersz-naglowek dnia (Poniedzialek/Wtorek/...) - dziala jak dawny <h3>,
+   ale jako wiersz tabeli, zeby zmiescic sie w pivot layoucie. Nazwa dnia
+   zostaje przypieta razem z kolumna cwiczen. */
+.trend-day-row .trend-day-cell,
+.trend-day-row .trend-day-spacer {
+  background: var(--bg);
   color: var(--text-dim);
+  font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.03em;
-  margin: 0 0 8px;
+  font-size: 0.78rem;
+  padding: 8px 12px;
+}
+
+.trend-empty {
+  color: var(--text-dim);
 }
 
 .day-nav {
@@ -385,22 +424,31 @@ td input[type="text"] {
   text-align: center;
 }
 
-/* --- Mobile: stack table rows into cards --- */
+/* --- Mobile: stack table rows into cards (WYLACZNIE zakladka Plan) ---
+   Zakladka Trend (tabela pivot z przypieta kolumna cwiczen) NIE dostaje tego
+   layoutu - card layout nie ma sensu przy szerokiej tabeli z wieloma
+   kolumnami tygodni; tam zamiast tego zwykly poziomy scroll (patrz
+   .table-wrap { overflow-x: auto } wyzej), spojny z widokiem desktopowym. */
 @media (max-width: 640px) {
-  .table-wrap {
+  #tab-plan .table-wrap {
     border: none;
     overflow: visible;
   }
 
-  table, thead, tbody, th, td, tr {
+  #tab-plan table,
+  #tab-plan thead,
+  #tab-plan tbody,
+  #tab-plan th,
+  #tab-plan td,
+  #tab-plan tr {
     display: block;
   }
 
-  thead {
+  #tab-plan thead {
     display: none;
   }
 
-  tbody tr {
+  #tab-plan tbody tr {
     background: var(--bg-card);
     border: 1px solid var(--border);
     border-radius: 10px;
@@ -408,14 +456,14 @@ td input[type="text"] {
     padding: 6px 0;
   }
 
-  tbody td {
+  #tab-plan tbody td {
     border-bottom: none;
     padding: 6px 12px;
     display: flex;
     gap: 8px;
   }
 
-  tbody td::before {
+  #tab-plan tbody td::before {
     content: attr(data-label);
     color: var(--text-dim);
     font-size: 0.72rem;
@@ -424,12 +472,20 @@ td input[type="text"] {
     flex: 0 0 110px;
   }
 
-  .action-cell {
+  #tab-plan .action-cell {
     justify-content: flex-end;
   }
 
-  .action-cell::before {
+  #tab-plan .action-cell::before {
     display: none;
+  }
+
+  /* Trend na mobile: nieco mniejszy font i padding, zeby poziomy scroll byl
+     bardziej ergonomiczny na waskim ekranie, ale uklad zostaje tabelaryczny. */
+  .trend-pivot th,
+  .trend-pivot td {
+    padding: 8px 9px;
+    font-size: 0.8rem;
   }
 }
 
