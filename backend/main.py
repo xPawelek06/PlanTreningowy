@@ -1,5 +1,5 @@
 import os
-from datetime import date
+from datetime import date, timedelta
 from typing import List, Optional
 
 from fastapi import Depends, FastAPI, Header, HTTPException
@@ -57,6 +57,15 @@ def get_db():
         yield db
     finally:
         db.close()
+
+
+def current_week_bounds(today: Optional[date] = None):
+    """Poniedzialek..niedziela biezacego tygodnia - ten sam wzorzec co w
+    appce Waga (main.py, current_week_bounds)."""
+    today = today or date.today()
+    week_start = today - timedelta(days=today.weekday())
+    week_end = week_start + timedelta(days=6)
+    return week_start, week_end
 
 
 def require_secret(x_auth_secret: str = Header(default="")):
@@ -180,6 +189,66 @@ def delete_all_entries(db: Session = Depends(get_db)):
     deleted = db.query(models.Entry).delete()
     db.commit()
     return {"status": "ok", "deleted": deleted}
+
+
+@app.post(
+    "/api/admin/weekly-trend-snapshot",
+    dependencies=[Depends(require_secret)],
+)
+def create_weekly_trend_snapshot(db: Session = Depends(get_db)):
+    """Kopiuje AKTUALNY stan tabeli 'exercises' do 'weekly_trend_snapshots',
+    otagowany biezacym tygodniem (poniedzialek..niedziela). Wywoluj PRZED
+    DELETE /api/admin/entries przy cotygodniowej archiwizacji - to jedyny
+    sposob, w jaki appka moze pokazac historie mimo ze 'entries' jest co
+    tydzien czyszczona (patrz docstring WeeklyTrendSnapshot w models.py).
+
+    Idempotentne: wywolanie drugi raz w tym samym tygodniu kasuje i zastepuje
+    poprzedni zrzut tego tygodnia (po week_start), a nie dubluje wiersze -
+    bezpiecznie wywolac ponownie, jesli plan zmienil sie tego samego dnia
+    (np. po zatwierdzeniu progresji) albo cos nie wyszlo za pierwszym razem."""
+    week_start, week_end = current_week_bounds()
+
+    db.query(models.WeeklyTrendSnapshot).filter(
+        models.WeeklyTrendSnapshot.week_start == week_start
+    ).delete()
+
+    exercises = db.query(models.Exercise).order_by(
+        models.Exercise.day_order, models.Exercise.position
+    ).all()
+    for ex in exercises:
+        db.add(
+            models.WeeklyTrendSnapshot(
+                week_start=week_start,
+                week_end=week_end,
+                day=ex.day,
+                day_order=ex.day_order,
+                position=ex.position,
+                name=ex.name,
+                sets_reps=ex.sets_reps,
+                tm_info=ex.tm_info,
+                is_main_lift=ex.is_main_lift,
+            )
+        )
+    db.commit()
+    return {"status": "ok", "week_start": week_start, "week_end": week_end, "count": len(exercises)}
+
+
+@app.get(
+    "/api/weekly-trend",
+    response_model=List[schemas.WeeklyTrendSnapshotOut],
+)
+def list_weekly_trend(db: Session = Depends(get_db)):
+    """Publiczny odczyt (bez sekretu, jak GET /api/weekly-summary w appce
+    Waga) - frontend grupuje plaska liste po week_start w sekcje 'Tydzien'."""
+    return (
+        db.query(models.WeeklyTrendSnapshot)
+        .order_by(
+            models.WeeklyTrendSnapshot.week_start.desc(),
+            models.WeeklyTrendSnapshot.day_order,
+            models.WeeklyTrendSnapshot.position,
+        )
+        .all()
+    )
 
 
 @app.delete("/api/admin/exercises", dependencies=[Depends(require_secret)])

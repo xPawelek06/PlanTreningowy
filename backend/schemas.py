@@ -60,3 +60,19 @@ class ExerciseRef(BaseModel):
 
 class DeletePayload(BaseModel):
     exercises: List[ExerciseRef]
+
+
+class WeeklyTrendSnapshotOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    week_start: date
+    week_end: date
+    day: str
+    day_order: int
+    position: int
+    name: str
+    sets_reps: str
+    tm_info: Optional[str]
+    is_main_lift: bool
+    created_at: datetime

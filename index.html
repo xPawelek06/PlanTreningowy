@@ -19,13 +19,13 @@
     <p class="subtitle">Trójbój siłowy — progresja falowa (4 tygodnie)</p>
     <div class="cycle-box">
       <div class="cycle-head">
-        <span class="cycle-badge">Tydzień 1 / 4</span>
-        <span class="cycle-scheme">schemat 5/5/5+ &middot; 65% / 75% / 85% TM</span>
+        <span class="cycle-badge">Tydzień 2 / 4</span>
+        <span class="cycle-scheme">schemat 3/3/3+ &middot; 70% / 80% / 90% TM</span>
       </div>
       <div class="tm-grid">
         <div class="tm-card">
           <span class="tm-label">Przysiad</span>
-          <span class="tm-value">97,5 kg</span>
+          <span class="tm-value">105 kg</span>
         </div>
         <div class="tm-card">
           <span class="tm-label">Wyciskanie płaskie</span>
@@ -33,14 +33,20 @@
         </div>
         <div class="tm-card">
           <span class="tm-label">Martwy ciąg</span>
-          <span class="tm-value">117,5 kg</span>
+          <span class="tm-value">125 kg</span>
         </div>
       </div>
-      <span class="updated">TM = Training Max &middot; zaktualizowano 2026-07-05</span>
+      <span class="updated">TM = Training Max &middot; zaktualizowano 2026-07-13</span>
     </div>
     <p id="load-status" class="load-status">Ładowanie planu…</p>
   </header>
 
+  <nav class="tabs">
+    <button class="tab-btn active" data-tab="plan">Plan</button>
+    <button class="tab-btn" data-tab="trend">Trend</button>
+  </nav>
+
+  <section class="tab-panel" id="tab-plan">
   <nav class="day-nav">
     <a href="#poniedzialek">Pon</a>
     <a href="#wtorek">Wt</a>
@@ -190,12 +196,20 @@
       </table>
     </div>
   </section>
+  </section>
+
+  <section class="tab-panel hidden" id="tab-trend">
+    <p id="trend-status" class="load-status">Ładowanie…</p>
+    <div id="trend-weeks"></div>
+  </section>
 
   <footer class="page-footer">
     <p>
       Wpisz zapas/uwagi i kliknij "Zapisz" przy ćwiczeniu — zapis trafia od razu do
       bazy appki. Trener synchronizuje te wpisy do dziennika w repo mózgu ręcznie,
-      na Twoją prośbę albo przy cotygodniowej analizie.
+      na Twoją prośbę albo przy cotygodniowej analizie. Zakładka "Trend" pokazuje
+      zrzuty planu z poprzednich tygodni — zapisywane automatycznie przy
+      cotygodniowej archiwizacji, przed wyczyszczeniem bieżącego tygodnia.
     </p>
   </footer>
 </main>

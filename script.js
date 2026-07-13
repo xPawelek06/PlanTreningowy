@@ -27,6 +27,7 @@ function showContent() {
   document.getElementById("lock-screen").classList.add("hidden");
   document.getElementById("content").classList.remove("hidden");
   loadPlan();
+  loadTrend();
 }
 
 async function tryUnlock() {
@@ -57,6 +58,17 @@ if (sessionStorage.getItem(SESSION_KEY) === "1") {
   authSecret = sessionStorage.getItem(SECRET_SESSION_KEY) || "";
   showContent();
 }
+
+// --- Zakładki ---
+
+document.querySelectorAll(".tab-btn").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll(".tab-btn").forEach((b) => b.classList.remove("active"));
+    document.querySelectorAll(".tab-panel").forEach((p) => p.classList.add("hidden"));
+    btn.classList.add("active");
+    document.getElementById(`tab-${btn.dataset.tab}`).classList.remove("hidden");
+  });
+});
 
 // --- Plan: pobranie z API i render tabel ---
 
@@ -171,6 +183,110 @@ async function loadPlan() {
       true
     );
     console.error("Błąd ładowania planu:", err);
+  }
+}
+
+// --- Trend: historia poprzednich tygodni (zrzuty planu) ---
+
+function groupTrendByWeek(rows) {
+  // rows juz posortowane przez backend: week_start desc, day_order, position.
+  const weeks = [];
+  const byWeekStart = new Map();
+  for (const row of rows) {
+    let week = byWeekStart.get(row.week_start);
+    if (!week) {
+      week = { week_start: row.week_start, week_end: row.week_end, days: new Map() };
+      byWeekStart.set(row.week_start, week);
+      weeks.push(week);
+    }
+    let dayRows = week.days.get(row.day);
+    if (!dayRows) {
+      dayRows = [];
+      week.days.set(row.day, dayRows);
+    }
+    dayRows.push(row);
+  }
+  return weeks;
+}
+
+function buildTrendRow(exercise) {
+  const tr = document.createElement("tr");
+
+  const nameCell = makeEl("td", { attrs: { "data-label": "Ćwiczenie" } });
+  if (exercise.is_main_lift) {
+    const strong = document.createElement("strong");
+    strong.textContent = exercise.name;
+    nameCell.appendChild(strong);
+  } else {
+    nameCell.textContent = exercise.name;
+  }
+  tr.appendChild(nameCell);
+
+  tr.appendChild(multilineCell(exercise.tm_info || "—", "Obciążenie"));
+  tr.appendChild(multilineCell(exercise.sets_reps, "Serie x powtórzenia"));
+
+  return tr;
+}
+
+function renderTrendWeeks(weeks) {
+  const container = document.getElementById("trend-weeks");
+  container.innerHTML = "";
+
+  if (!weeks.length) {
+    container.appendChild(
+      makeEl("p", {
+        className: "load-status",
+        text: "Brak zapisanych tygodni jeszcze — pojawi się po pierwszej cotygodniowej archiwizacji.",
+      })
+    );
+    return;
+  }
+
+  for (const week of weeks) {
+    const section = makeEl("div", { className: "trend-week" });
+    section.appendChild(
+      makeEl("h2", { className: "trend-week-title", text: `Tydzień ${week.week_start} – ${week.week_end}` })
+    );
+
+    for (const [day, rows] of week.days) {
+      const dayBlock = makeEl("div", { className: "trend-day" });
+      dayBlock.appendChild(makeEl("h3", { className: "trend-day-title", text: day }));
+
+      const tableWrap = makeEl("div", { className: "table-wrap" });
+      const table = document.createElement("table");
+      const thead = document.createElement("thead");
+      thead.innerHTML =
+        "<tr><th>Ćwiczenie</th><th>Obciążenie</th><th>Serie x powtórzenia</th></tr>";
+      const tbody = document.createElement("tbody");
+      for (const row of rows) {
+        tbody.appendChild(buildTrendRow(row));
+      }
+      table.appendChild(thead);
+      table.appendChild(tbody);
+      tableWrap.appendChild(table);
+      dayBlock.appendChild(tableWrap);
+      section.appendChild(dayBlock);
+    }
+
+    container.appendChild(section);
+  }
+}
+
+async function loadTrend() {
+  const statusEl = document.getElementById("trend-status");
+  statusEl.textContent = "Ładowanie…";
+  statusEl.classList.remove("hidden", "load-error");
+  try {
+    const resp = await fetch(`${API_BASE}/api/weekly-trend`);
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    const rows = await resp.json();
+    const weeks = groupTrendByWeek(rows);
+    renderTrendWeeks(weeks);
+    statusEl.classList.add("hidden");
+  } catch (err) {
+    statusEl.textContent = "Nie udało się pobrać historii tygodni. Sprawdź internet i spróbuj odświeżyć stronę.";
+    statusEl.classList.add("load-error");
+    console.error("Błąd ładowania trendu:", err);
   }
 }
 

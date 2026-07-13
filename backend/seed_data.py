@@ -24,12 +24,13 @@ EXERCISES = [
     dict(
         day="Poniedziałek", day_order=0, position=0,
         name="Przysiad ze sztangą",
-        sets_reps="3 x 5 (S3 = AMRAP, min. 5)",
+        sets_reps="3 x 3 (S3 = AMRAP, min. 3)",
         tm_info=(
-            "Rozgrzewka: pusta sztanga x5, 60 kg x5\n"
-            "S1: 70 kg x5\n"
-            "S2: 75 kg x5\n"
-            "S3: 82,5 kg x5+"
+            # Tydzien cyklu 2/4 (2026-07-13), TM 105 kg, schemat 70/80/90% TM
+            "Rozgrzewka: pusta sztanga x5, 62,5 kg x5\n"
+            "S1: 72,5 kg x3\n"
+            "S2: 85 kg x3\n"
+            "S3: 95 kg x3+"
         ),
         is_main_lift=False,  # Pawel poprosil o zwykly tekst bez pogrubienia (2026-07-05)
     ),
@@ -59,12 +60,13 @@ EXERCISES = [
     dict(
         day="Wtorek", day_order=1, position=0,
         name="Wyciskanie płaskie",
-        sets_reps="3 x 5 (S3 = AMRAP, min. 5)",
+        sets_reps="3 x 3 (S3 = AMRAP, min. 3)",
         tm_info=(
+            # Tydzien cyklu 2/4 (2026-07-13), TM 80 kg (bez zmian), schemat 70/80/90% TM
             "Rozgrzewka: pusta sztanga x5, 40 kg x5\n"
-            "S1: 50 kg x5\n"
-            "S2: 60 kg x5\n"
-            "S3: 67,5 kg x5+"
+            "S1: 56,25 kg x3\n"
+            "S2: 63,75 kg x3\n"
+            "S3: 72,5 kg x3+"
         ),
         is_main_lift=False,  # Pawel poprosil o zwykly tekst bez pogrubienia (jak Przysiad w Pon.)
     ),
@@ -112,12 +114,13 @@ EXERCISES = [
     dict(
         day="Piątek", day_order=4, position=0,
         name="Martwy ciąg",
-        sets_reps="3 x 5 (S3 = AMRAP, min. 5)",
+        sets_reps="3 x 3 (S3 = AMRAP, min. 3)",
         tm_info=(
-            "Rozgrzewka: pusta sztanga x5, 60 kg x5\n"
-            "S1: 80 kg x5\n"
-            "S2: 90 kg x5\n"
-            "S3: 100 kg x5+"
+            # Tydzien cyklu 2/4 (2026-07-13), TM 125 kg, schemat 70/80/90% TM
+            "Rozgrzewka: pusta sztanga x5, 75 kg x5\n"
+            "S1: 87,5 kg x3\n"
+            "S2: 100 kg x3\n"
+            "S3: 112,5 kg x3+"
         ),
         is_main_lift=False,  # Pawel poprosil o zwykly tekst bez pogrubienia (jak inne glowne boje)
     ),

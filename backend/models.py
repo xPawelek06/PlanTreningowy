@@ -45,3 +45,29 @@ class Entry(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
     exercise = relationship("Exercise", back_populates="entries")
+
+
+class WeeklyTrendSnapshot(Base):
+    """Trwaly zrzut planu (dzien/cwiczenie/obciazenie/serie x powtorzenia) per
+    tydzien - zapisywany przez trenera-personalnego PRZED cotygodniowym DELETE
+    /api/admin/entries (patrz POST /api/admin/weekly-trend-snapshot w main.py).
+
+    Tabela 'exercises' trzyma tylko AKTUALNY plan (nadpisywany co cykl przez
+    seed_data.py), a 'entries' jest czyszczona co tydzien - zadna z nich nie
+    daje appce trwalej historii. Ten wzorzec jest analogiczny do WeeklySummary
+    w appce Waga: zanim dane biezacego tygodnia znikna, kopiujemy ich zrzut
+    tutaj, zeby zakladka "Trend" mogla pokazac historie mimo czyszczenia."""
+
+    __tablename__ = "weekly_trend_snapshots"
+
+    id = Column(Integer, primary_key=True, index=True)
+    week_start = Column(Date, nullable=False)  # poniedzialek
+    week_end = Column(Date, nullable=False)  # niedziela
+    day = Column(String, nullable=False)
+    day_order = Column(Integer, nullable=False)
+    position = Column(Integer, nullable=False)
+    name = Column(String, nullable=False)
+    sets_reps = Column(String, nullable=False)
+    tm_info = Column(String, nullable=True)
+    is_main_lift = Column(Boolean, default=False, nullable=False)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())

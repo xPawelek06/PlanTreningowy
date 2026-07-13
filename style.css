@@ -200,6 +200,54 @@ body {
   display: none;
 }
 
+/* --- Tabs --- */
+.tabs {
+  display: flex;
+  gap: 8px;
+  margin: 0 0 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+.tab-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-dim);
+  font-size: 0.95rem;
+  font-weight: 600;
+  padding: 10px 14px;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+}
+
+.tab-btn.active {
+  color: var(--text);
+  border-bottom-color: var(--accent);
+}
+
+/* --- Trend tab --- */
+.trend-week {
+  margin-bottom: 32px;
+}
+
+.trend-week-title {
+  font-size: 1.1rem;
+  border-bottom: 2px solid var(--border);
+  padding-bottom: 8px;
+  margin: 0 0 16px;
+}
+
+.trend-day {
+  margin-bottom: 20px;
+}
+
+.trend-day-title {
+  font-size: 0.9rem;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  margin: 0 0 8px;
+}
+
 .day-nav {
   position: sticky;
   top: 0;
