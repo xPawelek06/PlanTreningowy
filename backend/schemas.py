@@ -100,10 +100,18 @@ class WeeklyTrendManualPayload(BaseModel):
 
 class WeeklyTrendPatch(BaseModel):
     """Body dla PATCH /api/admin/weekly-trend-snapshot/{id} - edycja
-    pojedynczej komorki (Obciazenie/Serie x powtorzenia) w zakladce Trend
-    z telefonu. Oba pola opcjonalne - wysylamy tylko to, co sie zmienilo;
-    None = nie dotykaj tego pola (odroznione od pustego stringa, ktory
-    swiadomie czysci pole)."""
+    pojedynczego wiersza 'weekly_trend_snapshots'. Dwa pierwsze pola
+    (sets_reps/tm_info) to komorki wypelniane z telefonu (Obciazenie/Serie x
+    powtorzenia); reszta (name/day/day_order/position) to reczna korekta
+    TOZSAMOSCI wiersza (literowka w nazwie, zla kolejnosc) - dodane
+    2026-07-13, zeby nie trzeba bylo uzywac pelnego resetu tygodnia
+    (POST .../manual) tylko po to, zeby poprawic jedna nazwe. Wszystkie pola
+    opcjonalne - wysylamy tylko to, co sie zmienilo; None = nie dotykaj tego
+    pola (odroznione od pustego stringa, ktory swiadomie czysci pole)."""
 
     sets_reps: Optional[str] = None
     tm_info: Optional[str] = None
+    name: Optional[str] = None
+    day: Optional[str] = None
+    day_order: Optional[int] = None
+    position: Optional[int] = None

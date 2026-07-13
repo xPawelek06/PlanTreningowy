@@ -273,12 +273,17 @@ def create_weekly_trend_snapshot(db: Session = Depends(get_db)):
 def patch_weekly_trend_snapshot(
     snapshot_id: int, payload: schemas.WeeklyTrendPatch, db: Session = Depends(get_db)
 ):
-    """Edycja jednej komorki (Obciazenie=tm_info i/lub Serie x powtorzenia=
-    sets_reps) pojedynczego wiersza 'weekly_trend_snapshots' - uzywane przez
-    edytowalne pola w zakladce Trend (zapis on blur, ten sam naglowek
-    X-Auth-Secret co POST /api/entries w zakladce Plan). Wysylamy tylko pole,
-    ktore sie zmienilo (None = bez zmian), zeby jeden zapis nie nadpisal
-    drugiej kolumny pustym stringiem."""
+    """Edycja pojedynczego wiersza 'weekly_trend_snapshots' - albo komorki
+    wykonania (Obciazenie=tm_info i/lub Serie x powtorzenia=sets_reps,
+    uzywane przez edytowalne pola w zakladce Trend, zapis on blur), albo
+    tozsamosci wiersza (name/day/day_order/position - reczna korekta
+    literowki/kolejnosci, dodane 2026-07-13, zeby nie trzeba bylo uzywac
+    pelnego resetu tygodnia POST .../manual tylko po to, zeby poprawic jedna
+    nazwe). Ten sam naglowek X-Auth-Secret co POST /api/entries. Wysylamy
+    tylko pole, ktore sie zmienilo (None = bez zmian), zeby jeden zapis nie
+    nadpisal reszty wiersza pustymi/domyslnymi wartosciami. Zmienia
+    WYLACZNIE wskazany wiersz {snapshot_id} - inne wiersze/tygodnie
+    nietkniete."""
     row = (
         db.query(models.WeeklyTrendSnapshot)
         .filter(models.WeeklyTrendSnapshot.id == snapshot_id)
@@ -290,6 +295,14 @@ def patch_weekly_trend_snapshot(
         row.sets_reps = payload.sets_reps
     if payload.tm_info is not None:
         row.tm_info = payload.tm_info
+    if payload.name is not None:
+        row.name = payload.name
+    if payload.day is not None:
+        row.day = payload.day
+    if payload.day_order is not None:
+        row.day_order = payload.day_order
+    if payload.position is not None:
+        row.position = payload.position
     db.commit()
     db.refresh(row)
     return row
