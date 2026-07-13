@@ -27,7 +27,7 @@ EXERCISES = [
         sets_reps="3 x 3 (S3 = AMRAP, min. 3)",
         tm_info=(
             # Tydzien cyklu 2/4 (2026-07-13), TM 105 kg, schemat 70/80/90% TM
-            "Rozgrzewka: pusta sztanga x5, 62,5 kg x5\n"
+            "Rozgrzewka: pusta sztanga x5, 60 kg x5\n"
             "S1: 72,5 kg x3\n"
             "S2: 85 kg x3\n"
             "S3: 95 kg x3+"
@@ -36,8 +36,8 @@ EXERCISES = [
     ),
     dict(
         day="Poniedziałek", day_order=0, position=1,
-        name="Bułgary", sets_reps="3 x 8–10 / noga",
-        tm_info="S1: 24 kg x8 / noga\nS2: 24 kg x9 / noga\nS3: 24 kg x10 / noga",
+        name="Bułgary", sets_reps="3 x 10 / noga",
+        tm_info="24kg",
     ),
     dict(
         day="Poniedziałek", day_order=0, position=2,
@@ -46,14 +46,18 @@ EXERCISES = [
             "Rozgrzewka: pusta sztanga x5, 40 kg x5\n"
             "S1: 60 kg x10\n"
             "S2: 70 kg x10\n"
-            "S3: 80 kg x10 (jeśli S2 lekko) / 70 kg x10 (jeśli S2 ciężko)"
+            "S3: 80 kg x10"
         ),
     ),
-    dict(day="Poniedziałek", day_order=0, position=3, name="Pallof Press", sets_reps="3 x 45–60 sek", tm_info="S1: 45 sek\nS2: 50 sek\nS3: 60 sek"),
-    dict(day="Poniedziałek", day_order=0, position=4, name="Hollow Hold", sets_reps="3 x 45–60 sek", tm_info="S1: 45 sek\nS2: 50 sek\nS3: 60 sek"),
+    dict(day="Poniedziałek", day_order=0, position=3, name="Pallof Press", sets_reps="3 x 60 sek"),
+    dict(day="Poniedziałek", day_order=0, position=4, name="Hollow Hold", sets_reps="3 x 60 sek"),
     dict(
         day="Poniedziałek", day_order=0, position=5,
-        name="Uginanie ramion ze sztangą/hantlami", sets_reps="3 x 10-12",
+        name="Uginanie ramion ze sztangą/hantlami", sets_reps="3 x 10",
+        tm_info=(
+                 "S1: 30kg\n"
+                 "S2: 40kg\n"
+                 "S3: 45kg\n")
     ),  # Dodane 2026-07-07 - propozycja kolegi Pawla, dzien z najmniejsza liczba cwiczen
 
     # WTOREK - Wyciskanie plaskie
@@ -79,17 +83,17 @@ EXERCISES = [
     ),
     dict(
         day="Wtorek", day_order=1, position=2,
-        name="Wiosłowanie sztangą / hantlami, szerokim chwytem", sets_reps="3 x 8–10",
+        name="Wiosłowanie wąskie na maszynie", sets_reps="3 x 10",
         tm_info=(
             "40 kg\n"
         ),
     ),  # Doprecyzowany chwyt 2026-07-07 (drugie wioslowanie w piatek - waskie)
-    dict(day="Wtorek", day_order=1, position=3, name="Prostowanie ramion wyciąg", sets_reps="3 x 12", tm_info="40 kg"),
+    dict(day="Wtorek", day_order=1, position=3, name="Prostowanie ramion wyciąg", sets_reps="3 x 10", tm_info="35 kg"),
     dict(day="Wtorek", day_order=1, position=4, name="Rozpiętki hantle w opadzie", sets_reps="3 x 10", tm_info="8 kg"),
 
     # SRODA - Bieg 10 km
     dict(day="Środa", day_order=2, position=0, name="Bieg 10 km", sets_reps="~50 min (cel 40 min)"),
-    dict(day="Środa", day_order=2, position=1, name="Mobilność bioder / kostek / Th", sets_reps="10–15 min"),
+    dict(day="Środa", day_order=2, position=1, name="Mobilność bioder / kostek", sets_reps="10–15 min"),
     dict(day="Środa", day_order=2, position=2, name="Superman Hold", sets_reps="3 x 45 sek"),
 
     # CZWARTEK - Kalistenika core
@@ -97,11 +101,11 @@ EXERCISES = [
         day="Czwartek", day_order=3, position=0,
         name="Dragon Flag + Hollow Body Rocks", sets_reps="4 serie",
         tm_info=(
-            "Dragon Flag: 3 powt. (pełny wyprost i powrót) / serię\n"
-            "Hollow Body Rocks: 30 sek / serię\n"
+            "Dragon Flag: 4 x 3\n"
+            "Hollow Body Rocks: 4 x 30 sek\n"
         ),
     ),
-    dict(day="Czwartek", day_order=3, position=1, name="Wznosy nóg/kolan w zwisie", sets_reps="3 x 10"),
+    dict(day="Czwartek", day_order=3, position=1, name="Wznosy kolan w zwisie", sets_reps="3 x 10"),
     dict(day="Czwartek", day_order=3, position=2, name="Shoulder Taps", sets_reps="3 x 20"),
     dict(day="Czwartek", day_order=3, position=3, name="Plank", sets_reps="3 x 60 sek"),
     dict(day="Czwartek", day_order=3, position=4, name="Mobilność bioder + lędźwie", sets_reps="10–15 min"),
@@ -127,33 +131,38 @@ EXERCISES = [
     dict(
         day="Piątek", day_order=4, position=1,
         name="Dipy",
-        sets_reps="3 x 5 (S3 = AMRAP, min. 5)",
+        sets_reps="3 serie",
         tm_info=(
-            "Rozgrzewka: dociążenie +20 kg x5, +25 kg x5\n"
+            "Rozgrzewka: pusto, 15kg x5\n"
             "S1: +30 kg x5\n"
             "S2: +35 kg x5\n"
-            "S3: +40 kg x5+"
+            "S3: +40 kg x3"
         ),
     ),  # TM=45 kg dociazenia; zaokraglenie w gore co 2,5 kg (najmniejszy talerz na pas do dipow), wartosci S1/S2/S3 podane przez Pawla
     dict(
         day="Piątek", day_order=4, position=2,
-        name="Podciąganie na drążku", sets_reps="3 x 12",
-        tm_info="Bez dociążenia — pod ilość",
+        name="Superseria:\n"
+             "Podciąganie na drążku\n"
+             "Nordic Curls",
+        sets_reps="Podciąganie: 3 x 12\n"
+                  "Nordic Curls: 3 x 6",
+        tm_info="Bez dociążenia — 3x12: cel\n"
+                "Nordic - 3x6 pełny wyprost: cel",
     ),
     dict(
         day="Piątek", day_order=4, position=3,
-        name="Wiosłowanie na maszynie (wąski chwyt)", sets_reps="3 x 8–10",
-    ),  # Dodane 2026-07-07 - propozycja kolegi Pawla, wasko zeby nie kumulowac hip-hinge (Pawel wybral maszyne zamiast podpory na lawce)
-    dict(day="Piątek", day_order=4, position=4, name="Nordic Curls", sets_reps="3 x 6"),
-    dict(
-        day="Piątek", day_order=4, position=5,
-        name="Spacer farmera", sets_reps="3 x 20 sek",
-        tm_info="15 kg / ręka",
+        name="Wiosłowanie szerokie", sets_reps="3 x 10",
+        tm_info=("50kg")
     ),
     dict(
-        day="Piątek", day_order=4, position=6,
-        name="Zginanie nadgarstków za plecami", sets_reps="3 x 15",
-        tm_info="30 kg",
+        day="Piątek", day_order=4, position=4,
+        name="Superseria:\n"
+             "Spacer farmera\n"
+             "Zginanie nadgarstków",
+        sets_reps="Spacer: 3 x 20 sek\n"
+                  "Zginanie: 3 x 15",
+        tm_info="Spacer: 15 kg / ręka\n"
+                "Zginanie: 30kg",
     ),
 
     # SOBOTA - Bieg latwy
