@@ -159,11 +159,35 @@ function buildRow(exercise) {
   return tr;
 }
 
+// Fetch z ponawianiem: darmowy plan Render usypia backend/baze po ~15 min
+// bezczynnosci - pierwszy request po uspieniu regularnie konczy sie 500/timeoutem
+// (baza jeszcze sie "budzi"), kolejny juz przechodzi. Telefon jest zwykle
+// otwierany po dluzszej przerwie (backend zimny) - stad appka bywa pusta zaraz
+// po otwarciu, choc odswiezenie po chwili juz dziala. Ponawiamy kilka razy
+// zanim pokazemy blad (ten sam wzorzec co appka Waga, naprawiona 2026-07-13).
+async function fetchWithRetry(url, options, attempts, delayMs) {
+  attempts = attempts || 3;
+  delayMs = delayMs || 1500;
+  let lastErr;
+  for (let i = 0; i < attempts; i++) {
+    try {
+      const resp = await fetch(url, options);
+      if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+      return resp;
+    } catch (err) {
+      lastErr = err;
+      if (i < attempts - 1) {
+        await new Promise((r) => setTimeout(r, delayMs * (i + 1)));
+      }
+    }
+  }
+  throw lastErr;
+}
+
 async function loadPlan() {
-  setLoadStatus("Ładowanie planu…", false);
+  setLoadStatus("Ładowanie planu… (jeśli backend spał, może to potrwać do 30 sek)", false);
   try {
-    const resp = await fetch(`${API_BASE}/api/plan`);
-    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    const resp = await fetchWithRetry(`${API_BASE}/api/plan`);
     const exercises = await resp.json();
 
     document.querySelectorAll("tbody[data-day]").forEach((tbody) => {
@@ -274,11 +298,10 @@ function renderTrendWeeks(weeks) {
 
 async function loadTrend() {
   const statusEl = document.getElementById("trend-status");
-  statusEl.textContent = "Ładowanie…";
+  statusEl.textContent = "Ładowanie… (jeśli backend spał, może to potrwać do 30 sek)";
   statusEl.classList.remove("hidden", "load-error");
   try {
-    const resp = await fetch(`${API_BASE}/api/weekly-trend`);
-    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    const resp = await fetchWithRetry(`${API_BASE}/api/weekly-trend`);
     const rows = await resp.json();
     const weeks = groupTrendByWeek(rows);
     renderTrendWeeks(weeks);
