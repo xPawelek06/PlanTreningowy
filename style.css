@@ -287,6 +287,51 @@ body {
   color: var(--text-dim);
 }
 
+/* Edytowalne komorki Obciazenie/Serie x powtorzenia (dane realnego wykonania
+   treningu, wpisywane recznie przez Pawla - zapis PATCH on blur, patrz
+   trendCell()/saveTrendCell() w script.js). */
+.trend-pivot td.trend-cell-editable {
+  white-space: normal;
+  vertical-align: top;
+}
+
+.trend-input {
+  width: 100%;
+  min-width: 130px;
+  padding: 6px 8px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text);
+  font-size: 0.85rem;
+  font-family: inherit;
+  line-height: 1.35;
+  resize: vertical;
+}
+
+.trend-input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.trend-input:disabled {
+  opacity: 0.65;
+}
+
+.trend-cell-status {
+  display: block;
+  margin-top: 4px;
+  font-size: 0.72rem;
+  color: var(--accent-2);
+  min-height: 1.1em;
+  white-space: nowrap;
+}
+
+.trend-cell-status.save-error {
+  color: #ff6b6b;
+  white-space: normal;
+}
+
 .day-nav {
   position: sticky;
   top: 0;

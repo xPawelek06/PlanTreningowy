@@ -96,3 +96,14 @@ class WeeklyTrendManualPayload(BaseModel):
     week_start: date
     week_end: date
     exercises: List[WeeklyTrendRow]
+
+
+class WeeklyTrendPatch(BaseModel):
+    """Body dla PATCH /api/admin/weekly-trend-snapshot/{id} - edycja
+    pojedynczej komorki (Obciazenie/Serie x powtorzenia) w zakladce Trend
+    z telefonu. Oba pola opcjonalne - wysylamy tylko to, co sie zmienilo;
+    None = nie dotykaj tego pola (odroznione od pustego stringa, ktory
+    swiadomie czysci pole)."""
+
+    sets_reps: Optional[str] = None
+    tm_info: Optional[str] = None

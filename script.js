@@ -295,25 +295,71 @@ function buildTrendPivot(rows) {
 
 // Komorka pivota dla jednego pola (tm_info / sets_reps) jednego cwiczenia w
 // jednym tygodniu. Brak wiersza (cwiczenie w tym tygodniu nie wystepowalo /
-// tydzien jeszcze nie zarchiwizowany) -> "---". Wiersz istnieje, ale pole jest
-// puste (np. tm_info dla dni bez glownego boju) -> "—" (jak dotychczas).
+// tydzien jeszcze nie zarchiwizowany) -> "---", nieedytowalne (nie ma wiersza
+// w bazie do edycji). Wiersz istnieje -> edytowalne pole tekstowe (dane
+// REALNEGO wykonania treningu, wpisywane recznie przez Pawla - patrz
+// saveTrendCell nizej), nawet jesli akurat puste.
 function trendCell(row, field) {
   if (!row) {
     return makeEl("td", { text: "---", className: "trend-cell trend-empty" });
   }
-  const value = row[field] || "—";
-  const td = makeEl("td", { className: "trend-cell" });
-  const lines = String(value).split("\n");
-  if (lines.length === 1) {
-    td.textContent = lines[0];
-    return td;
-  }
-  const wrap = makeEl("div", { className: "lines" });
-  for (const line of lines) {
-    wrap.appendChild(makeEl("div", { text: line, className: "line" }));
-  }
-  td.appendChild(wrap);
+
+  const td = makeEl("td", { className: "trend-cell trend-cell-editable" });
+  const value = row[field] || "";
+  const rows = Math.min(Math.max(String(value).split("\n").length, 1), 6);
+  const textarea = makeEl("textarea", {
+    className: "trend-input",
+    attrs: { rows: String(rows), spellcheck: "false", placeholder: "—" },
+  });
+  textarea.value = value;
+
+  const status = makeEl("span", { className: "trend-cell-status" });
+
+  let lastSaved = value;
+  textarea.addEventListener("blur", () => {
+    const next = textarea.value;
+    if (next === lastSaved) return; // bez zmian - nie wysylaj zbednego zapisu
+    saveTrendCell(row.id, field, next, textarea, status).then((ok) => {
+      if (ok) lastSaved = next;
+    });
+  });
+
+  td.appendChild(textarea);
+  td.appendChild(status);
   return td;
+}
+
+// Zapis pojedynczej komorki Trendu (Obciazenie=tm_info / Serie x powtorzenia=
+// sets_reps) - on blur z trendCell() wyzej. Ten sam naglowek X-Auth-Secret co
+// saveEntry() (zakladka Plan) i ten sam fetchWithRetry co loadPlan/loadTrend,
+// zeby zniesc ewentualny "zimny start" backendu na Renderze bez utraty
+// wpisanej wartosci.
+async function saveTrendCell(snapshotId, field, value, textareaEl, statusEl) {
+  textareaEl.disabled = true;
+  statusEl.textContent = "Zapisywanie…";
+  statusEl.classList.remove("save-error");
+  try {
+    await fetchWithRetry(`${API_BASE}/api/admin/weekly-trend-snapshot/${snapshotId}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Auth-Secret": authSecret,
+      },
+      body: JSON.stringify({ [field]: value }),
+    });
+    statusEl.textContent = "Zapisano ✓";
+    setTimeout(() => {
+      statusEl.textContent = "";
+    }, 2000);
+    return true;
+  } catch (err) {
+    statusEl.textContent = "Błąd zapisu — spróbuj ponownie";
+    statusEl.classList.add("save-error");
+    console.error("Błąd zapisu komórki trendu:", err);
+    return false;
+  } finally {
+    textareaEl.disabled = false;
+  }
 }
 
 function renderTrendPivot(rows) {

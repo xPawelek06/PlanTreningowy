@@ -48,9 +48,14 @@ class Entry(Base):
 
 
 class WeeklyTrendSnapshot(Base):
-    """Trwaly zrzut planu (dzien/cwiczenie/obciazenie/serie x powtorzenia) per
-    tydzien - zapisywany przez trenera-personalnego PRZED cotygodniowym DELETE
-    /api/admin/entries (patrz POST /api/admin/weekly-trend-snapshot w main.py).
+    """Trwaly zrzut per tydzien: day/day_order/position/name/is_main_lift
+    ustala TOZSAMOSC wiersza (kopiowane z 'exercises' przez POST
+    /api/admin/weekly-trend-snapshot w main.py, PRZED cotygodniowym DELETE
+    /api/admin/entries), ale sets_reps/tm_info (Serie x powtorzenia/
+    Obciazenie) to od 2026-07-13 REALNE dane wykonania treningu - Pawel
+    wpisuje je recznie z telefonu (PATCH /api/admin/weekly-trend-snapshot/
+    {id}), NIE kopia zaplanowanego schematu z 'exercises'. Nowy wiersz startuje
+    z pustymi sets_reps/tm_info ("").
 
     Tabela 'exercises' trzyma tylko AKTUALNY plan (nadpisywany co cykl przez
     seed_data.py), a 'entries' jest czyszczona co tydzien - zadna z nich nie

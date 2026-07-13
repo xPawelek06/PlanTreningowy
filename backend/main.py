@@ -46,7 +46,7 @@ app = FastAPI(title="Plan Treningowy API")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=ALLOWED_ORIGINS,
-    allow_methods=["GET", "POST", "DELETE"],
+    allow_methods=["GET", "POST", "PATCH", "DELETE"],
     allow_headers=["*"],
 )
 
@@ -196,41 +196,103 @@ def delete_all_entries(db: Session = Depends(get_db)):
     dependencies=[Depends(require_secret)],
 )
 def create_weekly_trend_snapshot(db: Session = Depends(get_db)):
-    """Kopiuje AKTUALNY stan tabeli 'exercises' do 'weekly_trend_snapshots',
-    otagowany biezacym tygodniem (poniedzialek..niedziela). Wywoluj PRZED
-    DELETE /api/admin/entries przy cotygodniowej archiwizacji - to jedyny
-    sposob, w jaki appka moze pokazac historie mimo ze 'entries' jest co
-    tydzien czyszczona (patrz docstring WeeklyTrendSnapshot w models.py).
+    """Ustala TOZSAMOSC wierszy Trendu na biezacy tydzien (poniedzialek..
+    niedziela) na podstawie AKTUALNEGO stanu tabeli 'exercises' - day/
+    day_order/position/name/is_main_lift sa kopiowane z planu, zeby nie trzeba
+    bylo recznie tworzyc wiersza dla kazdego cwiczenia. Wywoluj PRZED DELETE
+    /api/admin/entries przy cotygodniowej archiwizacji - to jedyny sposob, w
+    jaki appka moze pokazac historie mimo ze 'entries' jest co tydzien
+    czyszczona (patrz docstring WeeklyTrendSnapshot w models.py).
 
-    Idempotentne: wywolanie drugi raz w tym samym tygodniu kasuje i zastepuje
-    poprzedni zrzut tego tygodnia (po week_start), a nie dubluje wiersze -
-    bezpiecznie wywolac ponownie, jesli plan zmienil sie tego samego dnia
-    (np. po zatwierdzeniu progresji) albo cos nie wyszlo za pierwszym razem."""
+    UWAGA (zmiana 2026-07-13): sets_reps/tm_info (kolumny "Serie x
+    powtorzenia"/"Obciazenie" w Trendzie) to teraz REALNE dane wykonania
+    treningu, wpisywane recznie przez Pawla z telefonu (patrz PATCH
+    .../{snapshot_id} nizej) - NIE kopia zaplanowanego schematu z 'exercises'.
+    Dlatego ten endpoint NIE kopiuje juz exercises.sets_reps/exercises.tm_info.
+
+    Upsert po (week_start, day, name), NIE po samym week_start: dla wiersza,
+    ktory juz istnieje w tym tygodniu, aktualizujemy tylko tozsamosc
+    (day_order/position/is_main_lift/week_end) i NIE ruszamy sets_reps/
+    tm_info - zeby nie nadpisac tego, co Pawel juz recznie wpisal. Dla NOWEGO
+    wiersza (cwiczenie jeszcze nie mialo zrzutu w tym tygodniu) sets_reps/
+    tm_info zaczynaja jako puste stringi, do uzupelnienia recznie.
+    Bezpiecznie wywolac ponownie w tym samym tygodniu (np. po zmianie planu),
+    nie dubluje wierszy i nie kasuje juz wpisanych danych wykonania."""
     week_start, week_end = current_week_bounds()
 
-    db.query(models.WeeklyTrendSnapshot).filter(
-        models.WeeklyTrendSnapshot.week_start == week_start
-    ).delete()
+    existing_rows = (
+        db.query(models.WeeklyTrendSnapshot)
+        .filter(models.WeeklyTrendSnapshot.week_start == week_start)
+        .all()
+    )
+    existing_by_key = {(row.day, row.name): row for row in existing_rows}
 
     exercises = db.query(models.Exercise).order_by(
         models.Exercise.day_order, models.Exercise.position
     ).all()
+
+    created, updated = 0, 0
     for ex in exercises:
-        db.add(
-            models.WeeklyTrendSnapshot(
-                week_start=week_start,
-                week_end=week_end,
-                day=ex.day,
-                day_order=ex.day_order,
-                position=ex.position,
-                name=ex.name,
-                sets_reps=ex.sets_reps,
-                tm_info=ex.tm_info,
-                is_main_lift=ex.is_main_lift,
+        row = existing_by_key.get((ex.day, ex.name))
+        if row:
+            row.day_order = ex.day_order
+            row.position = ex.position
+            row.is_main_lift = ex.is_main_lift
+            row.week_end = week_end
+            updated += 1
+        else:
+            db.add(
+                models.WeeklyTrendSnapshot(
+                    week_start=week_start,
+                    week_end=week_end,
+                    day=ex.day,
+                    day_order=ex.day_order,
+                    position=ex.position,
+                    name=ex.name,
+                    sets_reps="",
+                    tm_info="",
+                    is_main_lift=ex.is_main_lift,
+                )
             )
-        )
+            created += 1
     db.commit()
-    return {"status": "ok", "week_start": week_start, "week_end": week_end, "count": len(exercises)}
+    return {
+        "status": "ok",
+        "week_start": week_start,
+        "week_end": week_end,
+        "created": created,
+        "updated": updated,
+    }
+
+
+@app.patch(
+    "/api/admin/weekly-trend-snapshot/{snapshot_id}",
+    response_model=schemas.WeeklyTrendSnapshotOut,
+    dependencies=[Depends(require_secret)],
+)
+def patch_weekly_trend_snapshot(
+    snapshot_id: int, payload: schemas.WeeklyTrendPatch, db: Session = Depends(get_db)
+):
+    """Edycja jednej komorki (Obciazenie=tm_info i/lub Serie x powtorzenia=
+    sets_reps) pojedynczego wiersza 'weekly_trend_snapshots' - uzywane przez
+    edytowalne pola w zakladce Trend (zapis on blur, ten sam naglowek
+    X-Auth-Secret co POST /api/entries w zakladce Plan). Wysylamy tylko pole,
+    ktore sie zmienilo (None = bez zmian), zeby jeden zapis nie nadpisal
+    drugiej kolumny pustym stringiem."""
+    row = (
+        db.query(models.WeeklyTrendSnapshot)
+        .filter(models.WeeklyTrendSnapshot.id == snapshot_id)
+        .first()
+    )
+    if not row:
+        raise HTTPException(status_code=404, detail="Nie ma wiersza trendu o tym id")
+    if payload.sets_reps is not None:
+        row.sets_reps = payload.sets_reps
+    if payload.tm_info is not None:
+        row.tm_info = payload.tm_info
+    db.commit()
+    db.refresh(row)
+    return row
 
 
 @app.post(
