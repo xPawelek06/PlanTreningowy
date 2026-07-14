@@ -30,6 +30,7 @@ class ExerciseOut(BaseModel):
     day_order: int
     position: int
     name: str
+    exercise_key: Optional[str] = None
     sets_reps: str
     tm_info: Optional[str]
     is_main_lift: bool
@@ -44,6 +45,12 @@ class ExerciseSeed(BaseModel):
     day_order: int
     position: int
     name: str
+    # Staly identyfikator cwiczenia (patrz models.Exercise.exercise_key) -
+    # opcjonalny na razie (wiersze sprzed migracji go nie maja), ale
+    # seed_data.py od 2026-07-14 wysyla go dla kazdego cwiczenia. Gdy podany,
+    # main.py.seed_plan() upsertuje po (day, exercise_key) zamiast (day, name),
+    # wiec zmiana "name" przy tym samym kluczu to rename, nie nowy wiersz.
+    exercise_key: Optional[str] = None
     sets_reps: str
     tm_info: Optional[str] = None
     is_main_lift: bool = False
@@ -56,6 +63,9 @@ class SeedPayload(BaseModel):
 class ExerciseRef(BaseModel):
     day: str
     name: str
+    # Opcjonalny - gdy podany, delete_exercises w main.py dopasowuje po
+    # (day, exercise_key) zamiast (day, name), spojnie z seed_plan().
+    exercise_key: Optional[str] = None
 
 
 class DeletePayload(BaseModel):
@@ -72,6 +82,7 @@ class WeeklyTrendSnapshotOut(BaseModel):
     day_order: int
     position: int
     name: str
+    exercise_key: Optional[str] = None
     sets_reps: str
     tm_info: Optional[str]
     is_main_lift: bool
@@ -83,6 +94,7 @@ class WeeklyTrendRow(BaseModel):
     day_order: int
     position: int
     name: str
+    exercise_key: Optional[str] = None
     sets_reps: str
     tm_info: Optional[str] = None
     is_main_lift: bool = False
@@ -102,12 +114,15 @@ class WeeklyTrendPatch(BaseModel):
     """Body dla PATCH /api/admin/weekly-trend-snapshot/{id} - edycja
     pojedynczego wiersza 'weekly_trend_snapshots'. Dwa pierwsze pola
     (sets_reps/tm_info) to komorki wypelniane z telefonu (Obciazenie/Serie x
-    powtorzenia); reszta (name/day/day_order/position) to reczna korekta
-    TOZSAMOSCI wiersza (literowka w nazwie, zla kolejnosc) - dodane
-    2026-07-13, zeby nie trzeba bylo uzywac pelnego resetu tygodnia
-    (POST .../manual) tylko po to, zeby poprawic jedna nazwe. Wszystkie pola
-    opcjonalne - wysylamy tylko to, co sie zmienilo; None = nie dotykaj tego
-    pola (odroznione od pustego stringa, ktory swiadomie czysci pole)."""
+    powtorzenia); reszta (name/day/day_order/position/exercise_key) to reczna
+    korekta TOZSAMOSCI wiersza (literowka w nazwie, zla kolejnosc, recznie
+    dopisany staly klucz cwiczenia) - name/day/day_order/position dodane
+    2026-07-13, exercise_key dodane 2026-07-14 (patrz
+    backend/migrate_exercise_keys.py), zeby nie trzeba bylo uzywac pelnego
+    resetu tygodnia (POST .../manual) tylko po to, zeby poprawic jedna nazwe
+    albo dopisac klucz recznie. Wszystkie pola opcjonalne - wysylamy tylko to,
+    co sie zmienilo; None = nie dotykaj tego pola (odroznione od pustego
+    stringa, ktory swiadomie czysci pole)."""
 
     sets_reps: Optional[str] = None
     tm_info: Optional[str] = None
@@ -115,3 +130,4 @@ class WeeklyTrendPatch(BaseModel):
     day: Optional[str] = None
     day_order: Optional[int] = None
     position: Optional[int] = None
+    exercise_key: Optional[str] = None

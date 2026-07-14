@@ -19,6 +19,14 @@ class Exercise(Base):
     day_order = Column(Integer, nullable=False)  # 0 = poniedzialek ... 6 = niedziela
     position = Column(Integer, nullable=False)  # kolejnosc cwiczenia w danym dniu
     name = Column(String, nullable=False)
+    # Staly identyfikator cwiczenia, niezalezny od wyswietlanej nazwy (np.
+    # "pon-przysiad"), nadawany recznie przez Pawla w seed_data.py. Dodane
+    # 2026-07-14, zeby rename nazwy w seed_data.py byl zwyklym UPDATE (upsert
+    # po day+exercise_key), a historia w zakladce Trend (weekly_trend_snapshots)
+    # sie nie urywala przy zmianie nazwy - patrz main.py seed_plan().
+    # Nullable, bo istniejace wiersze nie maja go jeszcze wypelnionego (czeka
+    # na zatwierdzona migracje danych, patrz backend/migrate_exercise_keys.py).
+    exercise_key = Column(String, nullable=True, index=True)
     sets_reps = Column(String, nullable=False)
     tm_info = Column(String, nullable=True)  # None dla cwiczen pomocniczych bez TM
     is_main_lift = Column(Boolean, default=False, nullable=False)
@@ -72,6 +80,12 @@ class WeeklyTrendSnapshot(Base):
     day_order = Column(Integer, nullable=False)
     position = Column(Integer, nullable=False)
     name = Column(String, nullable=False)
+    # Ten sam staly identyfikator co Exercise.exercise_key (kopiowany z
+    # 'exercises' przy tworzeniu snapshotu) - pozwala pivotowi w script.js
+    # dopasowywac wiersze miedzy tygodniami po (day, exercise_key) zamiast po
+    # (day, name), wiec rename nazwy w seed_data.py juz nie urywa historii.
+    # Nullable z tych samych powodow co Exercise.exercise_key.
+    exercise_key = Column(String, nullable=True, index=True)
     sets_reps = Column(String, nullable=False)
     tm_info = Column(String, nullable=True)
     is_main_lift = Column(Boolean, default=False, nullable=False)

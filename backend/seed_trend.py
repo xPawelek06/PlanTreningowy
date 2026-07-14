@@ -16,8 +16,12 @@ Kiedy tego uzywac:
 Uzycie:
     1. Zdefiniuj tydzien(-nie) w liscie TREND_WEEKS ponizej: week_start,
        week_end (poniedzialek..niedziela) i liste wierszy - kazdy wiersz to
-       jedno cwiczenie z day/day_order/position/name/sets_reps/tm_info/
-       is_main_lift (te same pola co w seed_data.py EXERCISES).
+       jedno cwiczenie z day/day_order/position/name/exercise_key/sets_reps/
+       tm_info/is_main_lift (te same pola co w seed_data.py EXERCISES).
+       exercise_key (dodany 2026-07-14) jest opcjonalny, ale zalecany - gdy
+       podany, pozwala zakladce Trend dopasowac wiersz do tej samej pozycji w
+       pivotcie nawet po zmianie nazwy cwiczenia w planie (patrz
+       backend/migrate_exercise_keys.py za mapowanie nazwa->klucz).
     2. Uruchom:
         API_BASE=http://127.0.0.1:8000 APP_SECRET=PlanTreningowy python seed_trend.py
         API_BASE=https://plan-treningowy-api.onrender.com APP_SECRET=PlanTreningowy python seed_trend.py
@@ -52,6 +56,7 @@ TREND_WEEKS = [
             dict(
                 day="Poniedziałek", day_order=0, position=0,
                 name="Przysiad ze sztangą",
+                exercise_key="pon-przysiad",
                 sets_reps="3 x 3 (S3 = AMRAP, min. 3)",
                 tm_info=(
                     "S1: 70 kg x3\n"

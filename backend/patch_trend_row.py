@@ -33,6 +33,7 @@ PATCH_FIELDS = {
     # "position": 2,
     # "sets_reps": "3 x 5",
     # "tm_info": "S1: 60kg\nS2: 70kg\nS3: 80kg",
+    # "exercise_key": "pon-przysiad",  # dodane 2026-07-14, patrz migrate_exercise_keys.py
 }
 
 

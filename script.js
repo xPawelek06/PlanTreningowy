@@ -14,6 +14,9 @@ const SECRET_SESSION_KEY = "plan-treningowy-secret";
 const API_BASE = "https://plan-treningowy-api.onrender.com";
 
 let authSecret = "";
+// Referencja do ostatnio dodanego listenera "resize" dla suwakow poziomego
+// przewijania w zakladce Trend - patrz attachDayScrollbarSync() nizej.
+let trendResizeHandler = null;
 
 async function sha256Hex(text) {
   const data = new TextEncoder().encode(text);
@@ -219,10 +222,17 @@ async function loadPlan() {
 // kolumna (nazwa cwiczenia) jest przypieta (position: sticky) podczas
 // przewijania w poziomie - patrz .sticky-col w style.css.
 //
-// Cwiczenia dopasowywane sa po kluczu "day|name" (dokladne dopasowanie
-// stringow) - jesli Pawel kiedys zmieni nazwe cwiczenia w planie, w Trendzie
-// wyladuje to jako NOWY wiersz, nie kontynuacja starego. To swiadome
-// ograniczenie (bez fuzzy matchingu), nie bug.
+// Cwiczenia dopasowywane sa po kluczu "day|exercise_key" (dodane 2026-07-14) -
+// exercise_key to staly identyfikator cwiczenia nadawany recznie w
+// seed_data.py, niezalezny od wyswietlanej nazwy, wiec rename w planie juz
+// NIE tworzy nowego wiersza w pivotcie, tylko kontynuuje historie starego.
+// Wiersze sprzed migracji danych (patrz backend/migrate_exercise_keys.py) nie
+// maja jeszcze exercise_key wypelnionego - dla nich trendKey() spada z
+// powrotem na "day|name" (stare zachowanie), zeby nic sie nie wywalilo, zanim
+// migracja zostanie zatwierdzona i wykonana.
+function trendKey(row) {
+  return `${row.day}|${row.exercise_key || row.name}`;
+}
 
 function buildTrendPivot(rows) {
   // rows: plaska lista z backendu, posortowana week_start desc, day_order, position.
@@ -233,7 +243,7 @@ function buildTrendPivot(rows) {
       week = { week_start: row.week_start, week_end: row.week_end, byKey: new Map() };
       weekMap.set(row.week_start, week);
     }
-    week.byKey.set(`${row.day}|${row.name}`, row);
+    week.byKey.set(trendKey(row), row);
   }
 
   // Najstarszy tydzien pierwszy (lewa kolumna) -> najnowszy ostatni (prawa kolumna).
@@ -256,6 +266,7 @@ function buildTrendPivot(rows) {
           day: row.day,
           day_order: row.day_order,
           name: row.name,
+          exercise_key: row.exercise_key,
           is_main_lift: row.is_main_lift,
           position: row.position,
           weekIdx: wIdx,
@@ -362,6 +373,80 @@ async function saveTrendCell(snapshotId, field, value, textareaEl, statusEl) {
   }
 }
 
+// Suwak poziomego przewijania dla jednej sekcji dnia w pivotcie Trendu
+// (2026-07-14) - problem: caly pivot to JEDEN szeroki, poziomo scrollowany
+// kontener (.trend-pivot-wrap), a jedyny scrollbar renderowany przez
+// przegladarke siedzi na samym DOLE tej (bardzo wysokiej) tabeli. Zeby
+// porownac tygodnie dla dnia na gorze (np. Poniedzialek), trzeba bylo
+// scrollowac na sam dol strony. Rozwiazanie: przy KAZDYM dniu wstawiamy
+// dodatkowy wiersz z mini-suwakiem - divem z overflow-x:auto i
+// position:sticky;left:0, wiec ten div zawsze zajmuje dokladnie widoczna
+// szerokosc viewportu kontenera (tak samo jak przypieta kolumna nazwy
+// cwiczenia, .sticky-col, ktora dziala na tej samej zasadzie), niezaleznie od
+// tego, jak szeroka jest cala tabela pod spodem. Wewnatrz jest "track" div o
+// szerokosci calej tabeli - sam scrollowanie tego paska ustawia scrollLeft
+// prawdziwego kontenera (i odwrotnie), patrz attachDayScrollbarSync() nizej.
+function createDayScrollbarRow(totalCols) {
+  const row = makeEl("tr", { className: "trend-day-scrollbar-row" });
+  const td = makeEl("td");
+  td.colSpan = totalCols;
+  const bar = makeEl("div", { className: "trend-day-scrollbar" });
+  const track = makeEl("div", { className: "trend-day-scrollbar-track" });
+  bar.appendChild(track);
+  td.appendChild(bar);
+  row.appendChild(td);
+  return { row, bar, track };
+}
+
+// Synchronizuje scrollLeft prawdziwego kontenera (wrap) z kazdym mini-suwakiem
+// (bars: lista { bar, track }) w obie strony. Flaga "syncing" chroni przed
+// nieskonczona petla zdarzen scroll (ustawienie .scrollLeft programowo tez
+// odpala 'scroll').
+function attachDayScrollbarSync(wrap, table, bars) {
+  let syncing = false;
+
+  function applyScrollLeft(value, source) {
+    syncing = true;
+    if (wrap !== source) wrap.scrollLeft = value;
+    for (const { bar } of bars) {
+      if (bar !== source) bar.scrollLeft = value;
+    }
+    syncing = false;
+  }
+
+  wrap.addEventListener("scroll", () => {
+    if (syncing) return;
+    applyScrollLeft(wrap.scrollLeft, wrap);
+  });
+  for (const { bar } of bars) {
+    bar.addEventListener("scroll", () => {
+      if (syncing) return;
+      applyScrollLeft(bar.scrollLeft, bar);
+    });
+  }
+
+  // Szerokosc mini-suwaka (viewport) i jego wewnetrznego "toru" (pelna
+  // szerokosc tabeli) trzeba przeliczyc po zbudowaniu DOM (dopiero wtedy
+  // znane sa prawdziwe wymiary) i przy kazdej zmianie rozmiaru okna/orientacji.
+  function syncWidths() {
+    const viewWidth = wrap.clientWidth;
+    const fullWidth = table.scrollWidth;
+    for (const { bar, track } of bars) {
+      bar.style.width = `${viewWidth}px`;
+      track.style.width = `${fullWidth}px`;
+    }
+  }
+
+  syncWidths();
+  // renderTrendPivot() moze w zasadzie zostac wywolane ponownie (np. w
+  // przyszlosci przy odswiezaniu bez przeladowania strony) - zdejmujemy
+  // poprzedni listener resize, zeby nie mnozyc ich przy kazdym renderze
+  // (stare zamkniecia trzymalyby referencje do juz odlaczonych elementow DOM).
+  if (trendResizeHandler) window.removeEventListener("resize", trendResizeHandler);
+  trendResizeHandler = syncWidths;
+  window.addEventListener("resize", trendResizeHandler);
+}
+
 function renderTrendPivot(rows) {
   const container = document.getElementById("trend-weeks");
   container.innerHTML = "";
@@ -403,6 +488,9 @@ function renderTrendPivot(rows) {
   thead.appendChild(headRow2);
   table.appendChild(thead);
 
+  const totalCols = 1 + weeks.length * 2;
+  const dayScrollbars = [];
+
   const tbody = document.createElement("tbody");
   for (const arr of dayList) {
     const dayRow = makeEl("tr", { className: "trend-day-row" });
@@ -411,6 +499,10 @@ function renderTrendPivot(rows) {
     spacer.colSpan = weeks.length * 2;
     dayRow.appendChild(spacer);
     tbody.appendChild(dayRow);
+
+    const { row: scrollbarRow, bar, track } = createDayScrollbarRow(totalCols);
+    tbody.appendChild(scrollbarRow);
+    dayScrollbars.push({ bar, track });
 
     for (const meta of arr) {
       const tr = document.createElement("tr");
@@ -435,6 +527,11 @@ function renderTrendPivot(rows) {
   table.appendChild(tbody);
   wrap.appendChild(table);
   container.appendChild(wrap);
+
+  // Dopiero po wpieciu do DOM (container.appendChild wyzej) mierzalne sa
+  // prawdziwe wymiary (clientWidth/scrollWidth) potrzebne do zsynchronizowania
+  // mini-suwakow z kontenerem - patrz attachDayScrollbarSync().
+  attachDayScrollbarSync(wrap, table, dayScrollbars);
 }
 
 async function loadTrend() {

@@ -287,6 +287,52 @@ body {
   color: var(--text-dim);
 }
 
+/* Mini-suwak poziomego przewijania przy KAZDYM dniu (2026-07-14) - patrz
+   createDayScrollbarRow()/attachDayScrollbarSync() w script.js. Bar jest
+   position:sticky;left:0 wewnatrz szerokiej (przewijanej) tabeli, wiec zawsze
+   zajmuje dokladnie widoczna szerokosc viewportu kontenera .trend-pivot-wrap -
+   ta sama sztuczka co .sticky-col nizej, tylko pozioma zamiast pionowej. */
+.trend-day-scrollbar-row td {
+  padding: 4px 0 10px;
+  border-bottom: 1px solid var(--border);
+}
+
+.trend-day-scrollbar {
+  position: sticky;
+  left: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  height: 14px;
+}
+
+.trend-day-scrollbar-track {
+  height: 1px;
+}
+
+/* Widoczny, chwytny pasek scrollbara (domyslnie w wielu przegladarkach
+   scrollbar pustego, "bezcielesnego" diva bywa ledwo widoczny). */
+.trend-day-scrollbar {
+  scrollbar-width: thin;
+}
+
+.trend-day-scrollbar::-webkit-scrollbar {
+  height: 8px;
+}
+
+.trend-day-scrollbar::-webkit-scrollbar-track {
+  background: var(--bg);
+  border-radius: 4px;
+}
+
+.trend-day-scrollbar::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 4px;
+}
+
+.trend-day-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: var(--accent);
+}
+
 /* Edytowalne komorki Obciazenie/Serie x powtorzenia (dane realnego wykonania
    treningu, wpisywane recznie przez Pawla - zapis PATCH on blur, patrz
    trendCell()/saveTrendCell() w script.js). */

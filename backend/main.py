@@ -19,12 +19,25 @@ def migrate_schema():
     istniejacych (np. produkcyjna tabela 'entries' na Neon) - wiec nowe kolumny
     dopisujemy tu recznie, bez ruszania istniejacych danych."""
     inspector = inspect(engine)
-    if "entries" not in inspector.get_table_names():
-        return
-    existing_cols = {col["name"] for col in inspector.get_columns("entries")}
-    if "seria_plus" not in existing_cols:
-        with engine.begin() as conn:
-            conn.execute(text("ALTER TABLE entries ADD COLUMN seria_plus VARCHAR"))
+    table_names = inspector.get_table_names()
+
+    if "entries" in table_names:
+        existing_cols = {col["name"] for col in inspector.get_columns("entries")}
+        if "seria_plus" not in existing_cols:
+            with engine.begin() as conn:
+                conn.execute(text("ALTER TABLE entries ADD COLUMN seria_plus VARCHAR"))
+
+    # exercise_key (2026-07-14): tylko DODANIE pustej (nullable) kolumny w obu
+    # tabelach - schemat, nie dane. Backfill istniejacych wierszy to OSOBNY,
+    # recznie zatwierdzany krok - patrz backend/migrate_exercise_keys.py, NIE
+    # uruchamiany automatycznie stad.
+    for table_name in ("exercises", "weekly_trend_snapshots"):
+        if table_name not in table_names:
+            continue
+        existing_cols = {col["name"] for col in inspector.get_columns(table_name)}
+        if "exercise_key" not in existing_cols:
+            with engine.begin() as conn:
+                conn.execute(text(f"ALTER TABLE {table_name} ADD COLUMN exercise_key VARCHAR"))
 
 
 migrate_schema()
@@ -101,6 +114,7 @@ def get_plan(db: Session = Depends(get_db)):
                 day_order=ex.day_order,
                 position=ex.position,
                 name=ex.name,
+                exercise_key=ex.exercise_key,
                 sets_reps=ex.sets_reps,
                 tm_info=ex.tm_info,
                 is_main_lift=ex.is_main_lift,
@@ -155,18 +169,38 @@ def list_entries(since: Optional[date] = None, db: Session = Depends(get_db)):
 
 @app.post("/api/admin/seed", dependencies=[Depends(require_secret)])
 def seed_plan(payload: schemas.SeedPayload, db: Session = Depends(get_db)):
-    """Upsert planu po (day, name) - nie kasuje istniejacych cwiczen/historii,
-    zeby zmiana TM po nowym cyklu nie urwala powiazanych wpisow zapas/uwagi."""
+    """Upsert planu. Gdy item.exercise_key jest podany, dopasowanie do
+    istniejacego wiersza idzie po (day, exercise_key) - wtedy zmiana 'name'
+    przy tym samym kluczu to zwykly rename (UPDATE), nie nowy wiersz, i
+    historia w zakladce Trend sie nie urywa (patrz models.Exercise.exercise_key).
+    Gdy klucza brak (wiersz sprzed migracji, albo item bez klucza), spada z
+    powrotem do starego dopasowania po (day, name) - jak dotychczas. W obu
+    przypadkach nie kasuje istniejacych cwiczen/historii, zeby zmiana TM po
+    nowym cyklu nie urwala powiazanych wpisow zapas/uwagi."""
     updated, created = 0, 0
     for item in payload.exercises:
-        existing = (
-            db.query(models.Exercise)
-            .filter(models.Exercise.day == item.day, models.Exercise.name == item.name)
-            .first()
-        )
+        existing = None
+        if item.exercise_key:
+            existing = (
+                db.query(models.Exercise)
+                .filter(
+                    models.Exercise.day == item.day,
+                    models.Exercise.exercise_key == item.exercise_key,
+                )
+                .first()
+            )
+        if not existing:
+            existing = (
+                db.query(models.Exercise)
+                .filter(models.Exercise.day == item.day, models.Exercise.name == item.name)
+                .first()
+            )
         if existing:
             existing.day_order = item.day_order
             existing.position = item.position
+            existing.name = item.name
+            if item.exercise_key:
+                existing.exercise_key = item.exercise_key
             existing.sets_reps = item.sets_reps
             existing.tm_info = item.tm_info
             existing.is_main_lift = item.is_main_lift
@@ -210,12 +244,17 @@ def create_weekly_trend_snapshot(db: Session = Depends(get_db)):
     .../{snapshot_id} nizej) - NIE kopia zaplanowanego schematu z 'exercises'.
     Dlatego ten endpoint NIE kopiuje juz exercises.sets_reps/exercises.tm_info.
 
-    Upsert po (week_start, day, name), NIE po samym week_start: dla wiersza,
-    ktory juz istnieje w tym tygodniu, aktualizujemy tylko tozsamosc
-    (day_order/position/is_main_lift/week_end) i NIE ruszamy sets_reps/
-    tm_info - zeby nie nadpisac tego, co Pawel juz recznie wpisal. Dla NOWEGO
-    wiersza (cwiczenie jeszcze nie mialo zrzutu w tym tygodniu) sets_reps/
-    tm_info zaczynaja jako puste stringi, do uzupelnienia recznie.
+    Upsert po (week_start, day, exercise_key) gdy cwiczenie ma exercise_key
+    wypelniony, w przeciwnym razie po (week_start, day, name) jak dotychczas
+    (wiersze sprzed migracji, patrz backend/migrate_exercise_keys.py) - NIE po
+    samym week_start: dla wiersza, ktory juz istnieje w tym tygodniu,
+    aktualizujemy tylko tozsamosc (name/day_order/position/is_main_lift/
+    exercise_key/week_end) i NIE ruszamy sets_reps/tm_info - zeby nie nadpisac
+    tego, co Pawel juz recznie wpisal. 'name' jest teraz tez aktualizowane przy
+    dopasowaniu po exercise_key, zeby rename w planie od razu byl widoczny w
+    biezacym (jeszcze niearchiwizowanym) tygodniu Trendu. Dla NOWEGO wiersza
+    (cwiczenie jeszcze nie mialo zrzutu w tym tygodniu) sets_reps/tm_info
+    zaczynaja jako puste stringi, do uzupelnienia recznie.
     Bezpiecznie wywolac ponownie w tym samym tygodniu (np. po zmianie planu),
     nie dubluje wierszy i nie kasuje juz wpisanych danych wykonania."""
     week_start, week_end = current_week_bounds()
@@ -225,7 +264,10 @@ def create_weekly_trend_snapshot(db: Session = Depends(get_db)):
         .filter(models.WeeklyTrendSnapshot.week_start == week_start)
         .all()
     )
-    existing_by_key = {(row.day, row.name): row for row in existing_rows}
+    existing_by_exercise_key = {
+        (row.day, row.exercise_key): row for row in existing_rows if row.exercise_key
+    }
+    existing_by_name = {(row.day, row.name): row for row in existing_rows}
 
     exercises = db.query(models.Exercise).order_by(
         models.Exercise.day_order, models.Exercise.position
@@ -233,10 +275,16 @@ def create_weekly_trend_snapshot(db: Session = Depends(get_db)):
 
     created, updated = 0, 0
     for ex in exercises:
-        row = existing_by_key.get((ex.day, ex.name))
+        row = None
+        if ex.exercise_key:
+            row = existing_by_exercise_key.get((ex.day, ex.exercise_key))
+        if not row:
+            row = existing_by_name.get((ex.day, ex.name))
         if row:
             row.day_order = ex.day_order
             row.position = ex.position
+            row.name = ex.name
+            row.exercise_key = ex.exercise_key
             row.is_main_lift = ex.is_main_lift
             row.week_end = week_end
             updated += 1
@@ -249,6 +297,7 @@ def create_weekly_trend_snapshot(db: Session = Depends(get_db)):
                     day_order=ex.day_order,
                     position=ex.position,
                     name=ex.name,
+                    exercise_key=ex.exercise_key,
                     sets_reps="",
                     tm_info="",
                     is_main_lift=ex.is_main_lift,
@@ -303,6 +352,8 @@ def patch_weekly_trend_snapshot(
         row.day_order = payload.day_order
     if payload.position is not None:
         row.position = payload.position
+    if payload.exercise_key is not None:
+        row.exercise_key = payload.exercise_key
     db.commit()
     db.refresh(row)
     return row
@@ -341,6 +392,7 @@ def create_weekly_trend_snapshot_manual(
                 day_order=row.day_order,
                 position=row.position,
                 name=row.name,
+                exercise_key=row.exercise_key,
                 sets_reps=row.sets_reps,
                 tm_info=row.tm_info,
                 is_main_lift=row.is_main_lift,
@@ -375,17 +427,30 @@ def list_weekly_trend(db: Session = Depends(get_db)):
 
 @app.delete("/api/admin/exercises", dependencies=[Depends(require_secret)])
 def delete_exercises(payload: schemas.DeletePayload, db: Session = Depends(get_db)):
-    """Kasuje cwiczenia po (day, name) - uzywane przez seed_data.py do usuwania
-    wierszy, ktore zostaly wykreslone z listy EXERCISES. Kasuje tez powiazane
+    """Kasuje cwiczenia - uzywane przez seed_data.py do usuwania wierszy,
+    ktore zostaly wykreslone z listy EXERCISES. Gdy ref.exercise_key jest
+    podany, dopasowanie idzie po (day, exercise_key) (spojnie z seed_plan()),
+    w przeciwnym razie po (day, name) jak dotychczas. Kasuje tez powiazane
     wpisy Entry (historia zapas/uwagi tego cwiczenia znika razem z nim - to
     swiadome, "prawdziwe" kasowanie, nie tylko ukrycie wiersza)."""
     deleted, not_found = 0, []
     for ref in payload.exercises:
-        exercise = (
-            db.query(models.Exercise)
-            .filter(models.Exercise.day == ref.day, models.Exercise.name == ref.name)
-            .first()
-        )
+        exercise = None
+        if ref.exercise_key:
+            exercise = (
+                db.query(models.Exercise)
+                .filter(
+                    models.Exercise.day == ref.day,
+                    models.Exercise.exercise_key == ref.exercise_key,
+                )
+                .first()
+            )
+        if not exercise:
+            exercise = (
+                db.query(models.Exercise)
+                .filter(models.Exercise.day == ref.day, models.Exercise.name == ref.name)
+                .first()
+            )
         if not exercise:
             not_found.append({"day": ref.day, "name": ref.name})
             continue
