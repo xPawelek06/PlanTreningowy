@@ -229,8 +229,18 @@ body {
    prawo. Pierwsza kolumna (nazwa cwiczenia) jest przypieta podczas
    przewijania w poziomie (position: sticky), zeby zawsze byla widoczna. */
 
+/* Ograniczona wysokosc + overflow-y:auto (obok istniejacego overflow-x:auto)
+   (2026-07-14) - zeby ".trend-pivot-wrap" bylo JEDYNYM scrollujacym
+   kontenerem w OBU kierunkach naraz. To warunek konieczny dla dzialajacego
+   "frozen pane" (naglowek sticky-top + kolumna sticky-left jednoczesnie,
+   patrz "thead" nizej) - bez wlasnego pionowego scrolla w tym elemencie,
+   position:sticky;top nie mialby wzgledem czego sie przypinac (przypiete
+   elementy licza sie wzgledem najblizszego SCROLLUJACEGO przodka, a bez
+   ograniczonej wysokosci to strona, nie ten div, przewijalaby sie w pionie). */
 .trend-pivot-wrap {
   max-width: 100%;
+  max-height: 75vh;
+  overflow-y: auto;
 }
 
 .trend-pivot {
@@ -249,6 +259,22 @@ body {
   white-space: normal;
 }
 
+/* Przypiety naglowek (2026-07-14) - "thead" jako calosc, nie pojedyncze
+   "th", zeby obie linie naglowka (tydzien + Obciazenie/Serie) przypinaly sie
+   razem bez recznego liczenia wysokosci pierwszego wiersza. Wspierane przez
+   wspolczesne przegladarki (Chrome/Firefox/Safari 16.4+) dla
+   table-header-group. Wlasne tlo na kazdej komorce (nie samym thead), zeby
+   przewijane w pionie wiersze cwiczen nie przeswiecaly pod spodem. */
+.trend-pivot thead {
+  position: sticky;
+  top: 0;
+  z-index: 4;
+}
+
+.trend-pivot thead th {
+  background: var(--bg-card);
+}
+
 /* Przypieta kolumna "Ćwiczenie" - wlasne, niepolprzezroczyste tlo, zeby
    przewijane kolumny tygodni nie przeswiecaly pod spodem, plus cien/border
    sygnalizujacy, ze kolumna jest przypieta. */
@@ -262,6 +288,23 @@ body {
 
 .trend-pivot thead .sticky-col {
   z-index: 3;
+}
+
+/* Sama kolumna nazw cwiczen (bez naglowka "Cwiczenie", ktory zostaje krotki)
+   zwezona do ok. 75% dotychczasowej naturalnej szerokosci (2026-07-14, na
+   prosbe Pawla) - zamiast rosnac wraz z najdluzsza nazwa (byla nieograniczona,
+   nowrap), dlugie nazwy teraz zawijaja sie do max. kilku linii zamiast
+   rozpychac kolumne z powrotem do pelnej szerokosci albo obcinac sie
+   elipsa. 36ch to ~75% szerokosci potrzebnej na najdluzsza obecna nazwe
+   (~48 znakow, "Wioslowanie sztanga / hantlami, szerokim chwytem") - jednostka
+   "ch" (nie px), zeby skalowalo sie razem ze zmiana font-size (np. media
+   query na mobile nizej). Wysokosc wiersza dopasowuje sie automatycznie
+   (domyslne zachowanie tabeli - wiersz rosnie do najwyzszej komorki). */
+.trend-pivot td.sticky-col {
+  max-width: 36ch;
+  white-space: normal;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 .trend-week-head {
