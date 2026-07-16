@@ -50,23 +50,27 @@ EXERCISES = [
     ),
     dict(
         day="Poniedziałek", day_order=0, position=2,
-        name="RDL (lekko)", exercise_key="pon-rdl", sets_reps="3 x 10",
+        name="RDL (lekko)", exercise_key="pon-rdl", sets_reps="3 x 5",
         tm_info=(
             "Rozgrzewka: pusta sztanga x5, 40 kg x5\n"
-            "S1: 60 kg x10\n"
-            "S2: 70 kg x10\n"
-            "S3: 80 kg x10"
+            "S1: 60 kg x5\n"
+            "S2: 70 kg x5\n"
+            "S3: 80 kg x5"
         ),
     ),
-    dict(day="Poniedziałek", day_order=0, position=3, name="Pallof Press", exercise_key="pon-pallof-press", sets_reps="3 x 60 sek"),
-    dict(day="Poniedziałek", day_order=0, position=4, name="Hollow Hold", exercise_key="pon-hollow-hold", sets_reps="3 x 60 sek"),
+    dict(day="Poniedziałek", day_order=0, position=3, name="Pallof Press", exercise_key="pon-pallof-press", sets_reps="3 x 60 sek",
+         tm_info=("Duże napięcie na gumie"
+                  )
+         ),
+    dict(day="Poniedziałek", day_order=0, position=4, name="Hollow Hold", exercise_key="pon-hollow-hold", sets_reps="3 x 40 sek",
+         tm_info=("Pełny wyprost"
+                  )
+         ),
     dict(
         day="Poniedziałek", day_order=0, position=5,
         name="Uginanie ramion ze sztangą/hantlami", exercise_key="pon-uginanie-ramion", sets_reps="3 x 10",
         tm_info=(
-                 "S1: 30kg\n"
-                 "S2: 40kg\n"
-                 "S3: 45kg\n")
+                 "30kg")
     ),  # Dodane 2026-07-07 - propozycja kolegi Pawla, dzien z najmniejsza liczba cwiczen
 
     # WTOREK - Wyciskanie plaskie
@@ -116,7 +120,7 @@ EXERCISES = [
         ),
     ),
     dict(day="Czwartek", day_order=3, position=1, name="Wznosy kolan w zwisie", exercise_key="cz-wznosy-kolan", sets_reps="3 x 10"),
-    dict(day="Czwartek", day_order=3, position=2, name="Shoulder Taps", exercise_key="cz-shoulder-taps", sets_reps="3 x 20"),
+    dict(day="Czwartek", day_order=3, position=2, name="Shoulder Taps", exercise_key="cz-shoulder-taps", sets_reps="3 x 30"),
     dict(day="Czwartek", day_order=3, position=3, name="Plank", exercise_key="cz-plank", sets_reps="3 x 60 sek"),
     dict(day="Czwartek", day_order=3, position=4, name="Mobilność bioder + lędźwie", exercise_key="cz-mobilnosc-bioder-ledzwie", sets_reps="10–15 min"),
 
