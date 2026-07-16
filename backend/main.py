@@ -359,6 +359,31 @@ def patch_weekly_trend_snapshot(
     return row
 
 
+@app.delete(
+    "/api/admin/weekly-trend-snapshot/{snapshot_id}",
+    dependencies=[Depends(require_secret)],
+)
+def delete_weekly_trend_snapshot(snapshot_id: int, db: Session = Depends(get_db)):
+    """Kasuje POJEDYNCZY wiersz 'weekly_trend_snapshots' po id - do sprzatania
+    'osieroconych' wierszy sprzed wdrozenia exercise_key (2026-07-14): rename
+    cwiczenia w seed_data.py PRZED ta migracja tworzyl NOWY wiersz zamiast
+    aktualizowac stary (bo dopasowanie szlo po (week_start, day, name), a
+    nazwa sie zmienila), wiec w historycznych tygodniach zostaly duplikaty -
+    stara nazwa (bez exercise_key, dane juz przepisane recznie do nowego,
+    kluczowanego wiersza) obok nowej. Nie rusza innych wierszy/tygodni.
+    Uzyj GET /api/weekly-trend, zeby najpierw znalezc {id} do skasowania."""
+    row = (
+        db.query(models.WeeklyTrendSnapshot)
+        .filter(models.WeeklyTrendSnapshot.id == snapshot_id)
+        .first()
+    )
+    if not row:
+        raise HTTPException(status_code=404, detail="Nie ma wiersza trendu o tym id")
+    db.delete(row)
+    db.commit()
+    return {"status": "ok", "deleted_id": snapshot_id}
+
+
 @app.post(
     "/api/admin/weekly-trend-snapshot/manual",
     dependencies=[Depends(require_secret)],

@@ -8,6 +8,22 @@ Ten plik jest tez "zrodlem prawdy" do reczszej edycji, gdy trener-personalny
 aktualizuje TM/plan po nowym cyklu - edytuj liste EXERCISES i uruchom ponownie
 skrypt przeciwko produkcyjnemu API_BASE (seed_plan robi upsert po day+name,
 wiec bezpiecznie nadpisuje tylko zmienione pola).
+
+WAZNE: samo "git push" NIE aktualizuje zakladki Plan/Trend na stronie - ten
+plik to tylko dane w repo, trzeba go faktycznie URUCHOMIC (jak wyzej) przeciwko
+dzialajacemu API, zeby zmiany trafily do bazy (Neon). Backend na Renderze sam
+w sobie nic z tego pliku nie czyta przy starcie/deployu.
+
+Rename cwiczenia (zmiana "name" przy tym samym exercise_key, 2026-07-16): od
+tego dnia main() ponizej, oprocz upsertu planu, wywoluje tez POST
+/api/admin/weekly-trend-snapshot - to synchronizuje tozsamosc (name/day_order/
+position) wiersza w BIEZACYM (jeszcze niearchiwizowanym) tygodniu zakladki
+Trend z dopasowaniem po exercise_key, wiec zmiana nazwy tutaj + jedno
+uruchomienie tego skryptu wystarcza, zeby rename byl widoczny wszedzie (Plan
+i biezacy tydzien Trendu) - bez recznej edycji Neon. Historyczne (juz
+zarchiwizowane) tygodnie Trendu NIE sa tym ruszane (to swiadomie zamrozniete
+zapisy przeszlosci) - do korekty starej nazwy w danym tygodniu sluzy
+backend/patch_trend_row.py.
 """
 
 import os
@@ -255,5 +271,24 @@ def main():
     print("delete:", del_resp.json())
 
 
+def sync_trend_identity():
+    # 3. Zsynchronizuj tozsamosc (name/day_order/position) BIEZACEGO tygodnia
+    # zakladki Trend z planem, ktory wlasnie zseedowalismy - dzieki upsertowi
+    # po exercise_key (main.py.create_weekly_trend_snapshot) to bezpieczne
+    # wywolac za kazdym razem: nie dubluje wierszy, nie kasuje juz recznie
+    # wpisanych sets_reps/tm_info, tylko aktualizuje name/day_order/position
+    # tam, gdzie exercise_key sie zgadza. To domyka petle "zmien nazwe w
+    # seed_data.py -> uruchom skrypt -> gotowe" takze dla Trendu, bez potrzeby
+    # recznej edycji Neon.
+    snap_resp = requests.post(
+        f"{API_BASE}/api/admin/weekly-trend-snapshot",
+        headers={"X-Auth-Secret": APP_SECRET},
+        timeout=30,
+    )
+    snap_resp.raise_for_status()
+    print("trend snapshot sync:", snap_resp.json())
+
+
 if __name__ == "__main__":
     main()
+    sync_trend_identity()
