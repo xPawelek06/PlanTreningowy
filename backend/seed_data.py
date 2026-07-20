@@ -100,8 +100,8 @@ EXERCISES = [
             # Tydzien cyklu 3/4 (2026-07-20), TM 80 kg (bez zmian), schemat 75/85/95% TM
             "Rozgrzewka: pusta sztanga x5, 40 kg x5\n"
             "S1: 60 kg x5\n"
-            "S2: 68 kg x3\n"
-            "S3: 76 kg x1+ (PR seria)"
+            "S2: 67,5 kg x3\n"
+            "S3: 75 kg x1+ (PR seria)"
         ),
         is_main_lift=False,  # Pawel poprosil o zwykly tekst bez pogrubienia (jak Przysiad w Pon.)
     ),
