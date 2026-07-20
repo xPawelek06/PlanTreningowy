@@ -49,13 +49,13 @@ EXERCISES = [
         day="Poniedziałek", day_order=0, position=0,
         name="Przysiad ze sztangą",
         exercise_key="pon-przysiad",
-        sets_reps="3 x 3 (S3 = AMRAP, min. 3)",
+        sets_reps="Tydz. 3/4: 5/3/1+ (S3 = seria PR, max powt.)",
         tm_info=(
-            # Tydzien cyklu 2/4 (2026-07-13), TM 105 kg, schemat 70/80/90% TM
+            # Tydzien cyklu 3/4 (2026-07-20), TM 105 kg (bez zmian), schemat 75/85/95% TM
             "Rozgrzewka: pusta sztanga x5, 60 kg x5\n"
-            "S1: 72,5 kg x3\n"
-            "S2: 85 kg x3\n"
-            "S3: 95 kg x3+"
+            "S1: 80 kg x5\n"
+            "S2: 90 kg x3\n"
+            "S3: 100 kg x1+ (PR seria)"
         ),
         is_main_lift=False,  # Pawel poprosil o zwykly tekst bez pogrubienia (2026-07-05)
     ),
@@ -68,10 +68,11 @@ EXERCISES = [
         day="Poniedziałek", day_order=0, position=2,
         name="RDL (lekko)", exercise_key="pon-rdl", sets_reps="3 x 5",
         tm_info=(
+            # Podniesione 2026-07-20 - 2. tydzien z rzedu "duzy zapas"
             "Rozgrzewka: pusta sztanga x5, 40 kg x5\n"
-            "S1: 60 kg x5\n"
-            "S2: 70 kg x5\n"
-            "S3: 80 kg x5"
+            "S1: 65 kg x5\n"
+            "S2: 75 kg x5\n"
+            "S3: 85 kg x5"
         ),
     ),
     dict(day="Poniedziałek", day_order=0, position=3, name="Pallof Press", exercise_key="pon-pallof-press", sets_reps="3 x 60 sek",
@@ -94,13 +95,13 @@ EXERCISES = [
         day="Wtorek", day_order=1, position=0,
         name="Wyciskanie płaskie",
         exercise_key="wt-wyciskanie-plaskie",
-        sets_reps="3 x 3 (S3 = AMRAP, min. 3)",
+        sets_reps="Tydz. 3/4: 5/3/1+ (S3 = seria PR, max powt.)",
         tm_info=(
-            # Tydzien cyklu 2/4 (2026-07-13), TM 80 kg (bez zmian), schemat 70/80/90% TM
+            # Tydzien cyklu 3/4 (2026-07-20), TM 80 kg (bez zmian), schemat 75/85/95% TM
             "Rozgrzewka: pusta sztanga x5, 40 kg x5\n"
-            "S1: 56,25 kg x3\n"
-            "S2: 63,75 kg x3\n"
-            "S3: 72,5 kg x3+"
+            "S1: 60 kg x5\n"
+            "S2: 68 kg x3\n"
+            "S3: 76 kg x1+ (PR seria)"
         ),
         is_main_lift=False,  # Pawel poprosil o zwykly tekst bez pogrubienia (jak Przysiad w Pon.)
     ),
@@ -118,7 +119,7 @@ EXERCISES = [
             "40 kg\n"
         ),
     ),  # Doprecyzowany chwyt 2026-07-07 (drugie wioslowanie w piatek - waskie)
-    dict(day="Wtorek", day_order=1, position=3, name="Prostowanie ramion wyciąg", exercise_key="wt-prostowanie-ramion", sets_reps="3 x 10", tm_info="35 kg"),
+    dict(day="Wtorek", day_order=1, position=3, name="Prostowanie ramion wyciąg", exercise_key="wt-prostowanie-ramion", sets_reps="3 x 10", tm_info="40 kg"),  # Podniesione 2026-07-20 - komfortowy zapas, Pawel sam zapowiedzial ten skok
     dict(day="Wtorek", day_order=1, position=4, name="Rozpiętki hantle w opadzie", exercise_key="wt-rozpietki-hantle", sets_reps="3 x 10", tm_info="8 kg"),
 
     # SRODA - Bieg 10 km
@@ -149,13 +150,13 @@ EXERCISES = [
         day="Piątek", day_order=4, position=0,
         name="Martwy ciąg",
         exercise_key="pt-martwy-ciag",
-        sets_reps="3 x 3 (S3 = AMRAP, min. 3)",
+        sets_reps="Tydz. 3/4: 5/3/1+ (S3 = seria PR, max powt.)",
         tm_info=(
-            # Tydzien cyklu 2/4 (2026-07-13), TM 125 kg, schemat 70/80/90% TM
+            # Tydzien cyklu 3/4 (2026-07-20), TM 125 kg (bez zmian teraz), schemat 75/85/95% TM
             "Rozgrzewka: pusta sztanga x5, 75 kg x5\n"
-            "S1: 87,5 kg x3\n"
-            "S2: 100 kg x3\n"
-            "S3: 112,5 kg x3+"
+            "S1: 95 kg x5\n"
+            "S2: 107,5 kg x3\n"
+            "S3: 120 kg x1+ (PR seria - sprawdz zaciski/rozwaz pasy, limiter zeszly tydzien byl chwyt)"
         ),
         is_main_lift=False,  # Pawel poprosil o zwykly tekst bez pogrubienia (jak inne glowne boje)
     ),
@@ -165,10 +166,11 @@ EXERCISES = [
         exercise_key="pt-dipy",
         sets_reps="3 serie",
         tm_info=(
+            # Obnizone 2026-07-20 - 2. tydzien z rzedu tylko 2 powt. na +40 kg (Pawel sam to zaproponowal)
             "Rozgrzewka: pusto, 15kg x5\n"
             "S1: +30 kg x5\n"
             "S2: +35 kg x5\n"
-            "S3: +40 kg x3"
+            "S3: +35 kg x3"
         ),
     ),  # TM=45 kg dociazenia; zaokraglenie w gore co 2,5 kg (najmniejszy talerz na pas do dipow), wartosci S1/S2/S3 podane przez Pawla
     dict(
