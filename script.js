@@ -11,7 +11,7 @@ const SECRET_SESSION_KEY = "plan-treningowy-secret";
 
 // Backend wdrożony i zweryfikowany na Renderze (2026-07-05) - to prawdziwy,
 // żywy URL, połączony z bazą Neon.
-const API_BASE = "https://plan-treningowy-api.onrender.com";
+const API_BASE = "https://plan.136-113-151-64.sslip.io";
 
 let authSecret = "";
 // Referencja do ostatnio dodanego listenera "resize" dla suwakow poziomego
