@@ -192,6 +192,12 @@ body {
   margin: 10px 0 0;
 }
 
+.trend-toolbar {
+  display: flex;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
 .load-status.load-error {
   color: #ff6b6b;
 }

@@ -107,9 +107,9 @@ EXERCISES = [
     ),
     dict(
         day="Wtorek", day_order=1, position=1,
-        name="Wyciskanie hantli skos górny", exercise_key="wt-wyciskanie-hantli-skos", sets_reps="3 x 8",
+        name="Wyciskanie sztangi skos górny", exercise_key="wt-wyciskanie-sztangi-skos", sets_reps="3 x 8",
         tm_info=(
-            "20 kg / hantla\n"
+            "50kg\n"
         ),
     ),
     dict(

@@ -550,6 +550,43 @@ async function loadTrend() {
   }
 }
 
+// Przycisk "Dodaj kolejny tydzien" w zakladce Trend (2026-07-23) - Pawel chce
+// moc zaczac wpisywac obciazenie/serie x powtorzenia dla NASTEPNEGO tygodnia z
+// wyprzedzeniem, zamiast czekac az automatyczna cotygodniowa archiwizacja
+// (poniedzialek rano) sama utworzy dla niego pusty wiersz. Woła ten sam
+// backendowy endpoint co ta automatyzacja (POST .../weekly-trend-snapshot),
+// tylko z week_offset=1 - tworzy/aktualizuje puste wiersze dla tygodnia
+// zaczynajacego sie w nastepny poniedzialek, na podstawie AKTUALNEGO planu
+// (tabela 'exercises'). Bezpiecznie klikac wielokrotnie (upsert po
+// week_start+day+exercise_key, patrz main.py) - nie kasuje juz wpisanych
+// wartosci, jesli Pawel zdazyl cos uzupelnic przed ponownym klikniewciem.
+async function addNextWeekSnapshot() {
+  const button = document.getElementById("add-next-week-btn");
+  const statusEl = document.getElementById("add-next-week-status");
+  button.disabled = true;
+  statusEl.textContent = "Dodawanie…";
+  statusEl.classList.remove("save-error");
+  try {
+    await fetchWithRetry(`${API_BASE}/api/admin/weekly-trend-snapshot?week_offset=1`, {
+      method: "POST",
+      headers: { "X-Auth-Secret": authSecret },
+    });
+    statusEl.textContent = "Dodano ✓";
+    setTimeout(() => {
+      statusEl.textContent = "";
+    }, 2500);
+    await loadTrend();
+  } catch (err) {
+    statusEl.textContent = "Błąd — spróbuj ponownie";
+    statusEl.classList.add("save-error");
+    console.error("Błąd dodawania kolejnego tygodnia:", err);
+  } finally {
+    button.disabled = false;
+  }
+}
+
+document.getElementById("add-next-week-btn").addEventListener("click", addNextWeekSnapshot);
+
 async function saveEntry(exerciseId, zapas, seriaPlus, uwagi, button, statusEl) {
   button.disabled = true;
   statusEl.textContent = "Zapisywanie…";

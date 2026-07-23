@@ -72,10 +72,14 @@ def get_db():
         db.close()
 
 
-def current_week_bounds(today: Optional[date] = None):
+def current_week_bounds(today: Optional[date] = None, week_offset: int = 0):
     """Poniedzialek..niedziela biezacego tygodnia - ten sam wzorzec co w
-    appce Waga (main.py, current_week_bounds)."""
-    today = today or date.today()
+    appce Waga (main.py, current_week_bounds). week_offset=1 przesuwa wynik o
+    jeden tydzien w przod (do reczneego tworzenia snapshotu NASTEPNEGO
+    tygodnia z wyprzedzeniem, patrz create_weekly_trend_snapshot nizej) -
+    domyslnie 0, czyli biezacy tydzien, bez zmiany zachowania dla
+    dotychczasowych wywolan bez tego parametru."""
+    today = (today or date.today()) + timedelta(weeks=week_offset)
     week_start = today - timedelta(days=today.weekday())
     week_end = week_start + timedelta(days=6)
     return week_start, week_end
@@ -229,7 +233,7 @@ def delete_all_entries(db: Session = Depends(get_db)):
     "/api/admin/weekly-trend-snapshot",
     dependencies=[Depends(require_secret)],
 )
-def create_weekly_trend_snapshot(db: Session = Depends(get_db)):
+def create_weekly_trend_snapshot(week_offset: int = 0, db: Session = Depends(get_db)):
     """Ustala TOZSAMOSC wierszy Trendu na biezacy tydzien (poniedzialek..
     niedziela) na podstawie AKTUALNEGO stanu tabeli 'exercises' - day/
     day_order/position/name/is_main_lift sa kopiowane z planu, zeby nie trzeba
@@ -256,8 +260,18 @@ def create_weekly_trend_snapshot(db: Session = Depends(get_db)):
     (cwiczenie jeszcze nie mialo zrzutu w tym tygodniu) sets_reps/tm_info
     zaczynaja jako puste stringi, do uzupelnienia recznie.
     Bezpiecznie wywolac ponownie w tym samym tygodniu (np. po zmianie planu),
-    nie dubluje wierszy i nie kasuje juz wpisanych danych wykonania."""
-    week_start, week_end = current_week_bounds()
+    nie dubluje wierszy i nie kasuje juz wpisanych danych wykonania.
+
+    week_offset (dodane 2026-07-23): domyslnie 0 (biezacy tydzien - tak jak
+    wywoluje to automatyczna cotygodniowa archiwizacja, Podczesc A kroku 4, bez
+    zadnych parametrow). Frontend (przycisk "Dodaj kolejny tydzien" w zakladce
+    Trend) woła ten sam endpoint z week_offset=1, zeby Pawel mogl zaczac
+    wpisywac dane NASTEPNEGO tygodnia z wyprzedzeniem, zanim automatyczny
+    snapshot poniedzialkowy go utworzy - upsert po (week_start, day,
+    exercise_key/name) gwarantuje, ze gdy automatyczny snapshot faktycznie
+    pozniej odpali sie dla tego samego tygodnia, nie nadpisze juz recznie
+    wpisanych wartosci (patrz logika nizej), tylko zaktualizuje tozsamosc."""
+    week_start, week_end = current_week_bounds(week_offset=week_offset)
 
     existing_rows = (
         db.query(models.WeeklyTrendSnapshot)
