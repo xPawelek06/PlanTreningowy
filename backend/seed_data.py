@@ -49,13 +49,13 @@ EXERCISES = [
         day="Poniedziałek", day_order=0, position=0,
         name="Przysiad ze sztangą",
         exercise_key="pon-przysiad",
-        sets_reps="Tydz. 3/4: 5/3/1+ (S3 = seria PR, max powt.)",
+        sets_reps="Tydz. 4/4: Deload 5/5/5 (lekko, technika)",
         tm_info=(
-            # Tydzien cyklu 3/4 (2026-07-20), TM 105 kg (bez zmian), schemat 75/85/95% TM
-            "Rozgrzewka: pusta sztanga x5, 60 kg x5\n"
-            "S1: 80 kg x5\n"
-            "S2: 90 kg x3\n"
-            "S3: 100 kg x1+ (PR seria)"
+            # Tydzien cyklu 4/4 (2026-07-27), TM 105 kg (bez zmian), deload 40/50/60% TM
+            "Rozgrzewka: pusta sztanga x5, 30 kg x5\n"
+            "S1: 42,5 kg x5\n"
+            "S2: 52,5 kg x5\n"
+            "S3: 62,5 kg x5"
         ),
         is_main_lift=False,  # Pawel poprosil o zwykly tekst bez pogrubienia (2026-07-05)
     ),
@@ -95,13 +95,15 @@ EXERCISES = [
         day="Wtorek", day_order=1, position=0,
         name="Wyciskanie płaskie",
         exercise_key="wt-wyciskanie-plaskie",
-        sets_reps="Tydz. 3/4: 5/3/1+ (S3 = seria PR, max powt.)",
+        sets_reps="Tydz. 4/4: Deload 5/5/5 (lekko, technika)",
         tm_info=(
-            # Tydzien cyklu 3/4 (2026-07-20), TM 80 kg (bez zmian), schemat 75/85/95% TM
-            "Rozgrzewka: pusta sztanga x5, 40 kg x5\n"
-            "S1: 60 kg x5\n"
-            "S2: 67,5 kg x3\n"
-            "S3: 75 kg x1+ (PR seria)"
+            # Tydzien cyklu 4/4 (2026-07-27), TM 80 kg (bez zmian), deload 40/50/60% TM
+            # zaokraglone do 2,5 kg (nie 1,25 kg) - najmniejsza plyta na silowni to
+            # 1,25 kg, wiec przy symetrycznym obciazeniu min. realny skok to 2,5 kg
+            "Rozgrzewka: pusta sztanga x5, 20 kg x5\n"
+            "S1: 32,5 kg x5\n"
+            "S2: 40 kg x5\n"
+            "S3: 47,5 kg x5"
         ),
         is_main_lift=False,  # Pawel poprosil o zwykly tekst bez pogrubienia (jak Przysiad w Pon.)
     ),
@@ -114,11 +116,11 @@ EXERCISES = [
     ),
     dict(
         day="Wtorek", day_order=1, position=2,
-        name="Wiosłowanie wąskie na maszynie", exercise_key="wt-wioslowanie-waskie", sets_reps="3 x 10",
+        name="Wiosłowanie wąskie na maszynie", exercise_key="wt-wioslowanie-waskie", sets_reps="3 x 8",
         tm_info=(
-            "40 kg\n"
+            "45 kg\n"
         ),
-    ),  # Doprecyzowany chwyt 2026-07-07 (drugie wioslowanie w piatek - waskie)
+    ),  # Podniesione 2026-07-27 - Pawel juz sprobowal 45 kg w tygodniu i dal rade (2x8), sam zapowiedzial ten skok
     dict(day="Wtorek", day_order=1, position=3, name="Prostowanie ramion wyciąg", exercise_key="wt-prostowanie-ramion", sets_reps="3 x 10", tm_info="40 kg"),  # Podniesione 2026-07-20 - komfortowy zapas, Pawel sam zapowiedzial ten skok
     dict(day="Wtorek", day_order=1, position=4, name="Rozpiętki hantle w opadzie", exercise_key="wt-rozpietki-hantle", sets_reps="3 x 10", tm_info="8 kg"),
 
@@ -150,13 +152,13 @@ EXERCISES = [
         day="Piątek", day_order=4, position=0,
         name="Martwy ciąg",
         exercise_key="pt-martwy-ciag",
-        sets_reps="Tydz. 3/4: 5/3/1+ (S3 = seria PR, max powt.)",
+        sets_reps="Tydz. 4/4: Deload 5/5/5 (lekko, technika)",
         tm_info=(
-            # Tydzien cyklu 3/4 (2026-07-20), TM 125 kg (bez zmian teraz), schemat 75/85/95% TM
-            "Rozgrzewka: pusta sztanga x5, 75 kg x5\n"
-            "S1: 95 kg x5\n"
-            "S2: 107,5 kg x3\n"
-            "S3: 120 kg x1+ (PR seria - sprawdz zaciski/rozwaz pasy, limiter zeszly tydzien byl chwyt)"
+            # Tydzien cyklu 4/4 (2026-07-27), TM 125 kg (bez zmian), deload 40/50/60% TM
+            "Rozgrzewka: pusta sztanga x5, 40 kg x5\n"
+            "S1: 50 kg x5\n"
+            "S2: 62,5 kg x5\n"
+            "S3: 75 kg x5"
         ),
         is_main_lift=False,  # Pawel poprosil o zwykly tekst bez pogrubienia (jak inne glowne boje)
     ),
