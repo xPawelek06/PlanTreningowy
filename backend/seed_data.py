@@ -49,13 +49,15 @@ EXERCISES = [
         day="Poniedziałek", day_order=0, position=0,
         name="Przysiad ze sztangą",
         exercise_key="pon-przysiad",
-        sets_reps="Tydz. 4/4: Deload 5/5/5 (lekko, technika)",
+        sets_reps="Tydz. 1/4: 5/5/5+ (S3 = min. 5 powt.)",
         tm_info=(
-            # Tydzien cyklu 4/4 (2026-07-27), TM 105 kg (bez zmian), deload 40/50/60% TM
-            "Rozgrzewka: pusta sztanga x5, 30 kg x5\n"
-            "S1: 42,5 kg x5\n"
-            "S2: 52,5 kg x5\n"
-            "S3: 62,5 kg x5"
+            # Tydzien cyklu 1/4 nowego cyklu (2026-08-03), TM 107,5 kg (+2,5 kg - ostrozniejszy
+            # skok niz standardowe +5 kg, bo tyg.3 poprzedniego cyklu skonczyl sie bolem ledzwi),
+            # schemat 65/75/85% TM
+            "Rozgrzewka: pusta sztanga x5, 62,5 kg x5\n"
+            "S1: 70 kg x5\n"
+            "S2: 80 kg x5\n"
+            "S3: 92,5 kg x5+"
         ),
         is_main_lift=False,  # Pawel poprosil o zwykly tekst bez pogrubienia (2026-07-05)
     ),
@@ -95,15 +97,14 @@ EXERCISES = [
         day="Wtorek", day_order=1, position=0,
         name="Wyciskanie płaskie",
         exercise_key="wt-wyciskanie-plaskie",
-        sets_reps="Tydz. 4/4: Deload 5/5/5 (lekko, technika)",
+        sets_reps="Tydz. 1/4: 5/5/5+ (S3 = min. 5 powt.)",
         tm_info=(
-            # Tydzien cyklu 4/4 (2026-07-27), TM 80 kg (bez zmian), deload 40/50/60% TM
-            # zaokraglone do 2,5 kg (nie 1,25 kg) - najmniejsza plyta na silowni to
-            # 1,25 kg, wiec przy symetrycznym obciazeniu min. realny skok to 2,5 kg
-            "Rozgrzewka: pusta sztanga x5, 20 kg x5\n"
-            "S1: 32,5 kg x5\n"
-            "S2: 40 kg x5\n"
-            "S3: 47,5 kg x5"
+            # Tydzien cyklu 1/4 nowego cyklu (2026-08-03), TM 82,5 kg (+2,5 kg - standardowy
+            # skok dla tego boju), schemat 65/75/85% TM
+            "Rozgrzewka: pusta sztanga x5, 42,5 kg x5\n"
+            "S1: 52,5 kg x5\n"
+            "S2: 62,5 kg x5\n"
+            "S3: 70 kg x5+"
         ),
         is_main_lift=False,  # Pawel poprosil o zwykly tekst bez pogrubienia (jak Przysiad w Pon.)
     ),
@@ -152,13 +153,14 @@ EXERCISES = [
         day="Piątek", day_order=4, position=0,
         name="Martwy ciąg",
         exercise_key="pt-martwy-ciag",
-        sets_reps="Tydz. 4/4: Deload 5/5/5 (lekko, technika)",
+        sets_reps="Tydz. 1/4: 5/5/5+ (S3 = min. 5 powt.)",
         tm_info=(
-            # Tydzien cyklu 4/4 (2026-07-27), TM 125 kg (bez zmian), deload 40/50/60% TM
-            "Rozgrzewka: pusta sztanga x5, 40 kg x5\n"
-            "S1: 50 kg x5\n"
-            "S2: 62,5 kg x5\n"
-            "S3: 75 kg x5"
+            # Tydzien cyklu 1/4 nowego cyklu (2026-08-03), TM 130 kg (+5 kg - standardowy
+            # skok dla tego boju), schemat 65/75/85% TM
+            "Rozgrzewka: pusta sztanga x5, 77,5 kg x5\n"
+            "S1: 85 kg x5\n"
+            "S2: 97,5 kg x5\n"
+            "S3: 110 kg x5+"
         ),
         is_main_lift=False,  # Pawel poprosil o zwykly tekst bez pogrubienia (jak inne glowne boje)
     ),
