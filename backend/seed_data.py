@@ -49,15 +49,15 @@ EXERCISES = [
         day="Poniedziałek", day_order=0, position=0,
         name="Przysiad ze sztangą",
         exercise_key="pon-przysiad",
-        sets_reps="Tydz. 1/4: 5/5/5+ (S3 = min. 5 powt.)",
+        sets_reps="Tydz. 2/4: 3/3/3+ (S3 = min. 3 powt.)",
         tm_info=(
-            # Tydzien cyklu 1/4 nowego cyklu (2026-08-03), TM 107,5 kg (+2,5 kg - ostrozniejszy
-            # skok niz standardowe +5 kg, bo tyg.3 poprzedniego cyklu skonczyl sie bolem ledzwi),
-            # schemat 65/75/85% TM
+            # Tydzien cyklu 2/4 (2026-08-10), TM bez zmian (107,5 kg) - tydz.1 wypadl slabo
+            # (S3 ledwo zaliczyla cel) w dniu startu choroby, wiec bez przyspieszenia,
+            # schemat 70/80/90% TM
             "Rozgrzewka: pusta sztanga x5, 62,5 kg x5\n"
-            "S1: 70 kg x5\n"
-            "S2: 80 kg x5\n"
-            "S3: 92,5 kg x5+"
+            "S1: 75 kg x3\n"
+            "S2: 85 kg x3\n"
+            "S3: 97,5 kg x3+"
         ),
         is_main_lift=False,  # Pawel poprosil o zwykly tekst bez pogrubienia (2026-07-05)
     ),
@@ -97,14 +97,15 @@ EXERCISES = [
         day="Wtorek", day_order=1, position=0,
         name="Wyciskanie płaskie",
         exercise_key="wt-wyciskanie-plaskie",
-        sets_reps="Tydz. 1/4: 5/5/5+ (S3 = min. 5 powt.)",
+        sets_reps="Tydz. 2/4: 3/3/3+ (S3 = min. 3 powt.)",
         tm_info=(
-            # Tydzien cyklu 1/4 nowego cyklu (2026-08-03), TM 82,5 kg (+2,5 kg - standardowy
-            # skok dla tego boju), schemat 65/75/85% TM
+            # Tydzien cyklu 2/4 (2026-08-10), TM bez zmian (82,5 kg) - tydz.1 wypadl 1 powt.
+            # ponizej celu, pierwszy trening po chorobie, wiec bez przyspieszenia,
+            # schemat 70/80/90% TM
             "Rozgrzewka: pusta sztanga x5, 42,5 kg x5\n"
-            "S1: 52,5 kg x5\n"
-            "S2: 62,5 kg x5\n"
-            "S3: 70 kg x5+"
+            "S1: 57,5 kg x3\n"
+            "S2: 65 kg x3\n"
+            "S3: 75 kg x3+"
         ),
         is_main_lift=False,  # Pawel poprosil o zwykly tekst bez pogrubienia (jak Przysiad w Pon.)
     ),
@@ -153,14 +154,15 @@ EXERCISES = [
         day="Piątek", day_order=4, position=0,
         name="Martwy ciąg",
         exercise_key="pt-martwy-ciag",
-        sets_reps="Tydz. 1/4: 5/5/5+ (S3 = min. 5 powt.)",
+        sets_reps="Tydz. 2/4: 3/3/3+ (S3 = min. 3 powt.)",
         tm_info=(
-            # Tydzien cyklu 1/4 nowego cyklu (2026-08-03), TM 130 kg (+5 kg - standardowy
-            # skok dla tego boju), schemat 65/75/85% TM
+            # Tydzien cyklu 2/4 (2026-08-10), TM bez zmian (130 kg) - tydz.1 najlepszy wynik
+            # tygodnia (8 powt. przy celu 5, bez bolu plecow), ale nie przyspieszam drugi raz
+            # z rzedu, schemat 70/80/90% TM
             "Rozgrzewka: pusta sztanga x5, 77,5 kg x5\n"
-            "S1: 85 kg x5\n"
-            "S2: 97,5 kg x5\n"
-            "S3: 110 kg x5+"
+            "S1: 90 kg x3\n"
+            "S2: 105 kg x3\n"
+            "S3: 117,5 kg x3+"
         ),
         is_main_lift=False,  # Pawel poprosil o zwykly tekst bez pogrubienia (jak inne glowne boje)
     ),
