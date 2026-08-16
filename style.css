@@ -195,7 +195,19 @@ body {
 .trend-toolbar {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
+  gap: 6px 12px;
   margin-bottom: 4px;
+}
+
+/* Dopisek przy "Dodaj kolejny tydzien" (2026-08-16, fix buga przesuwajacego
+   wpisy o tydzien) - tlumaczy, ze przycisk NIE jest potrzebny do wpisania
+   biezacego tygodnia, zeby nie klikac go z przyzwyczajenia zamiast po prostu
+   wypelnic juz istniejaca, podswietlona kolumne. */
+.trend-toolbar-hint {
+  font-size: 0.78rem;
+  color: var(--text-dim);
+  flex-basis: 100%;
 }
 
 .load-status.load-error {
@@ -316,6 +328,34 @@ body {
 .trend-week-head {
   text-align: center;
   border-left: 2px solid var(--border);
+}
+
+/* FIX (2026-08-16): wyroznienie kolumny REALNIE trwajacego dzis tygodnia
+   (week.isCurrent, patrz buildTrendPivot()/renderTrendPivot() w script.js) -
+   zeby Pawel nie musial zgadywac "ktora kolumna jest teraz" po samej pozycji
+   (najbardziej na prawo), bo to wlasnie mylenie kolumn bylo przyczyna buga
+   przesuwajacego wpisane dane pod tydzien X+1. Kolumna "nadchodzacego"
+   tygodnia (utworzona z wyprzedzeniem przyciskiem "Dodaj kolejny tydzien")
+   dostaje osobny, wygaszony styl, zeby byla jednoznacznie odrozniona od obu. */
+.trend-week-head-current {
+  background: rgba(79, 140, 255, 0.22) !important;
+  color: var(--text);
+  font-weight: 700;
+  border-left: 2px solid var(--accent);
+  border-right: 2px solid var(--accent);
+}
+
+.trend-week-head-future {
+  color: var(--text-dim);
+  font-style: italic;
+}
+
+.trend-pivot td.trend-col-current {
+  background: rgba(79, 140, 255, 0.1);
+}
+
+.trend-pivot td.trend-col-future {
+  opacity: 0.7;
 }
 
 /* Wiersz-naglowek dnia (Poniedzialek/Wtorek/...) - dziala jak dawny <h3>,

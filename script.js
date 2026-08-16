@@ -234,6 +234,21 @@ function trendKey(row) {
   return `${row.day}|${row.exercise_key || row.name}`;
 }
 
+// Data lokalna (telefon/przegladarka Pawla) w formacie YYYY-MM-DD, do
+// porownania z week_start/week_end (te same "YYYY-MM-DD" stringi z backendu,
+// porownywalne leksykograficznie) - UMYSLNIE lokalny czas urzadzenia, NIE
+// toISOString() (ten liczy w UTC i przy Warszawie wieczorem/noca potrafi
+// pokazac juz "jutro"). Uzywane wylacznie do WIZUALNEGO oznaczenia kolumny -
+// patrz komentarz przy renderTrendPivot() nizej, dlaczego to jest fix buga
+// "dane trafiaja pod zly tydzien".
+function todayLocalIso() {
+  const now = new Date();
+  const y = now.getFullYear();
+  const m = String(now.getMonth() + 1).padStart(2, "0");
+  const d = String(now.getDate()).padStart(2, "0");
+  return `${y}-${m}-${d}`;
+}
+
 function buildTrendPivot(rows) {
   // rows: plaska lista z backendu, posortowana week_start desc, day_order, position.
   const weekMap = new Map();
@@ -251,6 +266,29 @@ function buildTrendPivot(rows) {
     a.week_start < b.week_start ? -1 : a.week_start > b.week_start ? 1 : 0
   );
   const newestIdx = weeks.length - 1;
+
+  // FIX (2026-08-16): oznacz, ktora kolumna to REALNIE trwajacy dzis tydzien,
+  // zamiast pozwalac Pawlowi domyslac sie tego z samej pozycji "najbardziej
+  // na prawo". Root cause buga "dane wpisane w trakcie tygodnia X trafialy
+  // pod snapshot tygodnia X+1": przycisk "Dodaj kolejny tydzien" (patrz
+  // addNextWeekSnapshot() nizej) tworzy pusty wiersz dla NASTEPNEGO tygodnia
+  // z wyprzedzeniem (czasem juz w niedziele wieczorem albo we wtorek biezacego
+  // tygodnia - potwierdzone w danych produkcyjnych, created_at snapshotow
+  // 2026-08-17 to 2026-08-11), wiec przez reszte biezacego tygodnia w
+  // pivotcie widac RAZEM kolumne biezacego i przyszlego tygodnia, wizualnie
+  // nieodroznialne (obie po prostu maja zakres dat w naglowku). Pawel,
+  // wpisujac dane po treningu, w dobrej wierze uzupelnial kolumne najbardziej
+  // na prawo (najnowsza), ktora po utworzeniu snapshotu "na zapas" byla juz
+  // tym przyszlym tygodniem - stad systematyczne przesuniecie o tydzien w
+  // KAZDYM z 6 dotychczasowych tygodni. Naprawa: kazda kolumna dostaje
+  // jednoznaczna etykiete/wyroznienie na podstawie PRAWDZIWEJ dzisiejszej
+  // daty (nie na podstawie kolejnosci w tabeli) - patrz trend-week-head-current/
+  // trend-week-head-future w renderTrendPivot() i style.css.
+  const todayIso = todayLocalIso();
+  for (const week of weeks) {
+    week.isCurrent = week.week_start <= todayIso && todayIso <= week.week_end;
+    week.isFuture = todayIso < week.week_start;
+  }
 
   // Unia (day, name) ze WSZYSTKICH tygodni - zeby wiersz nie znikal tylko
   // dlatego, ze w najnowszym tygodniu danego cwiczenia nie bylo. Dla kazdego
@@ -310,12 +348,13 @@ function buildTrendPivot(rows) {
 // w bazie do edycji). Wiersz istnieje -> edytowalne pole tekstowe (dane
 // REALNEGO wykonania treningu, wpisywane recznie przez Pawla - patrz
 // saveTrendCell nizej), nawet jesli akurat puste.
-function trendCell(row, field) {
+function trendCell(row, field, weekClass = "") {
+  const suffix = weekClass ? ` ${weekClass}` : "";
   if (!row) {
-    return makeEl("td", { text: "---", className: "trend-cell trend-empty" });
+    return makeEl("td", { text: "---", className: `trend-cell trend-empty${suffix}` });
   }
 
-  const td = makeEl("td", { className: "trend-cell trend-cell-editable" });
+  const td = makeEl("td", { className: `trend-cell trend-cell-editable${suffix}` });
   const value = row[field] || "";
   const rows = Math.min(Math.max(String(value).split("\n").length, 1), 6);
   const textarea = makeEl("textarea", {
@@ -472,17 +511,28 @@ function renderTrendPivot(rows) {
   cornerTh.rowSpan = 2;
   headRow1.appendChild(cornerTh);
   for (const week of weeks) {
-    const th = makeEl("th", {
-      className: "trend-week-head",
-      text: `${week.week_start} – ${week.week_end}`,
-    });
+    // Jednoznaczna etykieta kolumny wzgledem PRAWDZIWEJ dzisiejszej daty
+    // (week.isCurrent/isFuture ustawione w buildTrendPivot) - zeby nie trzeba
+    // bylo zgadywac "ktora kolumna to teraz" po samej pozycji w tabeli. Patrz
+    // duzy komentarz przy buildTrendPivot() o root cause buga, ktory to naprawia.
+    let label = `${week.week_start} – ${week.week_end}`;
+    let headClass = "trend-week-head";
+    if (week.isCurrent) {
+      label += " • TEN TYDZIEŃ";
+      headClass += " trend-week-head-current";
+    } else if (week.isFuture) {
+      label += " (nadchodzący)";
+      headClass += " trend-week-head-future";
+    }
+    const th = makeEl("th", { className: headClass, text: label });
     th.colSpan = 2;
     headRow1.appendChild(th);
   }
   const headRow2 = document.createElement("tr");
   for (const week of weeks) {
-    headRow2.appendChild(makeEl("th", { text: "Obciążenie" }));
-    headRow2.appendChild(makeEl("th", { text: "Serie x powtórzenia" }));
+    const subClass = week.isCurrent ? "trend-week-head-current" : week.isFuture ? "trend-week-head-future" : "";
+    headRow2.appendChild(makeEl("th", { className: subClass, text: "Obciążenie" }));
+    headRow2.appendChild(makeEl("th", { className: subClass, text: "Serie x powtórzenia" }));
   }
   thead.appendChild(headRow1);
   thead.appendChild(headRow2);
@@ -518,8 +568,13 @@ function renderTrendPivot(rows) {
 
       for (const week of weeks) {
         const row = week.byKey.get(meta.key);
-        tr.appendChild(trendCell(row, "tm_info"));
-        tr.appendChild(trendCell(row, "sets_reps"));
+        const weekClass = week.isCurrent
+          ? "trend-col-current"
+          : week.isFuture
+          ? "trend-col-future"
+          : "";
+        tr.appendChild(trendCell(row, "tm_info", weekClass));
+        tr.appendChild(trendCell(row, "sets_reps", weekClass));
       }
       tbody.appendChild(tr);
     }
