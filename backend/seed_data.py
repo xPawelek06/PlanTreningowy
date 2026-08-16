@@ -49,15 +49,15 @@ EXERCISES = [
         day="Poniedziałek", day_order=0, position=0,
         name="Przysiad ze sztangą",
         exercise_key="pon-przysiad",
-        sets_reps="Tydz. 2/4: 3/3/3+ (S3 = min. 3 powt.)",
+        sets_reps="Tydz. 3/4: 5/3/1+ (S3 = seria PR, max powt.)",
         tm_info=(
-            # Tydzien cyklu 2/4 (2026-08-10), TM bez zmian (107,5 kg) - tydz.1 wypadl slabo
-            # (S3 ledwo zaliczyla cel) w dniu startu choroby, wiec bez przyspieszenia,
-            # schemat 70/80/90% TM
-            "Rozgrzewka: pusta sztanga x5, 62,5 kg x5\n"
-            "S1: 75 kg x3\n"
-            "S2: 85 kg x3\n"
-            "S3: 97,5 kg x3+"
+            # Tydzien cyklu 3/4 (2026-08-16), TM bez zmian (107,5 kg) - tydz.2 wypadl blisko
+            # celu ale bez duzego zapasu ("ledwo, 6 nie dalbym rady"), standardowa progresja
+            # bez przyspieszania, schemat 75/85/95% TM
+            "Rozgrzewka: pusta sztanga x5, 65 kg x5\n"
+            "S1: 80 kg x5\n"
+            "S2: 92,5 kg x3\n"
+            "S3: 102,5 kg x1+"
         ),
         is_main_lift=False,  # Pawel poprosil o zwykly tekst bez pogrubienia (2026-07-05)
     ),
@@ -97,15 +97,15 @@ EXERCISES = [
         day="Wtorek", day_order=1, position=0,
         name="Wyciskanie płaskie",
         exercise_key="wt-wyciskanie-plaskie",
-        sets_reps="Tydz. 2/4: 3/3/3+ (S3 = min. 3 powt.)",
+        sets_reps="Tydz. 3/4: 5/3/1+ (S3 = seria PR, max powt.)",
         tm_info=(
-            # Tydzien cyklu 2/4 (2026-08-10), TM bez zmian (82,5 kg) - tydz.1 wypadl 1 powt.
-            # ponizej celu, pierwszy trening po chorobie, wiec bez przyspieszenia,
-            # schemat 70/80/90% TM
-            "Rozgrzewka: pusta sztanga x5, 42,5 kg x5\n"
-            "S1: 57,5 kg x3\n"
-            "S2: 65 kg x3\n"
-            "S3: 75 kg x3+"
+            # Tydzien cyklu 3/4 (2026-08-16), TM bez zmian (82,5 kg) - tydz.2 wyszedl 4 powt.
+            # z delikatna asekuracja na ostatnim powtorzeniu, standardowa progresja,
+            # schemat 75/85/95% TM
+            "Rozgrzewka: pusta sztanga x5, 47,5 kg x5\n"
+            "S1: 62,5 kg x5\n"
+            "S2: 70 kg x3\n"
+            "S3: 77,5 kg x1+"
         ),
         is_main_lift=False,  # Pawel poprosil o zwykly tekst bez pogrubienia (jak Przysiad w Pon.)
     ),
@@ -154,15 +154,18 @@ EXERCISES = [
         day="Piątek", day_order=4, position=0,
         name="Martwy ciąg",
         exercise_key="pt-martwy-ciag",
-        sets_reps="Tydz. 2/4: 3/3/3+ (S3 = min. 3 powt.)",
+        sets_reps="Tydz. 3/4: 5/3/1+ (S3 = seria PR, max powt.)",
         tm_info=(
-            # Tydzien cyklu 2/4 (2026-08-10), TM bez zmian (130 kg) - tydz.1 najlepszy wynik
-            # tygodnia (8 powt. przy celu 5, bez bolu plecow), ale nie przyspieszam drugi raz
-            # z rzedu, schemat 70/80/90% TM
-            "Rozgrzewka: pusta sztanga x5, 77,5 kg x5\n"
-            "S1: 90 kg x3\n"
-            "S2: 105 kg x3\n"
-            "S3: 117,5 kg x3+"
+            # Tydzien cyklu 3/4 (2026-08-16), TM bez zmian (130 kg) - tydz.2 znow mocno ponad
+            # cel (Epley > wpisany max 135 kg, kolejny tydzien z rzedu). Pawel swiadomie
+            # podnosi serie PR do 125 kg (zamiast standardowych 122,5 kg) - spojne z sygnalem,
+            # ze TM ma jeszcze zapas. USTALONE 2026-08-16: od NASTEPNEGO cyklu (po tym
+            # deloadzie) zmiana podejscia do TM martwego - test 1RM albo przyspieszony skok
+            # zamiast standardowego +5 kg. Schemat 75/85/95% TM.
+            "Rozgrzewka: pusta sztanga x5, 85 kg x5\n"
+            "S1: 97,5 kg x5\n"
+            "S2: 110 kg x3\n"
+            "S3: 125 kg x1+"
         ),
         is_main_lift=False,  # Pawel poprosil o zwykly tekst bez pogrubienia (jak inne glowne boje)
     ),
