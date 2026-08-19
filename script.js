@@ -14,9 +14,12 @@ const SECRET_SESSION_KEY = "plan-treningowy-secret";
 const API_BASE = "https://plan.136-113-151-64.sslip.io";
 
 let authSecret = "";
-// Referencja do ostatnio dodanego listenera "resize" dla suwakow poziomego
-// przewijania w zakladce Trend - patrz attachDayScrollbarSync() nizej.
-let trendResizeHandler = null;
+// Referencje do ostatnio dodanych listenerow "resize" dla suwakow poziomego
+// przewijania w zakladkach Trend - patrz attachDayScrollbarSync() nizej.
+// Osobny klucz per sekcja (2026-08-20, dodanie zakladki Regeneracja obok
+// trojboju) - "trojboj" i "regen" maja WLASNY pivot/suwaki, wiec nie moga
+// dzielic jednej zmiennej (nadpisywalyby sobie nawzajem listener resize).
+const trendResizeHandlers = {};
 
 async function sha256Hex(text) {
   const data = new TextEncoder().encode(text);
@@ -30,7 +33,9 @@ function showContent() {
   document.getElementById("lock-screen").classList.add("hidden");
   document.getElementById("content").classList.remove("hidden");
   loadPlan();
-  loadTrend();
+  loadTrend("trojboj", "trend-weeks", "trend-status", "trojboj");
+  loadRegenPlan();
+  loadTrend("regeneracja", "regen-trend-weeks", "regen-trend-status", "regen");
 }
 
 async function tryUnlock() {
@@ -210,6 +215,48 @@ async function loadPlan() {
       true
     );
     console.error("Błąd ładowania planu:", err);
+  }
+}
+
+// --- Regeneracja: plan (statyczny, bez zapasu/uwag - te sa tylko w Trendzie
+// ponizej) tymczasowego bloku Upper/Lower/FBW na czas bolu plecow
+// (2026-08-20). Calkowicie oddzielona od trojboju po stronie backendu przez
+// plan_group=regeneracja (patrz backend/models.py, backend/main.py) - ta
+// funkcja tylko czyta ?plan_group=regeneracja i renderuje do wlasnych
+// tbody[data-regen-day], wiec nie moze przypadkiem wymieszac sie z tbody
+// trojboju (te maja atrybut data-day, nie data-regen-day).
+function buildRegenRow(exercise) {
+  const tr = document.createElement("tr");
+  const nameCell = makeEl("td", { attrs: { "data-label": "Ćwiczenie" }, text: exercise.name });
+  tr.appendChild(nameCell);
+  tr.appendChild(multilineCell(exercise.sets_reps, "Serie x powtórzenia"));
+  tr.appendChild(multilineCell(exercise.tm_info || "—", "Start / cel"));
+  return tr;
+}
+
+async function loadRegenPlan() {
+  const statusEl = document.getElementById("regen-load-status");
+  statusEl.textContent = "Ładowanie planu… (jeśli backend spał, może to potrwać do 30 sek)";
+  statusEl.classList.remove("hidden", "load-error");
+  try {
+    const resp = await fetchWithRetry(`${API_BASE}/api/plan?plan_group=regeneracja`);
+    const exercises = await resp.json();
+
+    document.querySelectorAll("tbody[data-regen-day]").forEach((tbody) => {
+      tbody.innerHTML = "";
+    });
+
+    for (const exercise of exercises) {
+      const tbody = document.querySelector(`tbody[data-regen-day="${exercise.day}"]`);
+      if (!tbody) continue;
+      tbody.appendChild(buildRegenRow(exercise));
+    }
+
+    statusEl.classList.add("hidden");
+  } catch (err) {
+    statusEl.textContent = "Nie udało się połączyć z serwerem planu. Sprawdź internet i spróbuj odświeżyć stronę.";
+    statusEl.classList.add("load-error");
+    console.error("Błąd ładowania planu Regeneracji:", err);
   }
 }
 
@@ -441,7 +488,7 @@ function createDayScrollbarRow(totalCols) {
 // (bars: lista { bar, track }) w obie strony. Flaga "syncing" chroni przed
 // nieskonczona petla zdarzen scroll (ustawienie .scrollLeft programowo tez
 // odpala 'scroll').
-function attachDayScrollbarSync(wrap, table, bars) {
+function attachDayScrollbarSync(wrap, table, bars, sectionKey) {
   let syncing = false;
 
   function applyScrollLeft(value, source) {
@@ -479,15 +526,17 @@ function attachDayScrollbarSync(wrap, table, bars) {
   syncWidths();
   // renderTrendPivot() moze w zasadzie zostac wywolane ponownie (np. w
   // przyszlosci przy odswiezaniu bez przeladowania strony) - zdejmujemy
-  // poprzedni listener resize, zeby nie mnozyc ich przy kazdym renderze
-  // (stare zamkniecia trzymalyby referencje do juz odlaczonych elementow DOM).
-  if (trendResizeHandler) window.removeEventListener("resize", trendResizeHandler);
-  trendResizeHandler = syncWidths;
-  window.addEventListener("resize", trendResizeHandler);
+  // poprzedni listener resize DLA TEJ SEKCJI (trojboj/regen maja wlasny klucz
+  // w trendResizeHandlers), zeby nie mnozyc ich przy kazdym renderze (stare
+  // zamkniecia trzymalyby referencje do juz odlaczonych elementow DOM).
+  const prevHandler = trendResizeHandlers[sectionKey];
+  if (prevHandler) window.removeEventListener("resize", prevHandler);
+  trendResizeHandlers[sectionKey] = syncWidths;
+  window.addEventListener("resize", syncWidths);
 }
 
-function renderTrendPivot(rows) {
-  const container = document.getElementById("trend-weeks");
+function renderTrendPivot(rows, containerId, sectionKey) {
+  const container = document.getElementById(containerId);
   container.innerHTML = "";
 
   if (!rows.length) {
@@ -586,17 +635,24 @@ function renderTrendPivot(rows) {
   // Dopiero po wpieciu do DOM (container.appendChild wyzej) mierzalne sa
   // prawdziwe wymiary (clientWidth/scrollWidth) potrzebne do zsynchronizowania
   // mini-suwakow z kontenerem - patrz attachDayScrollbarSync().
-  attachDayScrollbarSync(wrap, table, dayScrollbars);
+  attachDayScrollbarSync(wrap, table, dayScrollbars, sectionKey);
 }
 
-async function loadTrend() {
-  const statusEl = document.getElementById("trend-status");
+// planGroup: "trojboj" (domyslne, dotychczasowe wywolanie bez parametrow) albo
+// "regeneracja" (dodane 2026-08-20, wlasna, w pelni oddzielna historia
+// tygodni). containerId/statusElId/sectionKey pozwalaja tej samej funkcji
+// obslugiwac DWA niezalezne pivoty (Trend trojboju i Trend Regeneracji) bez
+// wzajemnej kolizji DOM/listenerow resize.
+async function loadTrend(planGroup, containerId, statusElId, sectionKey) {
+  const statusEl = document.getElementById(statusElId);
   statusEl.textContent = "Ładowanie… (jeśli backend spał, może to potrwać do 30 sek)";
   statusEl.classList.remove("hidden", "load-error");
   try {
-    const resp = await fetchWithRetry(`${API_BASE}/api/weekly-trend`);
+    const resp = await fetchWithRetry(
+      `${API_BASE}/api/weekly-trend?plan_group=${encodeURIComponent(planGroup)}`
+    );
     const rows = await resp.json();
-    renderTrendPivot(rows);
+    renderTrendPivot(rows, containerId, sectionKey);
     statusEl.classList.add("hidden");
   } catch (err) {
     statusEl.textContent = "Nie udało się pobrać historii tygodni. Sprawdź internet i spróbuj odświeżyć stronę.";
@@ -615,22 +671,27 @@ async function loadTrend() {
 // (tabela 'exercises'). Bezpiecznie klikac wielokrotnie (upsert po
 // week_start+day+exercise_key, patrz main.py) - nie kasuje juz wpisanych
 // wartosci, jesli Pawel zdazyl cos uzupelnic przed ponownym klikniewciem.
-async function addNextWeekSnapshot() {
-  const button = document.getElementById("add-next-week-btn");
-  const statusEl = document.getElementById("add-next-week-status");
+// planGroup/buttonId/statusId jak w loadTrend() wyzej; reloadFn odswieza
+// wlasciwy pivot (trojboj albo regeneracja) po dodaniu pustej kolumny.
+async function addNextWeekSnapshot(planGroup, buttonId, statusId, reloadFn) {
+  const button = document.getElementById(buttonId);
+  const statusEl = document.getElementById(statusId);
   button.disabled = true;
   statusEl.textContent = "Dodawanie…";
   statusEl.classList.remove("save-error");
   try {
-    await fetchWithRetry(`${API_BASE}/api/admin/weekly-trend-snapshot?week_offset=1`, {
-      method: "POST",
-      headers: { "X-Auth-Secret": authSecret },
-    });
+    await fetchWithRetry(
+      `${API_BASE}/api/admin/weekly-trend-snapshot?week_offset=1&plan_group=${encodeURIComponent(planGroup)}`,
+      {
+        method: "POST",
+        headers: { "X-Auth-Secret": authSecret },
+      }
+    );
     statusEl.textContent = "Dodano ✓";
     setTimeout(() => {
       statusEl.textContent = "";
     }, 2500);
-    await loadTrend();
+    await reloadFn();
   } catch (err) {
     statusEl.textContent = "Błąd — spróbuj ponownie";
     statusEl.classList.add("save-error");
@@ -640,7 +701,16 @@ async function addNextWeekSnapshot() {
   }
 }
 
-document.getElementById("add-next-week-btn").addEventListener("click", addNextWeekSnapshot);
+document.getElementById("add-next-week-btn").addEventListener("click", () =>
+  addNextWeekSnapshot("trojboj", "add-next-week-btn", "add-next-week-status", () =>
+    loadTrend("trojboj", "trend-weeks", "trend-status", "trojboj")
+  )
+);
+document.getElementById("add-next-week-regen-btn").addEventListener("click", () =>
+  addNextWeekSnapshot("regeneracja", "add-next-week-regen-btn", "add-next-week-regen-status", () =>
+    loadTrend("regeneracja", "regen-trend-weeks", "regen-trend-status", "regen")
+  )
+);
 
 async function saveEntry(exerciseId, zapas, seriaPlus, uwagi, button, statusEl) {
   button.disabled = true;

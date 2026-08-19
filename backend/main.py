@@ -39,6 +39,24 @@ def migrate_schema():
             with engine.begin() as conn:
                 conn.execute(text(f"ALTER TABLE {table_name} ADD COLUMN exercise_key VARCHAR"))
 
+    # plan_group (2026-08-20): dyskryminator planu ("trojboj" / "regeneracja",
+    # patrz models.py) - dodajemy kolumne jesli brak, i od razu backfillujemy
+    # WSZYSTKIE istniejace (NULL) wiersze na "trojboj", bo caly dotychczasowy
+    # plan/historia to trojboj - to jedyny krok tej migracji, ktory dotyka
+    # istniejacych wierszy, i robi to wylacznie wypelniajac NOWA kolumne, bez
+    # ruszania jakichkolwiek innych danych (sets_reps/tm_info/entries itd.).
+    for table_name in ("exercises", "weekly_trend_snapshots"):
+        if table_name not in table_names:
+            continue
+        existing_cols = {col["name"] for col in inspector.get_columns(table_name)}
+        if "plan_group" not in existing_cols:
+            with engine.begin() as conn:
+                conn.execute(text(f"ALTER TABLE {table_name} ADD COLUMN plan_group VARCHAR"))
+        with engine.begin() as conn:
+            conn.execute(
+                text(f"UPDATE {table_name} SET plan_group = 'trojboj' WHERE plan_group IS NULL")
+            )
+
 
 migrate_schema()
 
@@ -96,9 +114,16 @@ def health():
 
 
 @app.get("/api/plan", response_model=List[schemas.ExerciseOut])
-def get_plan(db: Session = Depends(get_db)):
+def get_plan(plan_group: str = "trojboj", db: Session = Depends(get_db)):
+    """plan_group domyslnie "trojboj" (dotychczasowy plan) - dzieki temu
+    istniejace wywolanie bez parametru (frontend, index.html) dziala
+    DOKLADNIE jak przed dodaniem zakladki Regeneracja (wszystkie
+    dotychczasowe wiersze sa backfillowane na "trojboj", patrz
+    migrate_schema()). Nowa zakladka Regeneracja woła ten sam endpoint z
+    ?plan_group=regeneracja."""
     exercises = (
         db.query(models.Exercise)
+        .filter(models.Exercise.plan_group == plan_group)
         .order_by(models.Exercise.day_order, models.Exercise.position)
         .all()
     )
@@ -122,6 +147,7 @@ def get_plan(db: Session = Depends(get_db)):
                 sets_reps=ex.sets_reps,
                 tm_info=ex.tm_info,
                 is_main_lift=ex.is_main_lift,
+                plan_group=ex.plan_group or "trojboj",
                 latest_zapas=latest.zapas if latest else None,
                 latest_seria_plus=latest.seria_plus if latest else None,
                 latest_uwagi=latest.uwagi if latest else None,
@@ -190,13 +216,18 @@ def seed_plan(payload: schemas.SeedPayload, db: Session = Depends(get_db)):
                 .filter(
                     models.Exercise.day == item.day,
                     models.Exercise.exercise_key == item.exercise_key,
+                    models.Exercise.plan_group == item.plan_group,
                 )
                 .first()
             )
         if not existing:
             existing = (
                 db.query(models.Exercise)
-                .filter(models.Exercise.day == item.day, models.Exercise.name == item.name)
+                .filter(
+                    models.Exercise.day == item.day,
+                    models.Exercise.name == item.name,
+                    models.Exercise.plan_group == item.plan_group,
+                )
                 .first()
             )
         if existing:
@@ -208,6 +239,7 @@ def seed_plan(payload: schemas.SeedPayload, db: Session = Depends(get_db)):
             existing.sets_reps = item.sets_reps
             existing.tm_info = item.tm_info
             existing.is_main_lift = item.is_main_lift
+            existing.plan_group = item.plan_group
             updated += 1
         else:
             db.add(models.Exercise(**item.model_dump()))
@@ -233,7 +265,9 @@ def delete_all_entries(db: Session = Depends(get_db)):
     "/api/admin/weekly-trend-snapshot",
     dependencies=[Depends(require_secret)],
 )
-def create_weekly_trend_snapshot(week_offset: int = 0, db: Session = Depends(get_db)):
+def create_weekly_trend_snapshot(
+    week_offset: int = 0, plan_group: str = "trojboj", db: Session = Depends(get_db)
+):
     """Ustala TOZSAMOSC wierszy Trendu na biezacy tydzien (poniedzialek..
     niedziela) na podstawie AKTUALNEGO stanu tabeli 'exercises' - day/
     day_order/position/name/is_main_lift sa kopiowane z planu, zeby nie trzeba
@@ -275,7 +309,10 @@ def create_weekly_trend_snapshot(week_offset: int = 0, db: Session = Depends(get
 
     existing_rows = (
         db.query(models.WeeklyTrendSnapshot)
-        .filter(models.WeeklyTrendSnapshot.week_start == week_start)
+        .filter(
+            models.WeeklyTrendSnapshot.week_start == week_start,
+            models.WeeklyTrendSnapshot.plan_group == plan_group,
+        )
         .all()
     )
     existing_by_exercise_key = {
@@ -283,9 +320,12 @@ def create_weekly_trend_snapshot(week_offset: int = 0, db: Session = Depends(get
     }
     existing_by_name = {(row.day, row.name): row for row in existing_rows}
 
-    exercises = db.query(models.Exercise).order_by(
-        models.Exercise.day_order, models.Exercise.position
-    ).all()
+    exercises = (
+        db.query(models.Exercise)
+        .filter(models.Exercise.plan_group == plan_group)
+        .order_by(models.Exercise.day_order, models.Exercise.position)
+        .all()
+    )
 
     created, updated = 0, 0
     for ex in exercises:
@@ -315,6 +355,7 @@ def create_weekly_trend_snapshot(week_offset: int = 0, db: Session = Depends(get
                     sets_reps="",
                     tm_info="",
                     is_main_lift=ex.is_main_lift,
+                    plan_group=plan_group,
                 )
             )
             created += 1
@@ -419,7 +460,8 @@ def create_weekly_trend_snapshot_manual(
     nowe z payloadu (identyczna logika jak w automatycznym endpoincie) -
     bezpiecznie wywolac ponownie dla tego samego tygodnia, np. przy korekcie."""
     db.query(models.WeeklyTrendSnapshot).filter(
-        models.WeeklyTrendSnapshot.week_start == payload.week_start
+        models.WeeklyTrendSnapshot.week_start == payload.week_start,
+        models.WeeklyTrendSnapshot.plan_group == payload.plan_group,
     ).delete()
 
     for row in payload.exercises:
@@ -435,6 +477,7 @@ def create_weekly_trend_snapshot_manual(
                 sets_reps=row.sets_reps,
                 tm_info=row.tm_info,
                 is_main_lift=row.is_main_lift,
+                plan_group=payload.plan_group,
             )
         )
     db.commit()
@@ -450,11 +493,14 @@ def create_weekly_trend_snapshot_manual(
     "/api/weekly-trend",
     response_model=List[schemas.WeeklyTrendSnapshotOut],
 )
-def list_weekly_trend(db: Session = Depends(get_db)):
+def list_weekly_trend(plan_group: str = "trojboj", db: Session = Depends(get_db)):
     """Publiczny odczyt (bez sekretu, jak GET /api/weekly-summary w appce
-    Waga) - frontend grupuje plaska liste po week_start w sekcje 'Tydzien'."""
+    Waga) - frontend grupuje plaska liste po week_start w sekcje 'Tydzien'.
+    plan_group domyslnie "trojboj", zeby dotychczasowe wywolanie (zakladka
+    Trend) dzialalo dokladnie jak przed dodaniem zakladki Regeneracja."""
     return (
         db.query(models.WeeklyTrendSnapshot)
+        .filter(models.WeeklyTrendSnapshot.plan_group == plan_group)
         .order_by(
             models.WeeklyTrendSnapshot.week_start.desc(),
             models.WeeklyTrendSnapshot.day_order,
@@ -481,13 +527,18 @@ def delete_exercises(payload: schemas.DeletePayload, db: Session = Depends(get_d
                 .filter(
                     models.Exercise.day == ref.day,
                     models.Exercise.exercise_key == ref.exercise_key,
+                    models.Exercise.plan_group == ref.plan_group,
                 )
                 .first()
             )
         if not exercise:
             exercise = (
                 db.query(models.Exercise)
-                .filter(models.Exercise.day == ref.day, models.Exercise.name == ref.name)
+                .filter(
+                    models.Exercise.day == ref.day,
+                    models.Exercise.name == ref.name,
+                    models.Exercise.plan_group == ref.plan_group,
+                )
                 .first()
             )
         if not exercise:

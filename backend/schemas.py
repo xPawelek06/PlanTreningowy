@@ -34,6 +34,7 @@ class ExerciseOut(BaseModel):
     sets_reps: str
     tm_info: Optional[str]
     is_main_lift: bool
+    plan_group: str = "trojboj"
     latest_zapas: Optional[str] = None
     latest_seria_plus: Optional[str] = None
     latest_uwagi: Optional[str] = None
@@ -54,6 +55,11 @@ class ExerciseSeed(BaseModel):
     sets_reps: str
     tm_info: Optional[str] = None
     is_main_lift: bool = False
+    # Dyskryminator planu (patrz models.Exercise.plan_group) - domyslnie
+    # "trojboj", zeby dotychczasowy backend/seed_data.py (nie wysyla tego pola)
+    # dzialal DOKLADNIE jak wczesniej, bez zadnej zmiany. Nowy
+    # backend/seed_data_regen.py wysyla jawnie "regeneracja" dla kazdego wiersza.
+    plan_group: str = "trojboj"
 
 
 class SeedPayload(BaseModel):
@@ -66,6 +72,9 @@ class ExerciseRef(BaseModel):
     # Opcjonalny - gdy podany, delete_exercises w main.py dopasowuje po
     # (day, exercise_key) zamiast (day, name), spojnie z seed_plan().
     exercise_key: Optional[str] = None
+    # Jak w ExerciseSeed - domyslnie "trojboj" dla wstecznej zgodnosci ze
+    # starym seed_data.py.
+    plan_group: str = "trojboj"
 
 
 class DeletePayload(BaseModel):
@@ -86,6 +95,7 @@ class WeeklyTrendSnapshotOut(BaseModel):
     sets_reps: str
     tm_info: Optional[str]
     is_main_lift: bool
+    plan_group: str = "trojboj"
     created_at: datetime
 
 
@@ -107,6 +117,10 @@ class WeeklyTrendManualPayload(BaseModel):
 
     week_start: date
     week_end: date
+    # Jak Exercise.plan_group - domyslnie "trojboj" dla wstecznej zgodnosci z
+    # backend/seed_trend.py (nie wysyla tego pola). Scope'uje, ktory tydzien
+    # (week_start, plan_group) endpoint kasuje/nadpisuje - patrz main.py.
+    plan_group: str = "trojboj"
     exercises: List[WeeklyTrendRow]
 
 

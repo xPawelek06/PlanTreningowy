@@ -30,6 +30,17 @@ class Exercise(Base):
     sets_reps = Column(String, nullable=False)
     tm_info = Column(String, nullable=True)  # None dla cwiczen pomocniczych bez TM
     is_main_lift = Column(Boolean, default=False, nullable=False)
+    # Rozroznienie planow w tej samej tabeli (dodane 2026-08-20, blok
+    # Upper/Lower/FBW na czas bolu plecow - patrz backend/seed_data_regen.py):
+    # "trojboj" (domyslny, dotychczasowy plan) vs "regeneracja" (nowy,
+    # tymczasowy blok). Wszystkie zapytania/upserty w main.py sa scope'owane
+    # PO TEJ KOLUMNIE (day+exercise_key+plan_group / day+name+plan_group), wiec
+    # dwa plany moga bezpiecznie uzywac tych samych nazw dni ("Poniedzialek"
+    # itd.) bez ryzyka wzajemnego nadpisania/skasowania. Nullable, bo istniejace
+    # (produkcyjne) wiersze go nie maja - migrate_schema() w main.py dodaje
+    # kolumne i backfilluje NULL -> "trojboj" (wszystkie dotychczasowe wiersze
+    # sa trojbojem), wiec efektywnie nigdy nie jest NULL po starcie backendu.
+    plan_group = Column(String, nullable=True, index=True)
 
     entries = relationship("Entry", back_populates="exercise")
 
@@ -89,4 +100,9 @@ class WeeklyTrendSnapshot(Base):
     sets_reps = Column(String, nullable=False)
     tm_info = Column(String, nullable=True)
     is_main_lift = Column(Boolean, default=False, nullable=False)
+    # Ten sam dyskryminator co Exercise.plan_group (patrz komentarz tam) -
+    # kopiowany z 'exercises' przy tworzeniu snapshotu, zeby zakladki Trend
+    # trojboju i Regeneracji mialy calkowicie odrebna historie tygodni mimo
+    # wspolnej tabeli. Nullable z tych samych powodow co Exercise.plan_group.
+    plan_group = Column(String, nullable=True, index=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
