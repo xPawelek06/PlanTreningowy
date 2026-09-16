@@ -9,9 +9,9 @@ const CORRECT_HASH =
 const SESSION_KEY = "plan-treningowy-unlocked";
 const SECRET_SESSION_KEY = "plan-treningowy-secret";
 
-// Backend wdrożony i zweryfikowany na Renderze (2026-07-05) - to prawdziwy,
-// żywy URL, połączony z bazą Neon.
-const API_BASE = "https://plan.136-113-151-64.sslip.io";
+// Backend hostowany na Oracle Cloud (paw-server, migracja z GCP 2026-09-16),
+// połączony z bazą Neon.
+const API_BASE = "https://plan.130-61-86-177.sslip.io";
 
 let authSecret = "";
 // Referencje do ostatnio dodanych listenerow "resize" dla suwakow poziomego
