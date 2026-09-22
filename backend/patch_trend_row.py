@@ -31,8 +31,7 @@ PATCH_FIELDS = {
     # "day": "Poniedziałek",
     # "day_order": 0,
     # "position": 2,
-    # "sets_reps": "3 x 5",
-    # "tm_info": "S1: 60kg\nS2: 70kg\nS3: 80kg",
+    # "postep": "+7,5 kg, 4x7 (zapas 1 powt.)",  # 2026-09-22: jedno wolne pole (dawniej sets_reps/tm_info)
     # "exercise_key": "pon-przysiad",  # dodane 2026-07-14, patrz migrate_exercise_keys.py
 }
 

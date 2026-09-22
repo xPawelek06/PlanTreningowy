@@ -16,8 +16,9 @@ Kiedy tego uzywac:
 Uzycie:
     1. Zdefiniuj tydzien(-nie) w liscie TREND_WEEKS ponizej: week_start,
        week_end (poniedzialek..niedziela) i liste wierszy - kazdy wiersz to
-       jedno cwiczenie z day/day_order/position/name/exercise_key/sets_reps/
-       tm_info/is_main_lift (te same pola co w seed_data.py EXERCISES).
+       jedno cwiczenie z day/day_order/position/name/exercise_key/postep/
+       is_main_lift. postep (2026-09-22, dawniej sets_reps+tm_info - patrz
+       models.WeeklyTrendSnapshot) to jedno wolne pole tekstowe.
        exercise_key (dodany 2026-07-14) jest opcjonalny, ale zalecany - gdy
        podany, pozwala zakladce Trend dopasowac wiersz do tej samej pozycji w
        pivotcie nawet po zmianie nazwy cwiczenia w planie (patrz
@@ -50,19 +51,13 @@ TREND_WEEKS = [
         week_end=date(2026, 6, 7),
         exercises=[
             # Przyklad - podmien na prawdziwe dane skondensowane z
-            # gym/logs/archiwum.md dla tego tygodnia. Kolumny sets_reps/tm_info
-            # moga zawierac \n - frontend renderuje kazdy fragment jako
-            # osobna linie (tak jak w seed_data.py).
+            # gym/logs/archiwum.md dla tego tygodnia. postep moze zawierac
+            # \n - frontend renderuje kazdy fragment jako osobna linie.
             dict(
                 day="Poniedziałek", day_order=0, position=0,
-                name="Przysiad ze sztangą",
-                exercise_key="pon-przysiad",
-                sets_reps="3 x 3 (S3 = AMRAP, min. 3)",
-                tm_info=(
-                    "S1: 70 kg x3\n"
-                    "S2: 80 kg x3\n"
-                    "S3: 90 kg x5+"
-                ),
+                name="Podciąganie z dociążeniem w plecaku",
+                exercise_key="pon-podciaganie-dociazone",
+                postep="+7,5 kg, 4x7 (zapas 1 powt.)",
                 is_main_lift=False,
             ),
         ],

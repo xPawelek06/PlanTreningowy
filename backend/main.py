@@ -57,6 +57,23 @@ def migrate_schema():
                 text(f"UPDATE {table_name} SET plan_group = 'trojboj' WHERE plan_group IS NULL")
             )
 
+    # postep (2026-09-22): Pawel przechodzi z trojboju na kalistenike (patrz
+    # gym/progresja.md, "Blok Kalistenika", w repo mozgu) i chce jedno wolne
+    # pole tekstowe na postep zamiast sztywnego podzialu sets_reps/tm_info w
+    # zakladce Trend (patrz models.WeeklyTrendSnapshot). Cala dotychczasowa
+    # historia (trojboj + regeneracja) byla juz zarchiwizowana w repo mozgu
+    # PRZED tym wdrozeniem, wiec ta migracja swiadomie KASUJE cala tabele i
+    # pozwala create_all() odtworzyc ja z nowym schematem (kolumna 'postep'),
+    # zamiast reczne sklejac stare kolumny w locie. Guard: sprawdzamy obecnosc
+    # KOLUMNY "sets_reps" (stary schemat) - po pierwszym deployu tej migracji
+    # tabela ma juz tylko "postep" i ten blok staje sie no-opem na zawsze.
+    if "weekly_trend_snapshots" in table_names:
+        existing_cols = {col["name"] for col in inspector.get_columns("weekly_trend_snapshots")}
+        if "sets_reps" in existing_cols:
+            with engine.begin() as conn:
+                conn.execute(text("DROP TABLE weekly_trend_snapshots"))
+            Base.metadata.create_all(bind=engine)
+
 
 migrate_schema()
 
@@ -276,23 +293,24 @@ def create_weekly_trend_snapshot(
     jaki appka moze pokazac historie mimo ze 'entries' jest co tydzien
     czyszczona (patrz docstring WeeklyTrendSnapshot w models.py).
 
-    UWAGA (zmiana 2026-07-13): sets_reps/tm_info (kolumny "Serie x
-    powtorzenia"/"Obciazenie" w Trendzie) to teraz REALNE dane wykonania
+    UWAGA (zmiana 2026-07-13, pole przemianowane 2026-09-22): postep (dawniej
+    dwie kolumny sets_reps/tm_info, "Serie x powtorzenia"/"Obciazenie" w
+    Trendzie - patrz models.WeeklyTrendSnapshot) to REALNE dane wykonania
     treningu, wpisywane recznie przez Pawla z telefonu (patrz PATCH
     .../{snapshot_id} nizej) - NIE kopia zaplanowanego schematu z 'exercises'.
-    Dlatego ten endpoint NIE kopiuje juz exercises.sets_reps/exercises.tm_info.
+    Dlatego ten endpoint NIE kopiuje exercises.sets_reps/exercises.tm_info.
 
     Upsert po (week_start, day, exercise_key) gdy cwiczenie ma exercise_key
     wypelniony, w przeciwnym razie po (week_start, day, name) jak dotychczas
     (wiersze sprzed migracji, patrz backend/migrate_exercise_keys.py) - NIE po
     samym week_start: dla wiersza, ktory juz istnieje w tym tygodniu,
     aktualizujemy tylko tozsamosc (name/day_order/position/is_main_lift/
-    exercise_key/week_end) i NIE ruszamy sets_reps/tm_info - zeby nie nadpisac
-    tego, co Pawel juz recznie wpisal. 'name' jest teraz tez aktualizowane przy
+    exercise_key/week_end) i NIE ruszamy postep - zeby nie nadpisac tego, co
+    Pawel juz recznie wpisal. 'name' jest teraz tez aktualizowane przy
     dopasowaniu po exercise_key, zeby rename w planie od razu byl widoczny w
     biezacym (jeszcze niearchiwizowanym) tygodniu Trendu. Dla NOWEGO wiersza
-    (cwiczenie jeszcze nie mialo zrzutu w tym tygodniu) sets_reps/tm_info
-    zaczynaja jako puste stringi, do uzupelnienia recznie.
+    (cwiczenie jeszcze nie mialo zrzutu w tym tygodniu) postep zaczyna jako
+    pusty string, do uzupelnienia recznie.
     Bezpiecznie wywolac ponownie w tym samym tygodniu (np. po zmianie planu),
     nie dubluje wierszy i nie kasuje juz wpisanych danych wykonania.
 
@@ -352,8 +370,7 @@ def create_weekly_trend_snapshot(
                     position=ex.position,
                     name=ex.name,
                     exercise_key=ex.exercise_key,
-                    sets_reps="",
-                    tm_info="",
+                    postep="",
                     is_main_lift=ex.is_main_lift,
                     plan_group=plan_group,
                 )
@@ -378,10 +395,10 @@ def patch_weekly_trend_snapshot(
     snapshot_id: int, payload: schemas.WeeklyTrendPatch, db: Session = Depends(get_db)
 ):
     """Edycja pojedynczego wiersza 'weekly_trend_snapshots' - albo komorki
-    wykonania (Obciazenie=tm_info i/lub Serie x powtorzenia=sets_reps,
-    uzywane przez edytowalne pola w zakladce Trend, zapis on blur), albo
-    tozsamosci wiersza (name/day/day_order/position - reczna korekta
-    literowki/kolejnosci, dodane 2026-07-13, zeby nie trzeba bylo uzywac
+    wykonania (postep, wolny tekst uzywany przez edytowalne pole w zakladce
+    Trend, zapis on blur), albo tozsamosci wiersza (name/day/day_order/
+    position - reczna korekta literowki/kolejnosci, dodane 2026-07-13, zeby
+    nie trzeba bylo uzywac
     pelnego resetu tygodnia POST .../manual tylko po to, zeby poprawic jedna
     nazwe). Ten sam naglowek X-Auth-Secret co POST /api/entries. Wysylamy
     tylko pole, ktore sie zmienilo (None = bez zmian), zeby jeden zapis nie
@@ -395,10 +412,8 @@ def patch_weekly_trend_snapshot(
     )
     if not row:
         raise HTTPException(status_code=404, detail="Nie ma wiersza trendu o tym id")
-    if payload.sets_reps is not None:
-        row.sets_reps = payload.sets_reps
-    if payload.tm_info is not None:
-        row.tm_info = payload.tm_info
+    if payload.postep is not None:
+        row.postep = payload.postep
     if payload.name is not None:
         row.name = payload.name
     if payload.day is not None:
@@ -448,8 +463,8 @@ def create_weekly_trend_snapshot_manual(
 ):
     """Reczny odpowiednik POST /api/admin/weekly-trend-snapshot - zamiast
     kopiowac AKTUALNY stan tabeli 'exercises' (dziala tylko dla biezacego
-    tygodnia), przyjmuje w body gotowy zestaw wierszy (day/name/sets_reps/
-    tm_info/...) dla DOWOLNEGO week_start/week_end podanego przez wywolujacego.
+    tygodnia), przyjmuje w body gotowy zestaw wierszy (day/name/postep/...)
+    dla DOWOLNEGO week_start/week_end podanego przez wywolujacego.
 
     Uzywane przez backend/seed_trend.py, zeby Pawel mogl uzupelnic/skorygowac
     zakladke 'Trend' za tygodnie sprzed wdrozenia automatycznego zrzutu, albo
@@ -474,8 +489,7 @@ def create_weekly_trend_snapshot_manual(
                 position=row.position,
                 name=row.name,
                 exercise_key=row.exercise_key,
-                sets_reps=row.sets_reps,
-                tm_info=row.tm_info,
+                postep=row.postep,
                 is_main_lift=row.is_main_lift,
                 plan_group=payload.plan_group,
             )

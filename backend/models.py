@@ -70,11 +70,21 @@ class WeeklyTrendSnapshot(Base):
     """Trwaly zrzut per tydzien: day/day_order/position/name/is_main_lift
     ustala TOZSAMOSC wiersza (kopiowane z 'exercises' przez POST
     /api/admin/weekly-trend-snapshot w main.py, PRZED cotygodniowym DELETE
-    /api/admin/entries), ale sets_reps/tm_info (Serie x powtorzenia/
-    Obciazenie) to od 2026-07-13 REALNE dane wykonania treningu - Pawel
-    wpisuje je recznie z telefonu (PATCH /api/admin/weekly-trend-snapshot/
-    {id}), NIE kopia zaplanowanego schematu z 'exercises'. Nowy wiersz startuje
-    z pustymi sets_reps/tm_info ("").
+    /api/admin/entries). Pole 'postep' to WOLNY tekst, ktory Pawel wpisuje
+    recznie z telefonu (PATCH /api/admin/weekly-trend-snapshot/{id}) - NIE
+    kopia zaplanowanego schematu z 'exercises'. Nowy wiersz startuje z
+    pustym postep ("").
+
+    ZMIANA 2026-09-22 (pivot z trojboju na kalistenike, patrz
+    gym/progresja.md "Blok Kalistenika" w repo mozgu Pawla): dawniej byly tu
+    DWIE kolumny (sets_reps="Serie x powtorzenia" / tm_info="Obciazenie"),
+    sensowne przy trojboju (ciezar sztangi + schemat serii). Kalistenika nie
+    ma jednego sztywnego wzorca postepu (czas, powtorzenia, wariant
+    cwiczenia, dociazenie...), wiec Pawel chcial JEDNO wolne pole tekstowe
+    zamiast wymuszonego podzialu - stad ta migracja scalila obie kolumny w
+    'postep' (patrz main.py migrate_schema(), ktora przy tej okazji
+    skasowala CALA dotychczasowa historie tabeli - byla juz zarchiwizowana
+    w repo mozgu, gym/archiwum/trojboj-plan-i-trend-2026-09-22.md).
 
     Tabela 'exercises' trzyma tylko AKTUALNY plan (nadpisywany co cykl przez
     seed_data.py), a 'entries' jest czyszczona co tydzien - zadna z nich nie
@@ -97,12 +107,16 @@ class WeeklyTrendSnapshot(Base):
     # (day, name), wiec rename nazwy w seed_data.py juz nie urywa historii.
     # Nullable z tych samych powodow co Exercise.exercise_key.
     exercise_key = Column(String, nullable=True, index=True)
-    sets_reps = Column(String, nullable=False)
-    tm_info = Column(String, nullable=True)
+    # Wolne pole tekstowe na postep (patrz docstring klasy wyzej) - zastapilo
+    # 2026-09-22 dawne sets_reps/tm_info.
+    postep = Column(String, nullable=False, default="")
     is_main_lift = Column(Boolean, default=False, nullable=False)
-    # Ten sam dyskryminator co Exercise.plan_group (patrz komentarz tam) -
-    # kopiowany z 'exercises' przy tworzeniu snapshotu, zeby zakladki Trend
-    # trojboju i Regeneracji mialy calkowicie odrebna historie tygodni mimo
-    # wspolnej tabeli. Nullable z tych samych powodow co Exercise.plan_group.
+    # Dyskryminator planu (patrz Exercise.plan_group) - kopiowany z
+    # 'exercises' przy tworzeniu snapshotu. Od 2026-09-22 istnieje w praktyce
+    # tylko jedna wartosc ("trojboj" - nazwa historyczna, technicznie oznacza
+    # teraz JEDYNY, aktualny plan kalisteniczny; zakladka "Regeneracja" i jej
+    # plan_group="regeneracja" zostaly calkowicie usuniete). Kolumna zostaje
+    # (nullable) na wypadek, gdyby w przyszlosci znow pojawil sie drugi,
+    # rownolegly plan.
     plan_group = Column(String, nullable=True, index=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())

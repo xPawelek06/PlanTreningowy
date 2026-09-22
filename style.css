@@ -218,37 +218,6 @@ body {
   display: none;
 }
 
-/* Zakladka Regeneracja (2026-08-20) - blok informacyjny nad planem,
-   analogiczny do .cycle-box ale wlasny akcent (bursztynowy), zeby wizualnie
-   sygnalizowac "to inny, tymczasowy plan", nie kolejna karta trojboju. */
-.regen-note {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-left: 4px solid #d99a3a;
-  border-radius: 10px;
-  padding: 14px 16px;
-  margin-bottom: 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.regen-note p {
-  margin: 0;
-  font-size: 0.88rem;
-  line-height: 1.5;
-}
-
-.regen-progression {
-  color: var(--text-dim);
-  font-size: 0.82rem !important;
-}
-
-.regen-trend-heading {
-  font-size: 1.05rem;
-  margin: 28px 0 10px;
-}
-
 /* --- Tabs --- */
 .tabs {
   display: flex;
@@ -308,10 +277,9 @@ body {
   white-space: normal;
 }
 
-/* Przypiety naglowek (2026-07-14) - "thead" jako calosc, nie pojedyncze
-   "th", zeby obie linie naglowka (tydzien + Obciazenie/Serie) przypinaly sie
-   razem bez recznego liczenia wysokosci pierwszego wiersza. Wspierane przez
-   wspolczesne przegladarki (Chrome/Firefox/Safari 16.4+) dla
+/* Przypiety naglowek (2026-07-14) - "thead" jako calosc, zeby naglowek
+   tygodnia przypinal sie bez recznego liczenia wysokosci wiersza. Wspierane
+   przez wspolczesne przegladarki (Chrome/Firefox/Safari 16.4+) dla
    table-header-group. Wlasne tlo na kazdej komorce (nie samym thead), zeby
    przewijane w pionie wiersze cwiczen nie przeswiecaly pod spodem. */
 .trend-pivot thead {
@@ -453,7 +421,7 @@ body {
   background: var(--accent);
 }
 
-/* Edytowalne komorki Obciazenie/Serie x powtorzenia (dane realnego wykonania
+/* Edytowalne komorki Postep (dane realnego wykonania
    treningu, wpisywane recznie przez Pawla - zapis PATCH on blur, patrz
    trendCell()/saveTrendCell() w script.js). */
 .trend-pivot td.trend-cell-editable {

@@ -92,8 +92,7 @@ class WeeklyTrendSnapshotOut(BaseModel):
     position: int
     name: str
     exercise_key: Optional[str] = None
-    sets_reps: str
-    tm_info: Optional[str]
+    postep: str
     is_main_lift: bool
     plan_group: str = "trojboj"
     created_at: datetime
@@ -105,8 +104,7 @@ class WeeklyTrendRow(BaseModel):
     position: int
     name: str
     exercise_key: Optional[str] = None
-    sets_reps: str
-    tm_info: Optional[str] = None
+    postep: str = ""
     is_main_lift: bool = False
 
 
@@ -126,20 +124,19 @@ class WeeklyTrendManualPayload(BaseModel):
 
 class WeeklyTrendPatch(BaseModel):
     """Body dla PATCH /api/admin/weekly-trend-snapshot/{id} - edycja
-    pojedynczego wiersza 'weekly_trend_snapshots'. Dwa pierwsze pola
-    (sets_reps/tm_info) to komorki wypelniane z telefonu (Obciazenie/Serie x
-    powtorzenia); reszta (name/day/day_order/position/exercise_key) to reczna
-    korekta TOZSAMOSCI wiersza (literowka w nazwie, zla kolejnosc, recznie
-    dopisany staly klucz cwiczenia) - name/day/day_order/position dodane
-    2026-07-13, exercise_key dodane 2026-07-14 (patrz
-    backend/migrate_exercise_keys.py), zeby nie trzeba bylo uzywac pelnego
-    resetu tygodnia (POST .../manual) tylko po to, zeby poprawic jedna nazwe
-    albo dopisac klucz recznie. Wszystkie pola opcjonalne - wysylamy tylko to,
-    co sie zmienilo; None = nie dotykaj tego pola (odroznione od pustego
-    stringa, ktory swiadomie czysci pole)."""
+    pojedynczego wiersza 'weekly_trend_snapshots'. Pierwsze pole (postep) to
+    wolny tekst wypelniany z telefonu (2026-09-22: zastapil dawny podzial na
+    sets_reps/tm_info - patrz models.WeeklyTrendSnapshot); reszta
+    (name/day/day_order/position/exercise_key) to reczna korekta TOZSAMOSCI
+    wiersza (literowka w nazwie, zla kolejnosc, recznie dopisany staly klucz
+    cwiczenia) - name/day/day_order/position dodane 2026-07-13, exercise_key
+    dodane 2026-07-14 (patrz backend/migrate_exercise_keys.py), zeby nie
+    trzeba bylo uzywac pelnego resetu tygodnia (POST .../manual) tylko po to,
+    zeby poprawic jedna nazwe albo dopisac klucz recznie. Wszystkie pola
+    opcjonalne - wysylamy tylko to, co sie zmienilo; None = nie dotykaj tego
+    pola (odroznione od pustego stringa, ktory swiadomie czysci pole)."""
 
-    sets_reps: Optional[str] = None
-    tm_info: Optional[str] = None
+    postep: Optional[str] = None
     name: Optional[str] = None
     day: Optional[str] = None
     day_order: Optional[int] = None

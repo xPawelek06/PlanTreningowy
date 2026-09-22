@@ -15,10 +15,10 @@ const API_BASE = "https://plan.130-61-86-177.sslip.io";
 
 let authSecret = "";
 // Referencje do ostatnio dodanych listenerow "resize" dla suwakow poziomego
-// przewijania w zakladkach Trend - patrz attachDayScrollbarSync() nizej.
-// Osobny klucz per sekcja (2026-08-20, dodanie zakladki Regeneracja obok
-// trojboju) - "trojboj" i "regen" maja WLASNY pivot/suwaki, wiec nie moga
-// dzielic jednej zmiennej (nadpisywalyby sobie nawzajem listener resize).
+// przewijania w zakladce Trend - patrz attachDayScrollbarSync() nizej.
+// Kluczowane po sectionKey (dawniej tez przez zakladke Regeneracja, usunieta
+// 2026-09-22 - zostaje jeden klucz "trojboj", patrz komentarz w
+// models.Exercise.plan_group w backendzie o tej nazwie).
 const trendResizeHandlers = {};
 
 async function sha256Hex(text) {
@@ -34,8 +34,6 @@ function showContent() {
   document.getElementById("content").classList.remove("hidden");
   loadPlan();
   loadTrend("trojboj", "trend-weeks", "trend-status", "trojboj");
-  loadRegenPlan();
-  loadTrend("regeneracja", "regen-trend-weeks", "regen-trend-status", "regen");
 }
 
 async function tryUnlock() {
@@ -134,7 +132,7 @@ function buildRow(exercise) {
   tr.appendChild(nameCell);
 
   tr.appendChild(multilineCell(exercise.sets_reps, "Serie x powtórzenia"));
-  tr.appendChild(multilineCell(exercise.tm_info || "—", "TM"));
+  tr.appendChild(multilineCell(exercise.tm_info || "—", "Poziom / ciężar"));
 
   const zapasCell = makeEl("td", { attrs: { "data-label": "Zapas" } });
   const zapasInput = makeEl("input", { attrs: { type: "text"} });
@@ -218,56 +216,17 @@ async function loadPlan() {
   }
 }
 
-// --- Regeneracja: plan (statyczny, bez zapasu/uwag - te sa tylko w Trendzie
-// ponizej) tymczasowego bloku Upper/Lower/FBW na czas bolu plecow
-// (2026-08-20). Calkowicie oddzielona od trojboju po stronie backendu przez
-// plan_group=regeneracja (patrz backend/models.py, backend/main.py) - ta
-// funkcja tylko czyta ?plan_group=regeneracja i renderuje do wlasnych
-// tbody[data-regen-day], wiec nie moze przypadkiem wymieszac sie z tbody
-// trojboju (te maja atrybut data-day, nie data-regen-day).
-function buildRegenRow(exercise) {
-  const tr = document.createElement("tr");
-  const nameCell = makeEl("td", { attrs: { "data-label": "Ćwiczenie" }, text: exercise.name });
-  tr.appendChild(nameCell);
-  tr.appendChild(multilineCell(exercise.sets_reps, "Serie x powtórzenia"));
-  tr.appendChild(multilineCell(exercise.tm_info || "—", "Start / cel"));
-  return tr;
-}
-
-async function loadRegenPlan() {
-  const statusEl = document.getElementById("regen-load-status");
-  statusEl.textContent = "Ładowanie planu… (jeśli backend spał, może to potrwać do 30 sek)";
-  statusEl.classList.remove("hidden", "load-error");
-  try {
-    const resp = await fetchWithRetry(`${API_BASE}/api/plan?plan_group=regeneracja`);
-    const exercises = await resp.json();
-
-    document.querySelectorAll("tbody[data-regen-day]").forEach((tbody) => {
-      tbody.innerHTML = "";
-    });
-
-    for (const exercise of exercises) {
-      const tbody = document.querySelector(`tbody[data-regen-day="${exercise.day}"]`);
-      if (!tbody) continue;
-      tbody.appendChild(buildRegenRow(exercise));
-    }
-
-    statusEl.classList.add("hidden");
-  } catch (err) {
-    statusEl.textContent = "Nie udało się połączyć z serwerem planu. Sprawdź internet i spróbuj odświeżyć stronę.";
-    statusEl.classList.add("load-error");
-    console.error("Błąd ładowania planu Regeneracji:", err);
-  }
-}
-
 // --- Trend: historia poprzednich tygodni, tabela przestawna (pivot) ---
 //
-// Uklad (ustalony z Pawlem 2026-07-13): wiersze = cwiczenia pogrupowane per
-// dzien (jak dawniej), kolumny = tygodnie rosnace w prawo (najstarszy po
-// lewej, najnowszy po prawej), kazdy tydzien to para kolumn "Obciazenie" /
-// "Serie x powtorzenia" pod wspolnym naglowkiem z zakresem dat. Pierwsza
-// kolumna (nazwa cwiczenia) jest przypieta (position: sticky) podczas
-// przewijania w poziomie - patrz .sticky-col w style.css.
+// Uklad (ustalony z Pawlem 2026-07-13, uproszczony 2026-09-22): wiersze =
+// cwiczenia pogrupowane per dzien, kolumny = tygodnie rosnace w prawo
+// (najstarszy po lewej, najnowszy po prawej), kazdy tydzien to JEDNA kolumna
+// "Postep" (wolny tekst) pod naglowkiem z zakresem dat - dawniej byla to para
+// kolumn "Obciazenie" / "Serie x powtorzenia", sensowna przy trojboju, ale
+// Pawel przy przejsciu na kalistenike chcial jedno wolne pole zamiast
+// wymuszonego podzialu (patrz gym/progresja.md, "Blok Kalistenika", w repo
+// mozgu). Pierwsza kolumna (nazwa cwiczenia) jest przypieta (position:
+// sticky) podczas przewijania w poziomie - patrz .sticky-col w style.css.
 //
 // Cwiczenia dopasowywane sa po kluczu "day|exercise_key" (dodane 2026-07-14) -
 // exercise_key to staly identyfikator cwiczenia nadawany recznie w
@@ -389,12 +348,12 @@ function buildTrendPivot(rows) {
   return { weeks, dayList };
 }
 
-// Komorka pivota dla jednego pola (tm_info / sets_reps) jednego cwiczenia w
-// jednym tygodniu. Brak wiersza (cwiczenie w tym tygodniu nie wystepowalo /
-// tydzien jeszcze nie zarchiwizowany) -> "---", nieedytowalne (nie ma wiersza
-// w bazie do edycji). Wiersz istnieje -> edytowalne pole tekstowe (dane
-// REALNEGO wykonania treningu, wpisywane recznie przez Pawla - patrz
-// saveTrendCell nizej), nawet jesli akurat puste.
+// Komorka pivota dla pola "postep" jednego cwiczenia w jednym tygodniu. Brak
+// wiersza (cwiczenie w tym tygodniu nie wystepowalo / tydzien jeszcze nie
+// zarchiwizowany) -> "---", nieedytowalne (nie ma wiersza w bazie do edycji).
+// Wiersz istnieje -> edytowalne pole tekstowe (dane REALNEGO wykonania
+// treningu, wpisywane recznie przez Pawla - patrz saveTrendCell nizej),
+// nawet jesli akurat puste.
 function trendCell(row, field, weekClass = "") {
   const suffix = weekClass ? ` ${weekClass}` : "";
   if (!row) {
@@ -426,11 +385,10 @@ function trendCell(row, field, weekClass = "") {
   return td;
 }
 
-// Zapis pojedynczej komorki Trendu (Obciazenie=tm_info / Serie x powtorzenia=
-// sets_reps) - on blur z trendCell() wyzej. Ten sam naglowek X-Auth-Secret co
-// saveEntry() (zakladka Plan) i ten sam fetchWithRetry co loadPlan/loadTrend,
-// zeby zniesc ewentualny "zimny start" backendu na Renderze bez utraty
-// wpisanej wartosci.
+// Zapis pojedynczej komorki Trendu (postep) - on blur z trendCell() wyzej.
+// Ten sam naglowek X-Auth-Secret co saveEntry() (zakladka Plan) i ten sam
+// fetchWithRetry co loadPlan/loadTrend, zeby zniesc ewentualny "zimny start"
+// backendu bez utraty wpisanej wartosci.
 async function saveTrendCell(snapshotId, field, value, textareaEl, statusEl) {
   textareaEl.disabled = true;
   statusEl.textContent = "Zapisywanie…";
@@ -526,8 +484,8 @@ function attachDayScrollbarSync(wrap, table, bars, sectionKey) {
   syncWidths();
   // renderTrendPivot() moze w zasadzie zostac wywolane ponownie (np. w
   // przyszlosci przy odswiezaniu bez przeladowania strony) - zdejmujemy
-  // poprzedni listener resize DLA TEJ SEKCJI (trojboj/regen maja wlasny klucz
-  // w trendResizeHandlers), zeby nie mnozyc ich przy kazdym renderze (stare
+  // poprzedni listener resize DLA TEJ SEKCJI (kluczowany po sectionKey w
+  // trendResizeHandlers), zeby nie mnozyc ich przy kazdym renderze (stare
   // zamkniecia trzymalyby referencje do juz odlaczonych elementow DOM).
   const prevHandler = trendResizeHandlers[sectionKey];
   if (prevHandler) window.removeEventListener("resize", prevHandler);
@@ -557,7 +515,6 @@ function renderTrendPivot(rows, containerId, sectionKey) {
   const thead = document.createElement("thead");
   const headRow1 = document.createElement("tr");
   const cornerTh = makeEl("th", { className: "sticky-col", text: "Ćwiczenie" });
-  cornerTh.rowSpan = 2;
   headRow1.appendChild(cornerTh);
   for (const week of weeks) {
     // Jednoznaczna etykieta kolumny wzgledem PRAWDZIWEJ dzisiejszej daty
@@ -574,20 +531,12 @@ function renderTrendPivot(rows, containerId, sectionKey) {
       headClass += " trend-week-head-future";
     }
     const th = makeEl("th", { className: headClass, text: label });
-    th.colSpan = 2;
     headRow1.appendChild(th);
   }
-  const headRow2 = document.createElement("tr");
-  for (const week of weeks) {
-    const subClass = week.isCurrent ? "trend-week-head-current" : week.isFuture ? "trend-week-head-future" : "";
-    headRow2.appendChild(makeEl("th", { className: subClass, text: "Obciążenie" }));
-    headRow2.appendChild(makeEl("th", { className: subClass, text: "Serie x powtórzenia" }));
-  }
   thead.appendChild(headRow1);
-  thead.appendChild(headRow2);
   table.appendChild(thead);
 
-  const totalCols = 1 + weeks.length * 2;
+  const totalCols = 1 + weeks.length;
   const dayScrollbars = [];
 
   const tbody = document.createElement("tbody");
@@ -595,7 +544,7 @@ function renderTrendPivot(rows, containerId, sectionKey) {
     const dayRow = makeEl("tr", { className: "trend-day-row" });
     dayRow.appendChild(makeEl("td", { className: "sticky-col trend-day-cell", text: arr[0].day }));
     const spacer = makeEl("td", { className: "trend-day-spacer" });
-    spacer.colSpan = weeks.length * 2;
+    spacer.colSpan = weeks.length;
     dayRow.appendChild(spacer);
     tbody.appendChild(dayRow);
 
@@ -622,8 +571,7 @@ function renderTrendPivot(rows, containerId, sectionKey) {
           : week.isFuture
           ? "trend-col-future"
           : "";
-        tr.appendChild(trendCell(row, "tm_info", weekClass));
-        tr.appendChild(trendCell(row, "sets_reps", weekClass));
+        tr.appendChild(trendCell(row, "postep", weekClass));
       }
       tbody.appendChild(tr);
     }
@@ -638,11 +586,11 @@ function renderTrendPivot(rows, containerId, sectionKey) {
   attachDayScrollbarSync(wrap, table, dayScrollbars, sectionKey);
 }
 
-// planGroup: "trojboj" (domyslne, dotychczasowe wywolanie bez parametrow) albo
-// "regeneracja" (dodane 2026-08-20, wlasna, w pelni oddzielna historia
-// tygodni). containerId/statusElId/sectionKey pozwalaja tej samej funkcji
-// obslugiwac DWA niezalezne pivoty (Trend trojboju i Trend Regeneracji) bez
-// wzajemnej kolizji DOM/listenerow resize.
+// planGroup: "trojboj" (jedyna wartosc od 2026-09-22 - zakladka Regeneracja i
+// jej plan_group="regeneracja" zostaly calkowicie usuniete, patrz komentarz w
+// backend/models.py). containerId/statusElId/sectionKey zostaly, mimo ze dziś
+// obsluguja tylko jeden pivot - zeby nie trzeba bylo przepisywac calej
+// funkcji, gdyby w przyszlosci wrocil drugi, rownolegly plan.
 async function loadTrend(planGroup, containerId, statusElId, sectionKey) {
   const statusEl = document.getElementById(statusElId);
   statusEl.textContent = "Ładowanie… (jeśli backend spał, może to potrwać do 30 sek)";
@@ -662,17 +610,16 @@ async function loadTrend(planGroup, containerId, statusElId, sectionKey) {
 }
 
 // Przycisk "Dodaj kolejny tydzien" w zakladce Trend (2026-07-23) - Pawel chce
-// moc zaczac wpisywac obciazenie/serie x powtorzenia dla NASTEPNEGO tygodnia z
-// wyprzedzeniem, zamiast czekac az automatyczna cotygodniowa archiwizacja
-// (poniedzialek rano) sama utworzy dla niego pusty wiersz. Woła ten sam
-// backendowy endpoint co ta automatyzacja (POST .../weekly-trend-snapshot),
-// tylko z week_offset=1 - tworzy/aktualizuje puste wiersze dla tygodnia
-// zaczynajacego sie w nastepny poniedzialek, na podstawie AKTUALNEGO planu
-// (tabela 'exercises'). Bezpiecznie klikac wielokrotnie (upsert po
-// week_start+day+exercise_key, patrz main.py) - nie kasuje juz wpisanych
-// wartosci, jesli Pawel zdazyl cos uzupelnic przed ponownym klikniewciem.
-// planGroup/buttonId/statusId jak w loadTrend() wyzej; reloadFn odswieza
-// wlasciwy pivot (trojboj albo regeneracja) po dodaniu pustej kolumny.
+// moc zaczac wpisywac postep dla NASTEPNEGO tygodnia z wyprzedzeniem, zamiast
+// czekac az automatyczna cotygodniowa archiwizacja (poniedzialek rano) sama
+// utworzy dla niego pusty wiersz. Woła ten sam backendowy endpoint co ta
+// automatyzacja (POST .../weekly-trend-snapshot), tylko z week_offset=1 -
+// tworzy/aktualizuje puste wiersze dla tygodnia zaczynajacego sie w nastepny
+// poniedzialek, na podstawie AKTUALNEGO planu (tabela 'exercises').
+// Bezpiecznie klikac wielokrotnie (upsert po week_start+day+exercise_key,
+// patrz main.py) - nie kasuje juz wpisanych wartosci, jesli Pawel zdazyl cos
+// uzupelnic przed ponownym klikniewciem. planGroup/buttonId/statusId jak w
+// loadTrend() wyzej; reloadFn odswieza pivot po dodaniu pustej kolumny.
 async function addNextWeekSnapshot(planGroup, buttonId, statusId, reloadFn) {
   const button = document.getElementById(buttonId);
   const statusEl = document.getElementById(statusId);
@@ -704,11 +651,6 @@ async function addNextWeekSnapshot(planGroup, buttonId, statusId, reloadFn) {
 document.getElementById("add-next-week-btn").addEventListener("click", () =>
   addNextWeekSnapshot("trojboj", "add-next-week-btn", "add-next-week-status", () =>
     loadTrend("trojboj", "trend-weeks", "trend-status", "trojboj")
-  )
-);
-document.getElementById("add-next-week-regen-btn").addEventListener("click", () =>
-  addNextWeekSnapshot("regeneracja", "add-next-week-regen-btn", "add-next-week-regen-status", () =>
-    loadTrend("regeneracja", "regen-trend-weeks", "regen-trend-status", "regen")
   )
 );
 

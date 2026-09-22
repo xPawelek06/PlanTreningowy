@@ -1,29 +1,40 @@
-"""Dane planu (Tydzien 1 cyklu, 2026-07-05) + skrypt wysylajacy je do API.
+"""Dane planu (kalistenika, od 2026-09-22) + skrypt wysylajacy je do API.
 
 Uzycie:
     API_BASE=http://127.0.0.1:8000 APP_SECRET=PlanTreningowy python seed_data.py
-    API_BASE=https://<twoj-render-url> APP_SECRET=PlanTreningowy python seed_data.py
+    API_BASE=https://plan.130-61-86-177.sslip.io APP_SECRET=PlanTreningowy python seed_data.py
 
 Ten plik jest tez "zrodlem prawdy" do reczszej edycji, gdy trener-personalny
-aktualizuje TM/plan po nowym cyklu - edytuj liste EXERCISES i uruchom ponownie
-skrypt przeciwko produkcyjnemu API_BASE (seed_plan robi upsert po day+name,
-wiec bezpiecznie nadpisuje tylko zmienione pola).
+aktualizuje plan po tygodniu progresji - edytuj liste EXERCISES i uruchom
+ponownie skrypt przeciwko produkcyjnemu API_BASE (seed_plan robi upsert po
+day+exercise_key, wiec bezpiecznie nadpisuje tylko zmienione pola).
 
 WAZNE: samo "git push" NIE aktualizuje zakladki Plan/Trend na stronie - ten
 plik to tylko dane w repo, trzeba go faktycznie URUCHOMIC (jak wyzej) przeciwko
-dzialajacemu API, zeby zmiany trafily do bazy (Neon). Backend na Renderze sam
+dzialajacemu API, zeby zmiany trafily do bazy (Neon). Backend na Oracle VM sam
 w sobie nic z tego pliku nie czyta przy starcie/deployu.
 
-Rename cwiczenia (zmiana "name" przy tym samym exercise_key, 2026-07-16): od
-tego dnia main() ponizej, oprocz upsertu planu, wywoluje tez POST
-/api/admin/weekly-trend-snapshot - to synchronizuje tozsamosc (name/day_order/
-position) wiersza w BIEZACYM (jeszcze niearchiwizowanym) tygodniu zakladki
-Trend z dopasowaniem po exercise_key, wiec zmiana nazwy tutaj + jedno
-uruchomienie tego skryptu wystarcza, zeby rename byl widoczny wszedzie (Plan
-i biezacy tydzien Trendu) - bez recznej edycji Neon. Historyczne (juz
-zarchiwizowane) tygodnie Trendu NIE sa tym ruszane (to swiadomie zamrozniete
-zapisy przeszlosci) - do korekty starej nazwy w danym tygodniu sluzy
-backend/patch_trend_row.py.
+ZMIANA 2026-09-22 (pivot z trojboju na kalistenike): Pawel wstrzymal trojboj
+19.08 (bol plecow) i zdecydowal sie na kalistenike domowa jako NOWY, staly
+kierunek (nie tymczasowy blok) - patrz core/decyzje.md i gym/progresja.md
+("Blok Kalistenika") w repo mozgu. Cala 31-cwiczeniowa lista trojboju + Trend
+zostaly zarchiwizowane w gym/archiwum/trojboj-plan-i-trend-2026-09-22.md i
+skasowane z appki PRZED wdrozeniem tego pliku. Zakladka "Regeneracja"
+(plan_group="regeneracja", blok Upper/Lower/FBW na czas bolu plecow) zostala
+CALKOWICIE usunieta (dane, UI, backend/seed_data_regen.py) - plan_group tego
+(jedynego juz) planu zostaje technicznie "trojboj" (nazwa historyczna, patrz
+models.py), zeby nie trzeba bylo przepisywac wszystkich domyslnych wartosci
+w schemas.py/main.py bez realnej korzysci (nigdzie nie jest pokazywana w UI).
+
+Rename cwiczenia (zmiana "name" przy tym samym exercise_key): main() ponizej,
+oprocz upsertu planu, wywoluje tez POST /api/admin/weekly-trend-snapshot - to
+synchronizuje tozsamosc (name/day_order/position) wiersza w BIEZACYM (jeszcze
+niearchiwizowanym) tygodniu zakladki Trend z dopasowaniem po exercise_key,
+wiec zmiana nazwy tutaj + jedno uruchomienie tego skryptu wystarcza, zeby
+rename byl widoczny wszedzie (Plan i biezacy tydzien Trendu) - bez recznej
+edycji Neon. Historyczne (juz zarchiwizowane) tygodnie Trendu NIE sa tym
+ruszane (to swiadomie zamrozniete zapisy przeszlosci) - do korekty starej
+nazwy w danym tygodniu sluzy backend/patch_trend_row.py.
 """
 
 import os
@@ -34,192 +45,205 @@ API_BASE = os.environ.get("API_BASE", "http://127.0.0.1:8000")
 APP_SECRET = os.environ.get("APP_SECRET", "PlanTreningowy")
 
 EXERCISES = [
-    # PONIEDZIALEK - Przysiad
-    # Kolumny sets_reps / tm_info moga zawierac znaki nowej linii (\n) - frontend
-    # renderuje kazdy fragment jako osobna linie (czytelny breakdown per seria).
+    # PONIEDZIALEK - Gora ciala (A) - sila & handstand focus
+    # Kolumny sets_reps / tm_info moga zawierac znaki nowej linii (\n) -
+    # frontend renderuje kazdy fragment jako osobna linie (czytelny breakdown).
     #
-    # exercise_key (dodane 2026-07-14): staly identyfikator cwiczenia,
-    # niezalezny od "name" - dzieki niemu zmiana "name" ponizej to zwykly
-    # rename (main.py.seed_plan robi upsert po day+exercise_key), a nie nowy
-    # wiersz, wiec historia w zakladce Trend sie nie urywa. Nadawany recznie -
-    # przy DODAWANIU nowego cwiczenia wymysl nowy, nigdy niepowtarzajacy sie
-    # klucz (np. "pon-nazwa-cwiczenia"); NIE zmieniaj juz istniejacego klucza
-    # przy zwyklym rename nazwy (o to wlasnie chodzi).
+    # exercise_key: staly identyfikator cwiczenia, niezalezny od "name" -
+    # dzieki niemu zmiana "name" ponizej to zwykly rename (main.py.seed_plan
+    # robi upsert po day+exercise_key), a nie nowy wiersz, wiec historia w
+    # zakladce Trend sie nie urywa. Nadawany recznie - przy DODAWANIU nowego
+    # cwiczenia wymysl nowy, nigdy niepowtarzajacy sie klucz (np.
+    # "pon-nazwa-cwiczenia"); NIE zmieniaj juz istniejacego klucza przy
+    # zwyklym rename nazwy (o to wlasnie chodzi).
     dict(
         day="Poniedziałek", day_order=0, position=0,
-        name="Przysiad ze sztangą",
-        exercise_key="pon-przysiad",
-        sets_reps="Tydz. 3/4: 5/3/1+ (S3 = seria PR, max powt.)",
-        tm_info=(
-            # Tydzien cyklu 3/4 (2026-08-16), TM bez zmian (107,5 kg) - tydz.2 wypadl blisko
-            # celu ale bez duzego zapasu ("ledwo, 6 nie dalbym rady"), standardowa progresja
-            # bez przyspieszania, schemat 75/85/95% TM
-            "Rozgrzewka: pusta sztanga x5, 65 kg x5\n"
-            "S1: 80 kg x5\n"
-            "S2: 92,5 kg x3\n"
-            "S3: 102,5 kg x1+"
-        ),
-        is_main_lift=False,  # Pawel poprosil o zwykly tekst bez pogrubienia (2026-07-05)
+        name="Wall Handstand Hold",
+        exercise_key="pon-handstand-hold",
+        sets_reps="3 x 20-30 sek (10-12 min praktyki przed właściwym treningiem)",
+        tm_info="Start: 20-30 sek, +5-10 sek/tydz. — kolejny etap: Free Handstand (czwartek)",
     ),
     dict(
         day="Poniedziałek", day_order=0, position=1,
-        name="Bułgary", exercise_key="pon-bulgary", sets_reps="3 x 10 / noga",
-        tm_info="24kg",
+        name="Negatywy HSPU przy ścianie",
+        exercise_key="pon-hspu-negatywy",
+        sets_reps="3 x 3-5 powt.",
+        tm_info="Opuszczanie 4-5 sek. — etap przed pełnym HSPU",
     ),
     dict(
         day="Poniedziałek", day_order=0, position=2,
-        name="RDL (lekko)", exercise_key="pon-rdl", sets_reps="3 x 5",
-        tm_info=(
-            # Podniesione 2026-07-20 - 2. tydzien z rzedu "duzy zapas"
-            "Rozgrzewka: pusta sztanga x5, 40 kg x5\n"
-            "S1: 65 kg x5\n"
-            "S2: 75 kg x5\n"
-            "S3: 85 kg x5"
-        ),
+        name="Podciąganie z dociążeniem w plecaku",
+        exercise_key="pon-podciaganie-dociazone",
+        sets_reps="4 x 6-8 powt.",
+        tm_info="Start: +5-10 kg w plecaku (baza: 10 czystych podciągnięć bez obciążenia)",
     ),
-    dict(day="Poniedziałek", day_order=0, position=3, name="Pallof Press", exercise_key="pon-pallof-press", sets_reps="3 x 60 sek",
-         tm_info=("Duże napięcie na gumie"
-                  )
-         ),
-    dict(day="Poniedziałek", day_order=0, position=4, name="Hollow Hold", exercise_key="pon-hollow-hold", sets_reps="3 x 40 sek",
-         tm_info=("Pełny wyprost"
-                  )
-         ),
+    dict(
+        day="Poniedziałek", day_order=0, position=3,
+        name="Pompki z nogami na podwyższeniu (dociążone)",
+        exercise_key="pon-pompki-nogi-podwyzszenie",
+        sets_reps="4 x 8-10 powt.",
+        tm_info="Start: +10 kg w plecaku (na uchwytach)",
+    ),
+    dict(
+        day="Poniedziałek", day_order=0, position=4,
+        name="Pompki Pseudo Planche",
+        exercise_key="pon-pompki-pseudo-planche",
+        sets_reps="3 x 8-10 powt.",
+        tm_info="Bez dociążenia — nowy wariant, najpierw technika (dłonie przy biodrach, ciało wychylone w przód)",
+    ),
     dict(
         day="Poniedziałek", day_order=0, position=5,
-        name="Uginanie ramion ze sztangą/hantlami", exercise_key="pon-uginanie-ramion", sets_reps="3 x 10",
-        tm_info=(
-                 "30kg")
-    ),  # Dodane 2026-07-07 - propozycja kolegi Pawla, dzien z najmniejsza liczba cwiczen
+        name="Dragon Flag",
+        exercise_key="pon-dragon-flag",
+        sets_reps="4 serie: 1-2 pełne powt. + 3-4 negatywy",
+        tm_info="Ostrożnie — silnie angażuje lędźwie, przerwij przy jakimkolwiek bólu",
+    ),
 
-    # WTOREK - Wyciskanie plaskie
+    # WTOREK - Dol ciala + Core (A)
     dict(
         day="Wtorek", day_order=1, position=0,
-        name="Wyciskanie płaskie",
-        exercise_key="wt-wyciskanie-plaskie",
-        sets_reps="Tydz. 3/4: 5/3/1+ (S3 = seria PR, max powt.)",
-        tm_info=(
-            # Tydzien cyklu 3/4 (2026-08-16), TM bez zmian (82,5 kg) - tydz.2 wyszedl 4 powt.
-            # z delikatna asekuracja na ostatnim powtorzeniu, standardowa progresja,
-            # schemat 75/85/95% TM
-            "Rozgrzewka: pusta sztanga x5, 47,5 kg x5\n"
-            "S1: 62,5 kg x5\n"
-            "S2: 70 kg x3\n"
-            "S3: 77,5 kg x1+"
-        ),
-        is_main_lift=False,  # Pawel poprosil o zwykly tekst bez pogrubienia (jak Przysiad w Pon.)
+        name="Przysiady bułgarskie z dociążeniem",
+        exercise_key="wt-bulgarskie-dociazone",
+        sets_reps="4 x 8-10 / nogę",
+        tm_info="Sesja testowa — dobierz ciężar w plecaku (zapas 2-3 powt. na ostatniej serii)",
     ),
     dict(
         day="Wtorek", day_order=1, position=1,
-        name="Wyciskanie sztangi skos górny", exercise_key="wt-wyciskanie-sztangi-skos", sets_reps="3 x 8",
-        tm_info=(
-            "50kg\n"
-        ),
+        name="Pistol Squats",
+        exercise_key="wt-pistol-squats",
+        sets_reps="3 x 5-8 / nogę",
+        tm_info="Bodyweight — do potwierdzenia w 1. sesji, jeśli za łatwe: dociążenie plecakiem",
     ),
     dict(
         day="Wtorek", day_order=1, position=2,
-        name="Wiosłowanie wąskie na maszynie", exercise_key="wt-wioslowanie-waskie", sets_reps="3 x 8",
-        tm_info=(
-            "45 kg\n"
-        ),
-    ),  # Podniesione 2026-07-27 - Pawel juz sprobowal 45 kg w tygodniu i dal rade (2x8), sam zapowiedzial ten skok
-    dict(day="Wtorek", day_order=1, position=3, name="Prostowanie ramion wyciąg", exercise_key="wt-prostowanie-ramion", sets_reps="3 x 10", tm_info="40 kg"),  # Podniesione 2026-07-20 - komfortowy zapas, Pawel sam zapowiedzial ten skok
-    dict(day="Wtorek", day_order=1, position=4, name="Rozpiętki hantle w opadzie", exercise_key="wt-rozpietki-hantle", sets_reps="3 x 10", tm_info="8 kg"),
+        name="Single-leg Hip Thrust",
+        exercise_key="wt-single-leg-hip-thrust",
+        sets_reps="3 x 12 powt. (pauza 2 sek. na górze)",
+        tm_info="Sesja testowa",
+    ),
+    dict(
+        day="Wtorek", day_order=1, position=3,
+        name="Wspięcia na palce na jednej nodze",
+        exercise_key="wt-wspiecia-jedna-noga",
+        sets_reps="4 x 15-20 powt.",
+        tm_info="Sesja testowa",
+    ),
+    dict(
+        day="Wtorek", day_order=1, position=4,
+        name="Ab Wheel (kółko)",
+        exercise_key="wt-ab-wheel",
+        sets_reps="4 x 10-12 powt.",
+        tm_info="Ostrożnie — silnie angażuje lędźwie, niepełny zakres na start",
+    ),
 
-    # SRODA - Bieg 10 km
+    # SRODA - Bieg 10 km (twardy) + regeneracja
     dict(day="Środa", day_order=2, position=0, name="Bieg 10 km", exercise_key="sr-bieg-10km", sets_reps="~50 min (cel 40 min)"),
     dict(day="Środa", day_order=2, position=1, name="Mobilność bioder / kostek", exercise_key="sr-mobilnosc-bioder-kostek", sets_reps="10–15 min"),
-    dict(day="Środa", day_order=2, position=2, name="Superman Hold", exercise_key="sr-superman-hold", sets_reps="3 x 45 sek"),
 
-    # CZWARTEK - Kalistenika core
+    # CZWARTEK - Gora ciala (B) - objetosc & ruchy unilateralne
     dict(
         day="Czwartek", day_order=3, position=0,
-        name="Dragon Flag + Hollow Body Rocks", exercise_key="cz-dragon-flag-hollow-body", sets_reps="4 serie",
-        tm_info=(
-            "Dragon Flag: 4 x 3\n"
-            "Hollow Body Rocks: 4 x 30 sek\n"
-        ),
+        name="Free Handstand",
+        exercise_key="cz-free-handstand",
+        sets_reps="10 min praktyki",
+        tm_info="Wolno, bez ściany — kolejny etap po Wall Handstand Hold (poniedziałek)",
     ),
-    dict(day="Czwartek", day_order=3, position=1, name="Wznosy kolan w zwisie", exercise_key="cz-wznosy-kolan", sets_reps="3 x 10"),
-    dict(day="Czwartek", day_order=3, position=2, name="Shoulder Taps", exercise_key="cz-shoulder-taps", sets_reps="3 x 30"),
-    dict(day="Czwartek", day_order=3, position=3, name="Plank", exercise_key="cz-plank", sets_reps="3 x 60 sek"),
-    dict(day="Czwartek", day_order=3, position=4, name="Mobilność bioder + lędźwie", exercise_key="cz-mobilnosc-bioder-ledzwie", sets_reps="10–15 min"),
+    dict(
+        day="Czwartek", day_order=3, position=1,
+        name="Pike Push-ups na uchwytach",
+        exercise_key="cz-pike-pushups",
+        sets_reps="4 x 8-10 powt.",
+        tm_info="Nogi na podwyższeniu — sesja testowa",
+    ),
+    dict(
+        day="Czwartek", day_order=3, position=2,
+        name="Podciąganie powolne",
+        exercise_key="cz-podciaganie-powolne",
+        sets_reps="4 x 8 powt.",
+        tm_info="1 sek. góra / 2 sek. pauza / 3 sek. dół",
+    ),
+    dict(
+        day="Czwartek", day_order=3, position=3,
+        name="Pompki Archer na uchwytach",
+        exercise_key="cz-pompki-archer",
+        sets_reps="4 x 6-8 / stronę",
+        tm_info="Bez dociążenia — wariant unilateralny",
+    ),
+    dict(
+        day="Czwartek", day_order=3, position=4,
+        name="Uginanie ramion w zwisie na drążku",
+        exercise_key="cz-uginanie-ramion-zwis",
+        sets_reps="3 x 8-10 powt.",
+        tm_info="Uwaga na lewy nadgarstek — jeśli wróci ból, zamienić ćwiczenie",
+    ),
+    dict(
+        day="Czwartek", day_order=3, position=5,
+        name="Dragon Flag",
+        exercise_key="cz-dragon-flag",
+        sets_reps="3 serie x max negatywów kontrolowanych do dołu",
+        tm_info="Ostrożnie — lędźwie, przerwij przy jakimkolwiek bólu",
+    ),
 
-    # PIATEK - Martwy ciag
-    # Kolejnosc cwiczen zmieniona 2026-07-05: Nordic Curls (hamstringi, mala
-    # obciazenie ledzwi) wstawione MIEDZY Martwy a RDL, zeby dac ledzwiom bufor
-    # zanim przyjdzie druga praca w zawiasie biodrowym - patrz uzasadnienie
-    # w wiadomosci do Pawla (historia kontuzji + swiezy powrot do martwego).
+    # PIATEK - Dol ciala + Core (B)
     dict(
         day="Piątek", day_order=4, position=0,
-        name="Martwy ciąg",
-        exercise_key="pt-martwy-ciag",
-        sets_reps="Tydz. 3/4: 5/3/1+ (S3 = seria PR, max powt.)",
-        tm_info=(
-            # Tydzien cyklu 3/4 (2026-08-16), TM bez zmian (130 kg) - tydz.2 znow mocno ponad
-            # cel (Epley > wpisany max 135 kg, kolejny tydzien z rzedu). Pawel swiadomie
-            # podnosi serie PR do 125 kg (zamiast standardowych 122,5 kg) - spojne z sygnalem,
-            # ze TM ma jeszcze zapas. USTALONE 2026-08-16: od NASTEPNEGO cyklu (po tym
-            # deloadzie) zmiana podejscia do TM martwego - test 1RM albo przyspieszony skok
-            # zamiast standardowego +5 kg. Schemat 75/85/95% TM.
-            "Rozgrzewka: pusta sztanga x5, 85 kg x5\n"
-            "S1: 97,5 kg x5\n"
-            "S2: 110 kg x3\n"
-            "S3: 125 kg x1+"
-        ),
-        is_main_lift=False,  # Pawel poprosil o zwykly tekst bez pogrubienia (jak inne glowne boje)
+        name="Zakroki chodzone z dociążeniem",
+        exercise_key="pt-zakroki-chodzone",
+        sets_reps="4 x 10-12 / nogę",
+        tm_info="Sesja testowa — dobierz ciężar w plecaku (zapas 2-3 powt.)",
     ),
     dict(
         day="Piątek", day_order=4, position=1,
-        name="Dipy",
-        exercise_key="pt-dipy",
-        sets_reps="3 serie",
-        tm_info=(
-            # Obnizone 2026-07-20 - 2. tydzien z rzedu tylko 2 powt. na +40 kg (Pawel sam to zaproponowal)
-            "Rozgrzewka: pusto, 15kg x5\n"
-            "S1: +30 kg x5\n"
-            "S2: +35 kg x5\n"
-            "S3: +35 kg x3"
-        ),
-    ),  # TM=45 kg dociazenia; zaokraglenie w gore co 2,5 kg (najmniejszy talerz na pas do dipow), wartosci S1/S2/S3 podane przez Pawla
+        name="Cossack Squats",
+        exercise_key="pt-cossack-squats",
+        sets_reps="3 x 10 / stronę",
+        tm_info="Sesja testowa",
+    ),
     dict(
         day="Piątek", day_order=4, position=2,
-        name="Superseria:\n"
-             "Podciąganie na drążku\n"
-             "Nordic Curls",
-        exercise_key="pt-superseria-podciaganie-nordic",
-        sets_reps="Podciąganie: 3 x 12\n"
-                  "Nordic Curls: 3 x 6",
-        tm_info="Bez dociążenia — 3x12: cel\n"
-                "Nordic - 3x6 pełny wyprost: cel",
+        name="Uginanie nóg w leżeniu (ślizg stopami)",
+        exercise_key="pt-uginanie-nog-slizg",
+        sets_reps="3 x 10-12 powt.",
+        tm_info="Sesja testowa — ręcznik/panele jako ślizg",
     ),
     dict(
         day="Piątek", day_order=4, position=3,
-        name="Wiosłowanie szerokie", exercise_key="pt-wioslowanie-szerokie", sets_reps="3 x 10",
-        tm_info=("50kg")
+        name="Ab Wheel (kółko)",
+        exercise_key="pt-ab-wheel",
+        sets_reps="4 x 12-15 powt.",
+        tm_info="Ostrożnie — lędźwie, niepełny zakres na start",
+    ),
+
+    # SOBOTA - Gora ciala (C, opcjonalnie/technika) + Bieg latwy
+    dict(
+        day="Sobota", day_order=5, position=0,
+        name="Stanie na rękach — próby",
+        exercise_key="sob-handstand-proby",
+        sets_reps="15 min, wolna przestrzeń",
+        tm_info="Opcjonalnie/technika",
     ),
     dict(
-        day="Piątek", day_order=4, position=4,
-        name="Superseria:\n"
-             "Spacer farmera\n"
-             "Zginanie nadgarstków",
-        exercise_key="pt-superseria-spacer-zginanie",
-        sets_reps="Spacer: 3 x 20 sek\n"
-                  "Zginanie: 3 x 15",
-        tm_info="Spacer: 15 kg / ręka\n"
-                "Zginanie: 30kg",
+        day="Sobota", day_order=5, position=1,
+        name="L-Sit na uchwytach",
+        exercise_key="sob-l-sit",
+        sets_reps="3 serie x max czas",
+        tm_info="Sesja testowa (cel na start: 5-8 sek.)",
+    ),
+    dict(
+        day="Sobota", day_order=5, position=2,
+        name="Pompki klasyczne w wolnym tempie",
+        exercise_key="sob-pompki-klasyczne",
+        sets_reps="3 serie",
+        tm_info="Sesja testowa",
+    ),
+    dict(
+        day="Sobota", day_order=5, position=3,
+        name="Bieg łatwy",
+        exercise_key="sob-bieg-latwy",
+        sets_reps="30–40 min (tempo konwersacyjne)",
     ),
 
-    # SOBOTA - Bieg latwy
-    dict(day="Sobota", day_order=5, position=0, name="Bieg łatwy", exercise_key="sob-bieg-latwy", sets_reps="30–40 min"),
-    dict(day="Sobota", day_order=5, position=2, name="Chest-to-wall Handstand Hold", exercise_key="sob-handstand-hold", sets_reps="3 x 30 sek"),
-    dict(day="Sobota", day_order=5, position=1, name="Rozciąganie całego ciała", exercise_key="sob-rozciaganie", sets_reps="20–30 min"),
-
-    # NIEDZIELA - Kalistenika vertical push
-    dict(day="Niedziela", day_order=6, position=0, name="HSPU przy ścianie", exercise_key="ndz-hspu", sets_reps="4 x 4"),
-    dict(day="Niedziela", day_order=6, position=1, name="Frog Stand", exercise_key="ndz-frog-stand", sets_reps="4 x 60 sek"),
-    dict(day="Niedziela", day_order=6, position=2, name="Pike Push-ups", exercise_key="ndz-pike-pushups", sets_reps="3 x 10"),
-    dict(day="Niedziela", day_order=6, position=3, name="Toes to Bar", exercise_key="ndz-toes-to-bar", sets_reps="3 x 10"),
+    # NIEDZIELA - Regeneracja (Rest): pelny odpoczynek, brak cwiczen w planie.
 ]
 
 
@@ -237,7 +261,11 @@ def main():
     # 2. Usun "osierocone" wiersze: te, ktore sa w bazie dla dni obecnych w
     # EXERCISES, ale nie ma ich juz na liscie (np. Pawel usunal linie z pliku).
     # Celowo NIE ruszamy dni, ktorych w tym przebiegu w ogole nie ma na liscie -
-    # zeby niepelny plik nie skasowal calych dni przez pomylke.
+    # zeby niepelny plik nie skasowal calych dni przez pomylke. Niedziela
+    # (rest day, brak cwiczen) jest wiec swiadomie NIETKNIETA tym krokiem -
+    # ewentualne stare wiersze Niedzieli trzeba usunac recznie (przez
+    # DELETE /api/admin/exercises), tak jak zrobiono to jednorazowo przy
+    # wdrozeniu kalisteniki 2026-09-22.
     #
     # Dopasowanie po (day, exercise_key) gdy baza juz ma klucz wypelniony
     # (patrz backend/migrate_exercise_keys.py) - dzieki temu rename w pliku nie
@@ -287,10 +315,10 @@ def sync_trend_identity():
     # zakladki Trend z planem, ktory wlasnie zseedowalismy - dzieki upsertowi
     # po exercise_key (main.py.create_weekly_trend_snapshot) to bezpieczne
     # wywolac za kazdym razem: nie dubluje wierszy, nie kasuje juz recznie
-    # wpisanych sets_reps/tm_info, tylko aktualizuje name/day_order/position
-    # tam, gdzie exercise_key sie zgadza. To domyka petle "zmien nazwe w
-    # seed_data.py -> uruchom skrypt -> gotowe" takze dla Trendu, bez potrzeby
-    # recznej edycji Neon.
+    # wpisanego postepu, tylko aktualizuje name/day_order/position tam, gdzie
+    # exercise_key sie zgadza. To domyka petle "zmien nazwe w seed_data.py ->
+    # uruchom skrypt -> gotowe" takze dla Trendu, bez potrzeby recznej edycji
+    # Neon.
     snap_resp = requests.post(
         f"{API_BASE}/api/admin/weekly-trend-snapshot",
         headers={"X-Auth-Secret": APP_SECRET},
