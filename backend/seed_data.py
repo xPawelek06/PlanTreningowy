@@ -86,17 +86,17 @@ EXERCISES = [
     ),
     dict(
         day="Poniedziałek", day_order=0, position=4,
-        name="Pompki Pseudo Planche",
-        exercise_key="pon-pompki-pseudo-planche",
-        sets_reps="3 x 8-10 powt.",
-        tm_info="Bez dociążenia — nowy wariant, najpierw technika (dłonie przy biodrach, ciało wychylone w przód)",
+        name="Planche Lean (podpór z wychyleniem)",
+        exercise_key="pon-planche-lean",
+        sets_reps="3 x 15-20 sek.",
+        tm_info="Barki przed dłońmi, proste łokcie — etap przed Pompkami Pseudo Planche, +5 sek./tydz.",
     ),
     dict(
         day="Poniedziałek", day_order=0, position=5,
-        name="Dragon Flag",
-        exercise_key="pon-dragon-flag",
-        sets_reps="4 serie: 1-2 pełne powt. + 3-4 negatywy",
-        tm_info="Ostrożnie — silnie angażuje lędźwie, przerwij przy jakimkolwiek bólu",
+        name="Hollow Hold",
+        exercise_key="pon-hollow-hold",
+        sets_reps="3 x 30-45 sek.",
+        tm_info="Lędźwie dociśnięte do podłogi, +5-10 sek./tydz.",
     ),
 
     # WTOREK - Dol ciala + Core (A)
@@ -109,10 +109,10 @@ EXERCISES = [
     ),
     dict(
         day="Wtorek", day_order=1, position=1,
-        name="Pistol Squats",
-        exercise_key="wt-pistol-squats",
-        sets_reps="3 x 5-8 / nogę",
-        tm_info="Bodyweight — do potwierdzenia w 1. sesji, jeśli za łatwe: dociążenie plecakiem",
+        name="Step-upy na podwyższenie",
+        exercise_key="wt-step-upy",
+        sets_reps="3 x 8-10 / nogę",
+        tm_info="Wysokie podwyższenie, wolne opuszczanie (3 sek.) — jeśli za łatwe: plecak",
     ),
     dict(
         day="Wtorek", day_order=1, position=2,
@@ -130,10 +130,10 @@ EXERCISES = [
     ),
     dict(
         day="Wtorek", day_order=1, position=4,
-        name="Ab Wheel (kółko)",
-        exercise_key="wt-ab-wheel",
-        sets_reps="4 x 10-12 powt.",
-        tm_info="Ostrożnie — silnie angażuje lędźwie, niepełny zakres na start",
+        name="Wznosy nóg w zwisie na drążku",
+        exercise_key="wt-wznosy-nog-zwis",
+        sets_reps="4 x 8-12 powt.",
+        tm_info="Bez bujania — na start wznosy kolan, potem proste nogi",
     ),
 
     # SRODA - Bieg 10 km (twardy) + regeneracja
@@ -171,10 +171,10 @@ EXERCISES = [
     ),
     dict(
         day="Czwartek", day_order=3, position=4,
-        name="Uginanie ramion w zwisie na drążku",
-        exercise_key="cz-uginanie-ramion-zwis",
-        sets_reps="3 x 8-10 powt.",
-        tm_info="Uwaga na lewy nadgarstek — jeśli wróci ból, zamienić ćwiczenie",
+        name="Podciąganie australijskie (niski drążek)",
+        exercise_key="cz-podciaganie-australijskie",
+        sets_reps="3 x 10-12 powt.",
+        tm_info="Ciało proste pod skosem, klatka do drążka — podchwyt mocniej angażuje biceps; uwaga na lewy nadgarstek",
     ),
     dict(
         day="Czwartek", day_order=3, position=5,
@@ -194,10 +194,10 @@ EXERCISES = [
     ),
     dict(
         day="Piątek", day_order=4, position=1,
-        name="Cossack Squats",
-        exercise_key="pt-cossack-squats",
-        sets_reps="3 x 10 / stronę",
-        tm_info="Sesja testowa",
+        name="Krzesełko przy ścianie (Wall Sit)",
+        exercise_key="pt-wall-sit",
+        sets_reps="3 x 45-60 sek.",
+        tm_info="Uda równolegle do podłogi, +10 sek./tydz.",
     ),
     dict(
         day="Piątek", day_order=4, position=2,
@@ -217,10 +217,10 @@ EXERCISES = [
     # SOBOTA - Gora ciala (C, opcjonalnie/technika) + Bieg latwy
     dict(
         day="Sobota", day_order=5, position=0,
-        name="Stanie na rękach — próby",
-        exercise_key="sob-handstand-proby",
-        sets_reps="15 min, wolna przestrzeń",
-        tm_info="Opcjonalnie/technika",
+        name="Podciąganie podchwytem",
+        exercise_key="sob-podciaganie-podchwyt",
+        sets_reps="3 x 6-8 powt.",
+        tm_info="Bez dociążenia, lekko — zapas 2-3 powt.",
     ),
     dict(
         day="Sobota", day_order=5, position=1,
@@ -238,6 +238,13 @@ EXERCISES = [
     ),
     dict(
         day="Sobota", day_order=5, position=3,
+        name="Pompki diamentowe",
+        exercise_key="sob-pompki-diamentowe",
+        sets_reps="3 x 10-12 powt.",
+        tm_info="Triceps — łokcie przy tułowiu, sesja testowa",
+    ),
+    dict(
+        day="Sobota", day_order=5, position=4,
         name="Bieg łatwy",
         exercise_key="sob-bieg-latwy",
         sets_reps="30–40 min (tempo konwersacyjne)",
