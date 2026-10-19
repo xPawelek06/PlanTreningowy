@@ -60,8 +60,8 @@ EXERCISES = [
         day="Poniedziałek", day_order=0, position=0,
         name="Wall Handstand Hold",
         exercise_key="pon-handstand-hold",
-        sets_reps="3 x 20-30 sek (10-12 min praktyki przed właściwym treningiem)",
-        tm_info="Start: 20-30 sek, +5-10 sek/tydz. — kolejny etap: Free Handstand (czwartek)",
+        sets_reps="3 x 45-60 sek (10-12 min praktyki przed właściwym treningiem)",
+        tm_info="Od 2026-10-19: 45-60 sek, +5-10 sek/tydz. — kolejny etap: Free Handstand (czwartek)",
     ),
     dict(
         day="Poniedziałek", day_order=0, position=1,
@@ -82,7 +82,7 @@ EXERCISES = [
         name="Pompki z nogami na podwyższeniu (dociążone)",
         exercise_key="pon-pompki-nogi-podwyzszenie",
         sets_reps="4 x 8-10 powt.",
-        tm_info="Start: +10 kg w plecaku (na uchwytach) — pełny zakres, pauza 1 sek. w dole",
+        tm_info="Od 2026-10-19: +5 kg w plecaku, start od 8 powt. (na uchwytach) — pełny zakres, pauza 1 sek. w dole",
     ),
     dict(
         day="Poniedziałek", day_order=0, position=4,
@@ -105,14 +105,14 @@ EXERCISES = [
         name="Przysiady bułgarskie z dociążeniem",
         exercise_key="wt-bulgarskie-dociazone",
         sets_reps="4 x 8-10 / nogę",
-        tm_info="Sesja testowa — dobierz ciężar w plecaku (zapas 2-3 powt. na ostatniej serii)",
+        tm_info="Od 2026-10-19: plecak ok. 10 kg + wolne opuszczanie 3 sek. (cięższego plecaka brak)",
     ),
     dict(
         day="Wtorek", day_order=1, position=1,
         name="Step-upy na podwyższenie",
         exercise_key="wt-step-upy",
         sets_reps="3 x 8-10 / nogę",
-        tm_info="Wysokie podwyższenie, wolne opuszczanie (3 sek.) — jeśli za łatwe: plecak",
+        tm_info="Od 2026-10-19: plecak 5 kg, start od 8/nogę. Wysokie podwyższenie, wolne opuszczanie (3 sek.)",
     ),
     dict(
         day="Wtorek", day_order=1, position=2,
@@ -197,7 +197,7 @@ EXERCISES = [
         name="Zakroki chodzone z dociążeniem",
         exercise_key="pt-zakroki-chodzone",
         sets_reps="4 x 10-12 / nogę",
-        tm_info="Sesja testowa — dobierz ciężar w plecaku (zapas 2-3 powt.)",
+        tm_info="Od 2026-10-19: plecak 7-10 kg + wolne opuszczanie 3 sek. (cięższego plecaka brak)",
     ),
     dict(
         day="Piątek", day_order=4, position=1,
@@ -211,7 +211,7 @@ EXERCISES = [
         name="Uginanie nóg w leżeniu (ślizg stopami)",
         exercise_key="pt-uginanie-nog-slizg",
         sets_reps="3 x 10-12 powt.",
-        tm_info="Sesja testowa — ręcznik/panele jako ślizg",
+        tm_info="Od 2026-10-19: opuszczanie (prostowanie nóg) 3 sek. — ręcznik/panele jako ślizg",
     ),
     dict(
         day="Piątek", day_order=4, position=3,
@@ -255,7 +255,7 @@ EXERCISES = [
         name="Pompki diamentowe",
         exercise_key="sob-pompki-diamentowe",
         sets_reps="3 x 10-12 powt.",
-        tm_info="Triceps — łokcie przy tułowiu, sesja testowa",
+        tm_info="Od 2026-10-19: plecak 5 kg, start od 10 powt. Triceps — łokcie przy tułowiu",
     ),
     dict(
         day="Sobota", day_order=5, position=3,
