@@ -68,7 +68,7 @@ EXERCISES = [
         name="Negatywy HSPU przy ścianie",
         exercise_key="pon-hspu-negatywy",
         sets_reps="3 x 3-5 powt.",
-        tm_info="Opuszczanie 4-5 sek. — etap przed pełnym HSPU",
+        tm_info="Od 2026-10-26: opuszczanie 6 sek. — etap przed pełnym HSPU",
     ),
     dict(
         day="Poniedziałek", day_order=0, position=2,
@@ -133,7 +133,7 @@ EXERCISES = [
         name="Wspięcia na palce na jednej nodze",
         exercise_key="wt-wspiecia-jedna-noga",
         sets_reps="4 x 15-20 powt.",
-        tm_info="Sesja testowa",
+        tm_info="Od 2026-10-26: plecak 10 kg + pauza 2 sek. na górze (cięższego plecaka brak)",
     ),
     dict(
         day="Wtorek", day_order=1, position=5,
@@ -160,7 +160,7 @@ EXERCISES = [
         name="Pike Push-ups na uchwytach",
         exercise_key="cz-pike-pushups",
         sets_reps="4 x 8-10 powt.",
-        tm_info="Nogi na podwyższeniu — sesja testowa",
+        tm_info="Od 2026-10-23: bez uchwytów (z uchwytami gorsza technika), nogi na podwyższeniu",
     ),
     dict(
         day="Czwartek", day_order=3, position=2,
@@ -181,7 +181,7 @@ EXERCISES = [
         name="Odwrotne rozpiętki w leżeniu na brzuchu (Y-T)",
         exercise_key="cz-odwrotne-rozpietki-lezenie",
         sets_reps="3 x 12-15 powt.",
-        tm_info="Nowe od 2026-10-12 — pierwsze 2 tyg. po 2 serie. Tylne barki — kciuki w górę, pauza 2 sek. na górze, bez szarpania",
+        tm_info="Od 2026-10-26: butelki 0,5 l w dłoniach, start od 12 powt. Tylne barki — kciuki w górę, pauza 2 sek. na górze, bez szarpania",
     ),
     dict(
         day="Czwartek", day_order=3, position=5,
@@ -224,15 +224,15 @@ EXERCISES = [
         day="Piątek", day_order=4, position=4,
         name="Ab Wheel (kółko)",
         exercise_key="pt-ab-wheel",
-        sets_reps="4 x 12-15 powt.",
-        tm_info="Ostrożnie — lędźwie, niepełny zakres na start",
+        sets_reps="4 x 8-10 powt.",
+        tm_info="Od 2026-10-26: cel obniżony z 12-15 (2 tyg. po 8). Ostrożnie — lędźwie, niepełny zakres na start",
     ),
     dict(
         day="Piątek", day_order=4, position=5,
         name="Superman Hold",
         exercise_key="pt-superman",
-        sets_reps="3 x 30 sek.",
-        tm_info="Nowe od 2026-10-12 — pierwsze 2 tyg. po 2 serie. Prostowniki grzbietu — bez przeprostu, przerwij przy bólu lędźwi",
+        sets_reps="3 x 40 sek.",
+        tm_info="Od 2026-10-26: 40 sek. Prostowniki grzbietu — bez przeprostu, przerwij przy bólu lędźwi",
     ),
 
     # SOBOTA - Gora ciala (C, opcjonalnie/technika) + Bieg latwy
@@ -241,14 +241,14 @@ EXERCISES = [
         name="Podciąganie podchwytem",
         exercise_key="sob-podciaganie-podchwyt",
         sets_reps="3 x 6-8 powt.",
-        tm_info="Bez dociążenia, lekko — zapas 2-3 powt.",
+        tm_info="Od 2026-10-26: plecak 2,5 kg, start od 6 powt.",
     ),
     dict(
         day="Sobota", day_order=5, position=1,
         name="Planche Lean (podpór z wychyleniem)",
         exercise_key="sob-planche-lean",
-        sets_reps="3 x 15-20 sek.",
-        tm_info="Barki przed dłońmi, proste łokcie — etap przed Pompkami Pseudo Planche, +5 sek./tydz.",
+        sets_reps="3 x 20-25 sek.",
+        tm_info="Od 2026-10-26: 20-25 sek. Barki przed dłońmi, proste łokcie — etap przed Pompkami Pseudo Planche, +5 sek./tydz.",
     ),
     dict(
         day="Sobota", day_order=5, position=2,
@@ -273,13 +273,6 @@ EXERCISES = [
     ),
     dict(
         day="Sobota", day_order=5, position=5,
-        name="Wyprosty nadgarstka z butelką wody",
-        exercise_key="sob-prostowniki-nadgarstka",
-        sets_reps="3 x 15 / rękę",
-        tm_info="Nowe od 2026-10-12 — pierwsze 2 tyg. po 2 serie. Zalecenie fizjo (28.08): przedramię na udzie, dłoń w dół, butelka 1,5 l, wolno",
-    ),
-    dict(
-        day="Sobota", day_order=5, position=6,
         name="Bieg łatwy",
         exercise_key="sob-bieg-latwy",
         sets_reps="30–40 min (tempo konwersacyjne)",
