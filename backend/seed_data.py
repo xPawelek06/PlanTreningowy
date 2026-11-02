@@ -60,8 +60,8 @@ EXERCISES = [
         day="Poniedziałek", day_order=0, position=0,
         name="Wall Handstand Hold",
         exercise_key="pon-handstand-hold",
-        sets_reps="3 x 45-60 sek (10-12 min praktyki przed właściwym treningiem)",
-        tm_info="Od 2026-10-19: 45-60 sek, +5-10 sek/tydz. — kolejny etap: Free Handstand (czwartek)",
+        sets_reps="3 x 60-70 sek (10-12 min praktyki przed właściwym treningiem)",
+        tm_info="Od 2026-11-02: 60-70 sek, +5-10 sek/tydz. — kolejny etap: Free Handstand (czwartek)",
     ),
     dict(
         day="Poniedziałek", day_order=0, position=1,
@@ -82,7 +82,7 @@ EXERCISES = [
         name="Pompki z nogami na podwyższeniu (dociążone)",
         exercise_key="pon-pompki-nogi-podwyzszenie",
         sets_reps="4 x 8-10 powt.",
-        tm_info="Od 2026-10-19: +5 kg w plecaku, start od 8 powt. (na uchwytach) — pełny zakres, pauza 1 sek. w dole",
+        tm_info="Od 2026-11-02: 7,5 kg w plecaku, start od 8 powt. (na uchwytach) — pełny zakres, pauza 1 sek. w dole",
     ),
     dict(
         day="Poniedziałek", day_order=0, position=4,
@@ -211,28 +211,28 @@ EXERCISES = [
         name="Uginanie nóg w leżeniu (ślizg stopami)",
         exercise_key="pt-uginanie-nog-slizg",
         sets_reps="3 x 10-12 powt.",
-        tm_info="Od 2026-10-19: opuszczanie (prostowanie nóg) 3 sek. — ręcznik/panele jako ślizg",
+        tm_info="Od 2026-11-02: opuszczanie (prostowanie nóg) 5 sek. — ręcznik/panele jako ślizg",
     ),
     dict(
         day="Piątek", day_order=4, position=3,
         name="Wspięcia na palce na jednej nodze",
         exercise_key="pt-wspiecia-jedna-noga",
         sets_reps="3 x 15-20 powt.",
-        tm_info="Nowe od 2026-10-12 — pierwsze 2 tyg. po 2 serie. Pełny zakres, pauza 1 sek. na górze",
+        tm_info="Od 2026-11-02: plecak 5 kg. Pełny zakres, pauza 1 sek. na górze",
     ),
     dict(
         day="Piątek", day_order=4, position=4,
         name="Ab Wheel (kółko)",
         exercise_key="pt-ab-wheel",
-        sets_reps="4 x 8-10 powt.",
-        tm_info="Od 2026-10-26: cel obniżony z 12-15 (2 tyg. po 8). Ostrożnie — lędźwie, niepełny zakres na start",
+        sets_reps="4 x 10-12 powt.",
+        tm_info="Od 2026-11-02: 10-12 (było 8-10, 4 x 10 zaliczone). Ostrożnie — lędźwie, niepełny zakres na start",
     ),
     dict(
         day="Piątek", day_order=4, position=5,
         name="Superman Hold",
         exercise_key="pt-superman",
-        sets_reps="3 x 40 sek.",
-        tm_info="Od 2026-10-26: 40 sek. Prostowniki grzbietu — bez przeprostu, przerwij przy bólu lędźwi",
+        sets_reps="3 x 45 sek.",
+        tm_info="Od 2026-11-02: 45 sek. Prostowniki grzbietu — bez przeprostu, przerwij przy bólu lędźwi",
     ),
 
     # SOBOTA - Gora ciala (C, opcjonalnie/technika) + Bieg latwy
@@ -241,7 +241,7 @@ EXERCISES = [
         name="Podciąganie podchwytem",
         exercise_key="sob-podciaganie-podchwyt",
         sets_reps="3 x 6-8 powt.",
-        tm_info="Od 2026-10-26: plecak 2,5 kg, start od 6 powt.",
+        tm_info="Od 2026-11-02: plecak 5 kg, start od 6 powt.",
     ),
     dict(
         day="Sobota", day_order=5, position=1,
@@ -255,7 +255,7 @@ EXERCISES = [
         name="Pompki diamentowe",
         exercise_key="sob-pompki-diamentowe",
         sets_reps="3 x 10-12 powt.",
-        tm_info="Od 2026-10-19: plecak 5 kg, start od 10 powt. Triceps — łokcie przy tułowiu",
+        tm_info="Od 2026-11-02: plecak 7,5 kg, start od 10 powt. Triceps — łokcie przy tułowiu",
     ),
     dict(
         day="Sobota", day_order=5, position=3,
