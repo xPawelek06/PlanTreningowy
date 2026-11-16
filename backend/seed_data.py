@@ -89,7 +89,7 @@ EXERCISES = [
         name="Podciąganie australijskie (niski drążek)",
         exercise_key="pon-podciaganie-australijskie",
         sets_reps="3 x 10-12 powt.",
-        tm_info="Najpierw ściągnij łopatki, potem ugnij łokcie; klatka do drążka — uwaga na lewy nadgarstek",
+        tm_info="Od 2026-11-16: pauza 2 sek. przy drążku. Najpierw ściągnij łopatki, potem ugnij łokcie; klatka do drążka — uwaga na lewy nadgarstek",
     ),
     dict(
         day="Poniedziałek", day_order=0, position=5,
@@ -104,15 +104,15 @@ EXERCISES = [
         day="Wtorek", day_order=1, position=0,
         name="Przysiady bułgarskie z dociążeniem",
         exercise_key="wt-bulgarskie-dociazone",
-        sets_reps="4 x 8-10 / nogę",
-        tm_info="Od 2026-10-19: plecak ok. 10 kg + wolne opuszczanie 3 sek. (cięższego plecaka brak)",
+        sets_reps="4 x 10-12 / nogę",
+        tm_info="Od 2026-11-16: 10-12 / nogę. Plecak ok. 10 kg + wolne opuszczanie 3 sek. (cięższego plecaka brak)",
     ),
     dict(
         day="Wtorek", day_order=1, position=1,
         name="Step-upy na podwyższenie",
         exercise_key="wt-step-upy",
-        sets_reps="3 x 8-10 / nogę",
-        tm_info="Od 2026-10-19: plecak 5 kg, start od 8/nogę. Wysokie podwyższenie, wolne opuszczanie (3 sek.)",
+        sets_reps="3 x 10-12 / nogę",
+        tm_info="Od 2026-11-16: plecak 5 kg, 10-12 / nogę. Wysokie podwyższenie, wolne opuszczanie (3 sek.)",
     ),
     dict(
         day="Wtorek", day_order=1, position=2,
@@ -181,7 +181,7 @@ EXERCISES = [
         name="Odwrotne rozpiętki w leżeniu na brzuchu (Y-T)",
         exercise_key="cz-odwrotne-rozpietki-lezenie",
         sets_reps="3 x 12-15 powt.",
-        tm_info="Od 2026-10-26: butelki 0,5 l w dłoniach, start od 12 powt. Tylne barki — kciuki w górę, pauza 2 sek. na górze, bez szarpania",
+        tm_info="Od 2026-11-16: butelki 1 l w dłoniach, start od 12 powt. Tylne barki — kciuki w górę, pauza 2 sek. na górze, bez szarpania",
     ),
     dict(
         day="Czwartek", day_order=3, position=5,
@@ -231,8 +231,8 @@ EXERCISES = [
         day="Piątek", day_order=4, position=5,
         name="Superman Hold",
         exercise_key="pt-superman",
-        sets_reps="3 x 45 sek.",
-        tm_info="Od 2026-11-02: 45 sek. Prostowniki grzbietu — bez przeprostu, przerwij przy bólu lędźwi",
+        sets_reps="3 x 50-60 sek.",
+        tm_info="Od 2026-11-16: 50-60 sek. Prostowniki grzbietu — bez przeprostu, przerwij przy bólu lędźwi",
     ),
 
     # SOBOTA - Gora ciala (C, opcjonalnie/technika) + Bieg latwy
@@ -247,8 +247,8 @@ EXERCISES = [
         day="Sobota", day_order=5, position=1,
         name="Planche Lean (podpór z wychyleniem)",
         exercise_key="sob-planche-lean",
-        sets_reps="3 x 25-30 sek.",
-        tm_info="Od 2026-11-09: 25-30 sek. Barki przed dłońmi, proste łokcie — etap przed Pompkami Pseudo Planche, +5 sek./tydz.",
+        sets_reps="3 x 30-35 sek.",
+        tm_info="Od 2026-11-16: 30-35 sek. Barki przed dłońmi, proste łokcie — etap przed Pompkami Pseudo Planche, +5 sek./tydz.",
     ),
     dict(
         day="Sobota", day_order=5, position=2,
