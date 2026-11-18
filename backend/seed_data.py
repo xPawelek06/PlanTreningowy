@@ -45,240 +45,223 @@ API_BASE = os.environ.get("API_BASE", "http://127.0.0.1:8000")
 APP_SECRET = os.environ.get("APP_SECRET", "PlanTreningowy")
 
 EXERCISES = [
-    # PONIEDZIALEK - Gora ciala (A) - sila & handstand focus
-    # Kolumny sets_reps / tm_info moga zawierac znaki nowej linii (\n) -
-    # frontend renderuje kazdy fragment jako osobna linie (czytelny breakdown).
+    # BLOK ROZLUZNIAJACY DNO MIEDNICY od 2026-11-18 (4-6 tyg.), zrodlo:
+    # gym/plan-tygodniowy.md w repo mozgu. Pelny plan kalisteniki sprzed bloku:
+    # gym/archiwum/plan-kalistenika-2026-11-przed-blokiem-rozluzniajacym.md
+    # (oraz historia git tego pliku, commit 3123db2).
     #
-    # exercise_key: staly identyfikator cwiczenia, niezalezny od "name" -
-    # dzieki niemu zmiana "name" ponizej to zwykly rename (main.py.seed_plan
-    # robi upsert po day+exercise_key), a nie nowy wiersz, wiec historia w
-    # zakladce Trend sie nie urywa. Nadawany recznie - przy DODAWANIU nowego
-    # cwiczenia wymysl nowy, nigdy niepowtarzajacy sie klucz (np.
-    # "pon-nazwa-cwiczenia"); NIE zmieniaj juz istniejacego klucza przy
-    # zwyklym rename nazwy (o to wlasnie chodzi).
+    # exercise_key: staly identyfikator cwiczenia, niezalezny od "name"
+    # (upsert po day+exercise_key). Cwiczenie zostajace w tym samym dniu
+    # zachowuje stary klucz (ciaglosc Trendu); przeniesione na inny dzien
+    # lub nowe dostaje nowy klucz. Kolumny sets_reps / tm_info moga zawierac znak nowej linii.
+
+    # PONIEDZIALEK - Gora ciala (A)
     dict(
         day="Poniedziałek", day_order=0, position=0,
-        name="Wall Handstand Hold",
-        exercise_key="pon-handstand-hold",
-        sets_reps="3 x 70-75 sek (10-12 min praktyki przed właściwym treningiem)",
-        tm_info="Od 2026-11-09: 70-75 sek, +5-10 sek/tydz. — kolejny etap: Free Handstand (czwartek)",
+        name="Podciąganie",
+        exercise_key="pon-podciaganie-dociazone",
+        sets_reps='4 x 6-8 powt.',
+        tm_info='Blok rozluźniający od 2026-11-18: bez plecaka, 2-3 powt. zapasu, wydech w fazie wysiłku',
     ),
     dict(
         day="Poniedziałek", day_order=0, position=1,
-        name="HSPU przy ścianie (pełne)",
-        exercise_key="pon-hspu-negatywy",
-        sets_reps="3 x 3-5 powt.",
-        tm_info="Od 2026-11-09: pełne pompki w staniu na rękach (negatywy zaliczone 3 x 5) — kontrolowane opuszczanie",
+        name="Pompki z nogami na podwyższeniu",
+        exercise_key="pon-pompki-nogi-podwyzszenie",
+        sets_reps='3 x 10-12 powt.',
+        tm_info='Bez plecaka',
     ),
     dict(
         day="Poniedziałek", day_order=0, position=2,
-        name="Podciąganie z dociążeniem w plecaku",
-        exercise_key="pon-podciaganie-dociazone",
-        sets_reps="4 x 6-8 powt.",
-        tm_info="Start: +5-10 kg w plecaku (baza: 10 czystych podciągnięć bez obciążenia)",
+        name="Pike Push-ups",
+        exercise_key="pon-pike-pushups",
+        sets_reps='3 x 8 powt.',
+        tm_info='Nogi na podwyższeniu, bez uchwytów',
     ),
     dict(
         day="Poniedziałek", day_order=0, position=3,
-        name="Pompki z nogami na podwyższeniu (dociążone)",
-        exercise_key="pon-pompki-nogi-podwyzszenie",
-        sets_reps="4 x 8-10 powt.",
-        tm_info="Od 2026-11-09: 10 kg w plecaku, start od 8 powt. (na uchwytach) — pełny zakres, pauza 1 sek. w dole",
+        name="Podciąganie australijskie (niski drążek)",
+        exercise_key="pon-podciaganie-australijskie",
+        sets_reps='3 x 10-12 powt.',
+        tm_info='Bez pauzy przy drążku. Uwaga na lewy nadgarstek',
     ),
     dict(
         day="Poniedziałek", day_order=0, position=4,
-        name="Podciąganie australijskie (niski drążek)",
-        exercise_key="pon-podciaganie-australijskie",
-        sets_reps="3 x 10-12 powt.",
-        tm_info="Od 2026-11-16: pauza 2 sek. przy drążku. Najpierw ściągnij łopatki, potem ugnij łokcie; klatka do drążka — uwaga na lewy nadgarstek",
+        name="Odwrotne rozpiętki w leżeniu na brzuchu (Y-T)",
+        exercise_key="pon-odwrotne-rozpietki-lezenie",
+        sets_reps='3 x 12-15 powt.',
+        tm_info='Butelki 1 l, kciuki w górę, bez szarpania',
     ),
     dict(
         day="Poniedziałek", day_order=0, position=5,
-        name="Hollow Hold",
-        exercise_key="pon-hollow-hold",
-        sets_reps="3 x 30-45 sek.",
-        tm_info="Lędźwie dociśnięte do podłogi, +5-10 sek./tydz.",
+        name="Zestaw rozluźniający (po treningu)",
+        exercise_key="pon-rozluznianie",
+        sets_reps='Happy Baby 2-3 min\nPrzysiad słowiański z podparciem 1,5-2 min\nPozycja dziecka, kolana szeroko 3-4 min',
+        tm_info='Oddech przeponowy: wdech nosem 4 s do brzucha, wydech ustami 6-8 s, krocze opada i puszcza. Bez parcia, bez Kegla',
     ),
 
-    # WTOREK - Dol ciala + Core (A)
+    # WTOREK - Dol ciala (A)
     dict(
         day="Wtorek", day_order=1, position=0,
-        name="Przysiady bułgarskie z dociążeniem",
-        exercise_key="wt-bulgarskie-dociazone",
-        sets_reps="4 x 10-12 / nogę",
-        tm_info="Od 2026-11-16: 10-12 / nogę. Plecak ok. 10 kg + wolne opuszczanie 3 sek. (cięższego plecaka brak)",
+        name="Zakroki w tył",
+        exercise_key="wt-zakroki-w-tyl",
+        sets_reps='3 x 10 / nogę',
+        tm_info='Bez plecaka, kontrolowane',
     ),
     dict(
         day="Wtorek", day_order=1, position=1,
         name="Step-upy na podwyższenie",
         exercise_key="wt-step-upy",
-        sets_reps="3 x 10-12 / nogę",
-        tm_info="Od 2026-11-16: plecak 5 kg, 10-12 / nogę. Wysokie podwyższenie, wolne opuszczanie (3 sek.)",
+        sets_reps='3 x 10-12 / nogę',
+        tm_info='Bez plecaka',
     ),
     dict(
         day="Wtorek", day_order=1, position=2,
-        name="Nordic Curl — negatywy",
-        exercise_key="wt-nordic-negatywy",
-        sets_reps="3 x 5 powt.",
-        tm_info="Nowe od 2026-10-12 — pierwsze 2 tyg. po 2 serie. Opuszczanie 4-5 sek., stopy zablokowane, powrót z pomocą rąk",
+        name="Glute Bridge obunóż",
+        exercise_key="wt-glute-bridge",
+        sets_reps='3 x 12 powt.',
+        tm_info='Bez ściskania pośladków na górze',
     ),
     dict(
         day="Wtorek", day_order=1, position=3,
-        name="Single-leg Hip Thrust",
-        exercise_key="wt-single-leg-hip-thrust",
-        sets_reps="3 x 12 powt. (pauza 2 sek. na górze)",
-        tm_info="Sesja testowa",
+        name="Wspięcia na palce na jednej nodze",
+        exercise_key="wt-wspiecia-jedna-noga",
+        sets_reps='3 x 15-20 powt.',
+        tm_info='Bez plecaka',
     ),
     dict(
         day="Wtorek", day_order=1, position=4,
-        name="Wspięcia na palce na jednej nodze",
-        exercise_key="wt-wspiecia-jedna-noga",
-        sets_reps="4 x 15-20 powt.",
-        tm_info="Od 2026-10-26: plecak 10 kg + pauza 2 sek. na górze (cięższego plecaka brak)",
+        name="Dead Bug",
+        exercise_key="wt-dead-bug",
+        sets_reps='3 x 8 / stronę',
+        tm_info='Mały zakres nóg, swobodny oddech',
     ),
     dict(
         day="Wtorek", day_order=1, position=5,
-        name="Wznosy nóg w zwisie na drążku",
-        exercise_key="wt-wznosy-nog-zwis",
-        sets_reps="4 x 8-12 powt.",
-        tm_info="Bez bujania — na start wznosy kolan, potem proste nogi",
+        name="Zestaw rozluźniający (po treningu)",
+        exercise_key="wt-rozluznianie",
+        sets_reps='Happy Baby 2-3 min\nPrzysiad słowiański z podparciem 1,5-2 min\nPozycja dziecka, kolana szeroko 3-4 min',
+        tm_info='Oddech przeponowy: wdech nosem 4 s do brzucha, wydech ustami 6-8 s, krocze opada i puszcza. Bez parcia, bez Kegla',
     ),
 
-    # SRODA - Bieg 10 km (twardy) + regeneracja
-    dict(day="Środa", day_order=2, position=0, name="Bieg 10 km", exercise_key="sr-bieg-10km", sets_reps="~50 min (cel 40 min)"),
-    dict(day="Środa", day_order=2, position=1, name="Mobilność bioder / kostek", exercise_key="sr-mobilnosc-bioder-kostek", sets_reps="10–15 min"),
+    # SRODA - Marszobieg + mobilnosc
+    dict(
+        day="Środa", day_order=2, position=0,
+        name="Marszobieg",
+        exercise_key="sr-marszobieg",
+        sets_reps='25-30 min: 4 min wolnego truchtu + 1 min marszu',
+        tm_info='Pierwsze 2 tyg. Brak pogorszenia wieczorem → ciągły łatwy bieg. Pogorszenie → 2 tyg. samych szybkich marszów',
+    ),
+    dict(
+        day="Środa", day_order=2, position=1,
+        name="Mobilność bioder",
+        exercise_key="sr-mobilnosc-bioder-kostek",
+        sets_reps='10 min',
+    ),
+    dict(
+        day="Środa", day_order=2, position=2,
+        name="Zestaw rozluźniający (po treningu)",
+        exercise_key="sr-rozluznianie",
+        sets_reps='Happy Baby 2-3 min\nPrzysiad słowiański z podparciem 1,5-2 min\nPozycja dziecka, kolana szeroko 3-4 min',
+        tm_info='Oddech przeponowy: wdech nosem 4 s do brzucha, wydech ustami 6-8 s, krocze opada i puszcza. Bez parcia, bez Kegla',
+    ),
 
-    # CZWARTEK - Gora ciala (B) - objetosc & ruchy unilateralne
+    # CZWARTEK - Gora ciala (B)
     dict(
         day="Czwartek", day_order=3, position=0,
-        name="Free Handstand",
-        exercise_key="cz-free-handstand",
-        sets_reps="10 min praktyki",
-        tm_info="Wolno, bez ściany — kolejny etap po Wall Handstand Hold (poniedziałek)",
+        name="Podciąganie podchwytem",
+        exercise_key="cz-podciaganie-podchwyt",
+        sets_reps='3 x 6-8 powt.',
+        tm_info='Bez plecaka',
     ),
     dict(
         day="Czwartek", day_order=3, position=1,
-        name="Pike Push-ups na uchwytach",
-        exercise_key="cz-pike-pushups",
-        sets_reps="4 x 8-10 powt.",
-        tm_info="Od 2026-10-23: bez uchwytów (z uchwytami gorsza technika), nogi na podwyższeniu",
+        name="Pompki Archer na uchwytach",
+        exercise_key="cz-pompki-archer",
+        sets_reps='3 x 6 / stronę',
     ),
     dict(
         day="Czwartek", day_order=3, position=2,
-        name="Podciąganie powolne",
-        exercise_key="cz-podciaganie-powolne",
-        sets_reps="4 x 8 powt.",
-        tm_info="1 sek. góra / 2 sek. pauza / 3 sek. dół",
+        name="Pompki diamentowe",
+        exercise_key="cz-pompki-diamentowe",
+        sets_reps='3 x 10 powt.',
+        tm_info='Bez plecaka, łokcie przy tułowiu',
     ),
     dict(
         day="Czwartek", day_order=3, position=3,
-        name="Pompki Archer na uchwytach",
-        exercise_key="cz-pompki-archer",
-        sets_reps="4 x 6-8 / stronę",
-        tm_info="Bez dociążenia — wariant unilateralny",
+        name="Podciąganie powolne",
+        exercise_key="cz-podciaganie-powolne",
+        sets_reps='3 x 5 powt.',
+        tm_info='Bez pauzy u góry',
     ),
     dict(
         day="Czwartek", day_order=3, position=4,
-        name="Odwrotne rozpiętki w leżeniu na brzuchu (Y-T)",
-        exercise_key="cz-odwrotne-rozpietki-lezenie",
-        sets_reps="3 x 12-15 powt.",
-        tm_info="Od 2026-11-16: butelki 1 l w dłoniach, start od 12 powt. Tylne barki — kciuki w górę, pauza 2 sek. na górze, bez szarpania",
-    ),
-    dict(
-        day="Czwartek", day_order=3, position=5,
-        name="Dragon Flag",
-        exercise_key="cz-dragon-flag",
-        sets_reps="3 serie x max negatywów kontrolowanych do dołu",
-        tm_info="Ostrożnie — lędźwie, przerwij przy jakimkolwiek bólu",
+        name="Zestaw rozluźniający (po treningu)",
+        exercise_key="cz-rozluznianie",
+        sets_reps='Happy Baby 2-3 min\nPrzysiad słowiański z podparciem 1,5-2 min\nPozycja dziecka, kolana szeroko 3-4 min',
+        tm_info='Oddech przeponowy: wdech nosem 4 s do brzucha, wydech ustami 6-8 s, krocze opada i puszcza. Bez parcia, bez Kegla',
     ),
 
-    # PIATEK - Dol ciala + Core (B)
+    # PIATEK - Dol ciala (B)
     dict(
         day="Piątek", day_order=4, position=0,
-        name="Zakroki chodzone z dociążeniem",
-        exercise_key="pt-zakroki-chodzone",
-        sets_reps="4 x 10-12 / nogę",
-        tm_info="Od 2026-10-19: plecak 7-10 kg + wolne opuszczanie 3 sek. (cięższego plecaka brak)",
+        name="Przysiady z masą ciała",
+        exercise_key="pt-przysiady-bw",
+        sets_reps='3 x 15 powt.',
+        tm_info='Płynny ruch',
     ),
     dict(
         day="Piątek", day_order=4, position=1,
-        name="Krzesełko przy ścianie (Wall Sit)",
-        exercise_key="pt-wall-sit",
-        sets_reps="3 x 45-60 sek.",
-        tm_info="Uda równolegle do podłogi, +10 sek./tydz.",
+        name="Single-leg Hip Thrust",
+        exercise_key="pt-single-leg-hip-thrust",
+        sets_reps='3 x 10 / nogę',
+        tm_info='Bez pauzy na górze',
     ),
     dict(
         day="Piątek", day_order=4, position=2,
         name="Uginanie nóg w leżeniu (ślizg stopami)",
         exercise_key="pt-uginanie-nog-slizg",
-        sets_reps="3 x 10-12 powt.",
-        tm_info="Od 2026-11-02: opuszczanie (prostowanie nóg) 5 sek. — ręcznik/panele jako ślizg",
+        sets_reps='3 x 10 powt.',
     ),
     dict(
         day="Piątek", day_order=4, position=3,
         name="Wspięcia na palce na jednej nodze",
         exercise_key="pt-wspiecia-jedna-noga",
-        sets_reps="3 x 15-20 powt.",
-        tm_info="Od 2026-11-09: plecak 10 kg, start od 15 powt. Pełny zakres, pauza 1 sek. na górze",
+        sets_reps='3 x 15 powt.',
+        tm_info='Bez plecaka',
     ),
     dict(
         day="Piątek", day_order=4, position=4,
-        name="Ab Wheel (kółko)",
-        exercise_key="pt-ab-wheel",
-        sets_reps="4 x 10-12 powt.",
-        tm_info="Od 2026-11-02: 10-12 (było 8-10, 4 x 10 zaliczone). Ostrożnie — lędźwie, niepełny zakres na start",
+        name="Bird Dog",
+        exercise_key="pt-bird-dog",
+        sets_reps='3 x 8 / stronę',
+        tm_info='Swobodny oddech',
     ),
     dict(
         day="Piątek", day_order=4, position=5,
-        name="Superman Hold",
-        exercise_key="pt-superman",
-        sets_reps="3 x 50-60 sek.",
-        tm_info="Od 2026-11-16: 50-60 sek. Prostowniki grzbietu — bez przeprostu, przerwij przy bólu lędźwi",
+        name="Zestaw rozluźniający (po treningu)",
+        exercise_key="pt-rozluznianie",
+        sets_reps='Happy Baby 2-3 min\nPrzysiad słowiański z podparciem 1,5-2 min\nPozycja dziecka, kolana szeroko 3-4 min',
+        tm_info='Oddech przeponowy: wdech nosem 4 s do brzucha, wydech ustami 6-8 s, krocze opada i puszcza. Bez parcia, bez Kegla',
     ),
 
-    # SOBOTA - Gora ciala (C, opcjonalnie/technika) + Bieg latwy
+    # SOBOTA - Bieg latwy
     dict(
         day="Sobota", day_order=5, position=0,
-        name="Podciąganie podchwytem",
-        exercise_key="sob-podciaganie-podchwyt",
-        sets_reps="3 x 6-8 powt.",
-        tm_info="Od 2026-11-09: plecak 7,5 kg, start od 6 powt.",
+        name="Bieg łatwy",
+        exercise_key="sob-bieg-latwy",
+        sets_reps='25-30 min (marszobieg albo łatwy trucht)',
+        tm_info='Tempo konwersacyjne, zasady jak w środę',
     ),
     dict(
         day="Sobota", day_order=5, position=1,
-        name="Planche Lean (podpór z wychyleniem)",
-        exercise_key="sob-planche-lean",
-        sets_reps="3 x 30-35 sek.",
-        tm_info="Od 2026-11-16: 30-35 sek. Barki przed dłońmi, proste łokcie — etap przed Pompkami Pseudo Planche, +5 sek./tydz.",
-    ),
-    dict(
-        day="Sobota", day_order=5, position=2,
-        name="Pompki diamentowe",
-        exercise_key="sob-pompki-diamentowe",
-        sets_reps="3 x 10-12 powt.",
-        tm_info="Od 2026-11-09: plecak 10 kg, start od 10 powt. Triceps — łokcie przy tułowiu",
-    ),
-    dict(
-        day="Sobota", day_order=5, position=3,
-        name="L-Sit na uchwytach",
-        exercise_key="sob-l-sit",
-        sets_reps="3 serie x max czas",
-        tm_info="Sesja testowa (cel na start: 5-8 sek.)",
-    ),
-    dict(
-        day="Sobota", day_order=5, position=4,
-        name="Side Plank",
-        exercise_key="sob-side-plank",
-        sets_reps="3 x 30-45 sek. / stronę",
-        tm_info="Nowe od 2026-10-12 — pierwsze 2 tyg. po 2 serie. Skośne brzucha — biodra wysoko",
-    ),
-    dict(
-        day="Sobota", day_order=5, position=5,
-        name="Bieg łatwy",
-        exercise_key="sob-bieg-latwy",
-        sets_reps="30–40 min (tempo konwersacyjne)",
+        name="Zestaw rozluźniający (po treningu)",
+        exercise_key="sob-rozluznianie",
+        sets_reps='Happy Baby 2-3 min\nPrzysiad słowiański z podparciem 1,5-2 min\nPozycja dziecka, kolana szeroko 3-4 min',
+        tm_info='Oddech przeponowy: wdech nosem 4 s do brzucha, wydech ustami 6-8 s, krocze opada i puszcza. Bez parcia, bez Kegla',
     ),
 
-    # NIEDZIELA - Regeneracja (Rest): pelny odpoczynek, brak cwiczen w planie.
+    # NIEDZIELA - Odpoczynek: brak wierszy (zestaw rozluzniajacy wieczorem
+    # opisany statycznie w index.html).
 ]
 
 
