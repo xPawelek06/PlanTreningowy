@@ -95,7 +95,7 @@ EXERCISES = [
         day="Poniedziałek", day_order=0, position=5,
         name="Zestaw rozluźniający (po treningu)",
         exercise_key="pon-rozluznianie",
-        sets_reps='Happy Baby 2-3 min\nPrzysiad słowiański z podparciem 1,5-2 min\nPozycja dziecka, kolana szeroko 3-4 min',
+        sets_reps='Nogi na kanapie/łóżku (90/90, kolana lekko na boki) 4-5 min\nMotyl leżący, kolana na poduszkach 3 min\nPozycja dziecka z poduszką pod pośladkami 1,5-3 min',
         tm_info='Oddech przeponowy: wdech nosem 4 s do brzucha, wydech ustami 6-8 s, krocze opada i puszcza. Bez parcia, bez Kegla',
     ),
 
@@ -139,7 +139,7 @@ EXERCISES = [
         day="Wtorek", day_order=1, position=5,
         name="Zestaw rozluźniający (po treningu)",
         exercise_key="wt-rozluznianie",
-        sets_reps='Happy Baby 2-3 min\nPrzysiad słowiański z podparciem 1,5-2 min\nPozycja dziecka, kolana szeroko 3-4 min',
+        sets_reps='Nogi na kanapie/łóżku (90/90, kolana lekko na boki) 4-5 min\nMotyl leżący, kolana na poduszkach 3 min\nPozycja dziecka z poduszką pod pośladkami 1,5-3 min',
         tm_info='Oddech przeponowy: wdech nosem 4 s do brzucha, wydech ustami 6-8 s, krocze opada i puszcza. Bez parcia, bez Kegla',
     ),
 
@@ -161,7 +161,7 @@ EXERCISES = [
         day="Środa", day_order=2, position=2,
         name="Zestaw rozluźniający (po treningu)",
         exercise_key="sr-rozluznianie",
-        sets_reps='Happy Baby 2-3 min\nPrzysiad słowiański z podparciem 1,5-2 min\nPozycja dziecka, kolana szeroko 3-4 min',
+        sets_reps='Nogi na kanapie/łóżku (90/90, kolana lekko na boki) 4-5 min\nMotyl leżący, kolana na poduszkach 3 min\nPozycja dziecka z poduszką pod pośladkami 1,5-3 min',
         tm_info='Oddech przeponowy: wdech nosem 4 s do brzucha, wydech ustami 6-8 s, krocze opada i puszcza. Bez parcia, bez Kegla',
     ),
 
@@ -197,7 +197,7 @@ EXERCISES = [
         day="Czwartek", day_order=3, position=4,
         name="Zestaw rozluźniający (po treningu)",
         exercise_key="cz-rozluznianie",
-        sets_reps='Happy Baby 2-3 min\nPrzysiad słowiański z podparciem 1,5-2 min\nPozycja dziecka, kolana szeroko 3-4 min',
+        sets_reps='Nogi na kanapie/łóżku (90/90, kolana lekko na boki) 4-5 min\nMotyl leżący, kolana na poduszkach 3 min\nPozycja dziecka z poduszką pod pośladkami 1,5-3 min',
         tm_info='Oddech przeponowy: wdech nosem 4 s do brzucha, wydech ustami 6-8 s, krocze opada i puszcza. Bez parcia, bez Kegla',
     ),
 
@@ -240,7 +240,7 @@ EXERCISES = [
         day="Piątek", day_order=4, position=5,
         name="Zestaw rozluźniający (po treningu)",
         exercise_key="pt-rozluznianie",
-        sets_reps='Happy Baby 2-3 min\nPrzysiad słowiański z podparciem 1,5-2 min\nPozycja dziecka, kolana szeroko 3-4 min',
+        sets_reps='Nogi na kanapie/łóżku (90/90, kolana lekko na boki) 4-5 min\nMotyl leżący, kolana na poduszkach 3 min\nPozycja dziecka z poduszką pod pośladkami 1,5-3 min',
         tm_info='Oddech przeponowy: wdech nosem 4 s do brzucha, wydech ustami 6-8 s, krocze opada i puszcza. Bez parcia, bez Kegla',
     ),
 
@@ -256,7 +256,7 @@ EXERCISES = [
         day="Sobota", day_order=5, position=1,
         name="Zestaw rozluźniający (po treningu)",
         exercise_key="sob-rozluznianie",
-        sets_reps='Happy Baby 2-3 min\nPrzysiad słowiański z podparciem 1,5-2 min\nPozycja dziecka, kolana szeroko 3-4 min',
+        sets_reps='Nogi na kanapie/łóżku (90/90, kolana lekko na boki) 4-5 min\nMotyl leżący, kolana na poduszkach 3 min\nPozycja dziecka z poduszką pod pośladkami 1,5-3 min',
         tm_info='Oddech przeponowy: wdech nosem 4 s do brzucha, wydech ustami 6-8 s, krocze opada i puszcza. Bez parcia, bez Kegla',
     ),
 
